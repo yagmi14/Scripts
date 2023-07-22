@@ -65,3 +65,5 @@ cat > /usr/local/etc/sing-box/config.json <<EOF
   ]
 }
 EOF
+systemctl restart sing-box
+systemctl status sing-box
