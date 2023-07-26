@@ -1,12 +1,12 @@
 #!/bin/bash
 
-read -p "请输入域名: " ip_address
-
 echo "请选择:"
 echo "1) vless-xtls-grpc-reality"
 echo "2) vless-xtls-vision-reality"
 
 read -p "输入(1-2):" choice
+
+read -p "请输入域名: " ip_address
 
 case $choice in
   1)
