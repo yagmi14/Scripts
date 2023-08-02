@@ -12,15 +12,15 @@ read -p "输入(0-4):" choice
 case $choice in
   0)
     echo "默认,执行所有命令"
-    nexttrace -Tp 65499 27.185.201.1
-    nexttrace -Tp 65499 124.74.52.254 
-    nexttrace -Tp 65499 61.144.6.18
-    nexttrace -Tp 65499 61.240.159.62
-    nexttrace -Tp 65499 220.196.190.38
-    nexttrace -Tp 65499 163.177.38.106
-    nexttrace -Tp 65499 111.62.68.52
-    nexttrace -Tp 65499 120.204.34.2
-    nexttrace -Tp 65499 120.198.26.254
+    nexttrace -T -p 65499 27.185.201.1
+    nexttrace -T -p 65499 124.74.52.254 
+    nexttrace -T -p 65499 61.144.6.18
+    nexttrace -T -p 65499 61.240.159.62
+    nexttrace -T -p 65499 220.196.190.38
+    nexttrace -T -p 65499 163.177.38.106
+    nexttrace -T -p 65499 111.62.68.52
+    nexttrace -T -p 65499 120.204.34.2
+    nexttrace -T -p 65499 120.198.26.254
     nexttrace -T -p 40001 58.32.4.1
     nexttrace -T -p 40001 210.13.67.2
     nexttrace -T -p 40001 223.70.155.6
