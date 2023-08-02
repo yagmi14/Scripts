@@ -64,6 +64,7 @@ case $choice in
     nexttrace -Tp 65499 223.70.155.6
     nexttrace -Tp 65499 211.156.140.17
     nexttrace -Tp 65499 166.111.4.5
+    nexttrace -T 159.226.254.1
     ;;
   *)
     echo "无效输入,请重试!"
