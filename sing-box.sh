@@ -26,6 +26,7 @@ case $choice in
     {"log":{"level":"info","timestamp":true},"route":{"rules":[{"geosite":"cn","geoip":"cn","outbound":"direct"},{"geosite":"category-ads-all","outbound":"block"}]},"inbounds":[{"type":"shadowsocks","tag":"shadowsocks-in","listen":"::","listen_port":40001,"sniff":true,"sniff_override_destination":true,"method":"aes-256-gcm","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4="}],"outbounds":[{"type":"direct","tag":"direct"},{"type":"block","tag":"block"}]}
     EOF
     /usr/local/bin/sing-box run -c /usr/local/etc/sing-box/sb40001.json
+    ;;
   *)
     echo "无效输入,请重试!"
     ;;
