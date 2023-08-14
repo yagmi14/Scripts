@@ -24,7 +24,7 @@ case $choice in
     read -p "listening port:" port
     echo "shadowsocks"
     folder="/usr/local/etc/sb$port"; if [ ! -d "$folder" ]; then mkdir -p "$folder"; echo "文件夹 $folder 创建成功！"; else echo "文件夹 $folder 已经存在，无需创建。"; fi
-    echo '{"log":{"level":"info","timestamp":true},"inbounds":[{"type":"shadowsocks","tag":"shadowsocks-in","listen":"::","listen_port": '$port' ,"sniff":true,"sniff_override_destination":true,"method":"aes-256-gcm","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4="}],"outbounds":[{"type":"direct","tag":"direct"}]}' > "$folder/config.json"
+    echo '{"log":{"level":"info","timestamp":true},"inbounds":[{"type":"shadowsocks","tag":"shadowsocks-in","listen":"::","listen_port":'$port',"sniff":true,"sniff_override_destination":true,"method":"aes-256-gcm","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4="}],"outbounds":[{"type":"direct","tag":"direct"}]}' > "$folder/config.json"
     /usr/local/bin/sing-box run -c "$folder/config.json"
     ;;
   *)
