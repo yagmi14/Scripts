@@ -17,7 +17,7 @@ cat > /etc/ss-rust/config.json <<EOF
     "server": "::",
     "server_port": $port,
     "password": "W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=",
-    "method": "aes-128-gcm",
+    "method": "aes-256-gcm",
     "fast_open": true,
     "mode": "tcp_and_udp",
     "user":"nobody",
