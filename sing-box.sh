@@ -21,7 +21,7 @@ case $choice in
     /usr/local/bin/sing-box run -c /usr/local/etc/sing-box/config.json
     ;;
   3)
-    read -p "listening port：" port
+    read -p "listening port:" port
     echo "shadowsocks"
     folder="/usr/local/etc/sb$port"; if [ ! -d "$folder" ]; then mkdir -p "$folder"; echo "文件夹 $folder 创建成功！"; else echo "文件夹 $folder 已经存在，无需创建。"; fi
     echo '{"log":{"level":"info","timestamp":true},"route":{"rules":[{"geosite":"cn","geoip":"cn","outbound":"direct"},{"geosite":"category-ads-all","outbound":"block"}]},"inbounds":[{"type":"shadowsocks","tag":"shadowsocks-in","listen":"::","listen_port":'$port',"sniff":true,"sniff_override_destination":true,"method":"aes-256-gcm","password":"X7cGR05g3vo5AEgq/JXha4fysq8jVczKfH6PdmB9KXk="}],"outbounds":[{"type":"direct","tag":"direct"},{"type":"block","tag":"block"}]}' > /usr/local/etc/sb$port/config.json
