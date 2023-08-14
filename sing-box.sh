@@ -22,9 +22,9 @@ case $choice in
     ;;
   3)
     echo "shadowsocks"
-    folder="/usr/local/etc/sb40001"; if [ ! -d "$folder" ]; then mkdir -p "$folder"; echo "文件夹 $folder 创建成功！"; else echo "文件夹 $folder 已经存在，无需创建。"; fi
-    echo '{"log":{"level":"info","timestamp":true},"route":{"rules":[{"geosite":"cn","geoip":"cn","outbound":"direct"},{"geosite":"category-ads-all","outbound":"block"}]},"inbounds":[{"type":"shadowsocks","tag":"shadowsocks-in","listen":"::","listen_port":40001,"sniff":true,"sniff_override_destination":true,"method":"aes-256-gcm","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4="}],"outbounds":[{"type":"direct","tag":"direct"},{"type":"block","tag":"block"}]}' > /usr/local/etc/sb40001/config.json
-    /usr/local/bin/sing-box run -c /usr/local/etc/sb40001/config.json
+    folder="/usr/local/etc/sb40002"; if [ ! -d "$folder" ]; then mkdir -p "$folder"; echo "文件夹 $folder 创建成功！"; else echo "文件夹 $folder 已经存在，无需创建。"; fi
+    echo '{"log":{"level":"info","timestamp":true},"route":{"rules":[{"geosite":"cn","geoip":"cn","outbound":"direct"},{"geosite":"category-ads-all","outbound":"block"}]},"inbounds":[{"type":"shadowsocks","tag":"shadowsocks-in","listen":"::","listen_port":40002,"sniff":true,"sniff_override_destination":true,"method":"aes-256-gcm","password":"X7cGR05g3vo5AEgq/JXha4fysq8jVczKfH6PdmB9KXk="}],"outbounds":[{"type":"direct","tag":"direct"},{"type":"block","tag":"block"}]}' > /usr/local/etc/sb40002/config.json
+    /usr/local/bin/sing-box run -c /usr/local/etc/sb40002/config.json
     ;;
   *)
     echo "无效输入,请重试!"
