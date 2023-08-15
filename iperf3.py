@@ -14,6 +14,8 @@ else:
 mode_input = input("请选择模式（-RZ或-Z，默认为-RZ，按下空格使用默认值）: ")
 if mode_input == "":
     mode = "-RZ"
+elif mode_input.upper() == "Z":
+    mode = "-Z"
 else:
     mode = mode_input
 
