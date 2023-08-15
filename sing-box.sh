@@ -37,7 +37,7 @@ case $choice in
     echo "shadowsocks"
     read -p "listening port:" port1
     read -p "domain:" domain
-    read -p "ip:" ip
+    read -p "remote ip:" ip
     read -p "remote port:" port2
     service_file="/etc/systemd/system/sb${port1}.service"; if [ -f "$service_file" ]; then echo "Service file for port $port1 exists."; sudo systemctl stop "sb${port1}"; else echo "Service file for port $port1 does not exist."; fi
     folder="/usr/local/etc/sb$port1"; if [ ! -d "$folder" ]; then mkdir -p "$folder"; echo "文件夹 $folder 创建成功！"; else echo "文件夹 $folder 已经存在，无需创建。"; fi
