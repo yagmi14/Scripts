@@ -3,7 +3,7 @@
 echo "请选择:"
 echo "1) vless-xtls-grpc-reality"
 echo "2) vless-xtls-vision-reality"
-echo "3) shadowsocks"
+echo "3) shadowsocks2022"
 echo "4) reality+ss2022"
 echo "5) reality+ss"
 
@@ -27,7 +27,7 @@ case $choice in
     /usr/local/bin/sing-box run -c /usr/local/etc/sing-box/config.json
     ;;
   3)
-    echo "shadowsocks"
+    echo "shadowsocks2022"
     read -p "listening port:" port
     service_file="/etc/systemd/system/sb${port}.service"; if [ -f "$service_file" ]; then echo "Service file for port $port exists."; sudo systemctl stop "sb${port}"; else echo "Service file for port $port does not exist."; fi
     folder="/usr/local/etc/sb$port"; if [ ! -d "$folder" ]; then mkdir -p "$folder"; echo "文件夹 $folder 创建成功！"; else echo "文件夹 $folder 已经存在，无需创建。"; fi
