@@ -21,14 +21,14 @@ start_pre() {
 
 start() {
     ebegin "Starting $name"
-    start-stop-daemon --start --exec $command -- $command_args
-    eend $?
+    start-stop-daemon --start --exec \$command -- \$command_args
+    eend \$?
 }
 
 stop() {
     ebegin "Stopping $name"
-    start-stop-daemon --stop --exec $command
-    eend $?
+    start-stop-daemon --stop --exec \$command
+    eend \$?
 }
 EOF
 
