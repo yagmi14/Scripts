@@ -30,6 +30,14 @@ stop() {
     start-stop-daemon --stop --exec \$command
     eend \$?
 }
+
+restart() {
+    ebegin "Restarting $name"
+    start-stop-daemon --stop --exec \$command
+    sleep 1
+    start-stop-daemon --start --exec \$command -- \$command_args
+    eend 0
+}
 EOF
 
 chmod +x /etc/init.d/$name;
