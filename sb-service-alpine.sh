@@ -21,13 +21,13 @@ start() {
 
 stop() {
     ebegin "Stopping $name"
-    start-stop-daemon --stop --exec \$command
+    start-stop-daemon --stop --exec \$command -- \$command_args
     eend 0
 }
 
 restart() {
     ebegin "Restarting $name"
-    start-stop-daemon --stop --exec \$command
+    start-stop-daemon --stop --exec \$command -- \$command_args
     sleep 1
     start-stop-daemon --start --exec \$command -- \$command_args
     eend 0
