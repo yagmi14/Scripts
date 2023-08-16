@@ -27,7 +27,7 @@ start() {
 
 stop() {
     ebegin "Stopping $name"
-    start-stop-daemon --stop --exec $command -- $command_args
+    start-stop-daemon --stop --exec $command
     eend $?
 }
 EOF
