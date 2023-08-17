@@ -7,7 +7,7 @@ echo "3) shadowsocks2022"
 echo "4) shadowsocks"
 echo "5) reality+ss2022"
 echo "6) reality+ss"
-echo "7) ShadowTLS-v3"
+echo "7) ShadowTLS v3"
 
 read -p "请选择:" choice
 
@@ -67,7 +67,7 @@ case $choice in
     /usr/local/bin/sing-box run -c "$folder/config.json"
     ;;
   7)
-    echo "ShadowTLS-v3"
+    echo "ShadowTLS v3"
     read -p "listening port:" port
     read -p "domain:" domain
     service_file="/etc/systemd/system/sb${port}.service"; if [ -f "$service_file" ]; then echo "Service file for port $port exists."; sudo systemctl stop "sb${port}"; else echo "Service file for port $port does not exist."; fi
