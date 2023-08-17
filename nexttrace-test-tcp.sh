@@ -55,7 +55,7 @@ case $choice in
     nexttrace -T -p 65499 111.62.68.52
     nexttrace -T 211.139.80.33
     nexttrace -T -p 65499 120.204.34.2
-    nexttrace -T -p 65499 111.8.9.165
+    nexttrace -T 111.8.9.73
     nexttrace -T -p 65499 120.198.26.254
     ;;
   4)
