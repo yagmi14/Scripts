@@ -51,7 +51,7 @@ case $choice in
     ;;
   3)
     echo "China Mobile"
-    nexttrace -T -p 8080 111.13.111.224
+    nexttrace -T 111.13.111.99
     nexttrace -T -p 65499 111.62.68.52
     nexttrace -T 211.139.80.33
     nexttrace -T -p 65499 120.204.34.2
