@@ -44,9 +44,7 @@ case $choice in
     nexttrace -T -p 65499 60.13.41.246
     nexttrace -T -p 40001 cu.lightnovel.cn
     nexttrace -T -p 65499 220.196.190.38
-    nexttrace -T 123.158.253.254
     nexttrace -T -p 65499 58.20.176.94
-    nexttrace -T -p 40001 36.248.202.18
     nexttrace -T -p 65499 163.177.38.106
     ;;
   3)
