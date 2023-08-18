@@ -6,9 +6,10 @@ echo "02) 🇭🇰 IPRaft-HKG1"
 echo "03) 🇭🇰 IPRaft-HKG2"
 echo "04) 🇭🇰 IPRaft-HKG3"
 echo "05) 🇭🇰 IPRaft-HKG4"
-echo "21) 🇺🇦 GlobalVM-IEV"
-echo "22) 🇮🇸 1984-REF"
-echo "23) 🇮🇱 Stark-IL"
+echo "21) 🇺🇸 IPRaft-SJC"
+echo "31) 🇺🇦 GlobalVM-IEV"
+echo "32) 🇮🇸 1984-REF"
+echo "33) 🇮🇱 Stark-IL"
 
 read -p "输入选择:" choice
 
@@ -31,17 +32,21 @@ case $choice in
     ;;
   05)
     echo "🇭🇰 IPRaft-HKG4"
-    ssh root@209.146.125.19 -p 53022
+    ssh root@209.146.125.105 -p 40000
     ;;
   21)
+    echo "🇺🇸 IPRaft-SJC"
+    ssh root@38.207.149.43 -p 40000
+    ;;
+  31)
     echo "🇺🇦 GlobalVM-IEV"
     ssh root@2a13:b487:4f00::50
     ;;
-  22)
+  32)
     echo "🇮🇸 1984-REF"
     ssh root@is.1984.wx2021.buzz -p 20031
     ;;
-  23)
+  33)
     echo "🇮🇱 Stark-IL"
     ssh root@il.sisl.wx2021.buzz -p 10016
     ;;
