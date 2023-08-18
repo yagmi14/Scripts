@@ -61,7 +61,10 @@ case $choice in
     ;;
   5)
     echo "reality+shadowsocks"
-    read -p "Select method:
+    read -p "listening port:" port1
+    read -p "domain:" domain
+    
+    read -p "Select outbounds method:
     1. 2022-blake3-aes-256-gcm
     2. aes-256-gcm
     (press plz): " method_choice
@@ -74,8 +77,6 @@ case $choice in
       method="2022-blake3-aes-256-gcm"
     fi
     
-    read -p "listening port:" port1
-    read -p "domain:" domain
     read -p "remote ip:" ip
     read -p "remote port:" port2
     service_file="/etc/systemd/system/sb${port1}.service"; if [ -f "$service_file" ]; then echo "Service file for port $port1 exists."; sudo systemctl stop "sb${port1}"; else echo "Service file for port $port1 does not exist."; fi
