@@ -10,7 +10,7 @@ touch "$filename"
 # 打开文件并将用户输入的内容写入其中
 echo "请输入文本内容："
 while read line; do
-  echo "$line" >> "$filename"
+  echo "$line" > "$filename"
 done
 
 # 给予文件权限
