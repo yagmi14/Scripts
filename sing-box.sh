@@ -33,10 +33,23 @@ case $choice in
     ;;
   3)
     echo "shadowsocks2022"
+    read -p "Select method:
+    1. 2022-blake3-aes-256-gcm
+    2. aes-256-gcm
+    (press plz): " method_choice
+
+    if [[ "$method_choice" == "1" ]]; then
+      method="2022-blake3-aes-256-gcm"
+    elif [[ "$method_choice" == "2" ]]; then
+      method="aes-256-gcm"
+    else
+      method="2022-blake3-aes-256-gcm"
+    fi
+    
     read -p "listening port:" port
     service_file="/etc/systemd/system/sb${port}.service"; if [ -f "$service_file" ]; then echo "Service file for port $port exists."; sudo systemctl stop "sb${port}"; else echo "Service file for port $port does not exist."; fi
     folder="/usr/local/etc/sb$port"; if [ ! -d "$folder" ]; then mkdir -p "$folder"; echo "文件夹 $folder 创建成功！"; else echo "文件夹 $folder 已经存在，无需创建。"; fi
-    echo '{"log":{"level":"info","timestamp":true},"inbounds":[{"type":"shadowsocks","tag":"shadowsocks-in","listen":"::","listen_port":'$port',"sniff":true,"sniff_override_destination":true,"method":"2022-blake3-aes-256-gcm","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4="}],"outbounds":[{"type":"direct","tag":"direct"}]}' > "$folder/config.json"
+    echo '{"log":{"level":"info","timestamp":true},"inbounds":[{"type":"shadowsocks","tag":"shadowsocks-in","listen":"::","listen_port":'$port',"sniff":true,"sniff_override_destination":true,"method":"'"$method"'","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4="}],"outbounds":[{"type":"direct","tag":"direct"}]}' > "$folder/config.json"
     service_file="/etc/systemd/system/sb${port}.service"; if [ -f "$service_file" ]; then echo "Service file for port $port exists."; sudo systemctl restart "sb${port}" && sudo systemctl status "sb${port}"; else /usr/local/bin/sing-box run -c "$folder/config.json"; fi
     ;;
   4)
