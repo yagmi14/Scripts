@@ -98,6 +98,8 @@ case $choice in
       method1="2022-blake3-aes-256-gcm"
     fi
 
+    read -p "listening port:" port1
+
     read -p "Select outbounds method:
     1. 2022-blake3-aes-256-gcm
     2. aes-256-gcm
@@ -111,7 +113,6 @@ case $choice in
       method2="2022-blake3-aes-256-gcm"
     fi
     
-    read -p "listening port:" port1
     read -p "remote ip:" ip
     read -p "remote port:" port2
     service_file="/etc/systemd/system/sb${port1}.service"; if [ -f "$service_file" ]; then echo "Service file for port $port1 exists."; sudo systemctl stop "sb${port1}"; else echo "Service file for port $port1 does not exist."; fi
