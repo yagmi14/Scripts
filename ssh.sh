@@ -1,17 +1,23 @@
 #!/bin/bash
 
+options=(
+  "01) 🇭🇰 Cera-HKG"
+  "02) 🇭🇰 HKBN-HKG"
+  "03) 🇭🇰 IPRaft-HKG1"
+  "04) 🇭🇰 IPRaft-HKG2"
+  "05) 🇭🇰 IPRaft-HKG3"
+  "06) 🇭🇰 IPRaft-HKG4"
+  "07) 🇭🇰 Miku-HKG"
+  "21) 🇺🇸 IPRaft-SJC"
+  "31) 🇺🇦 GlobalVM-IEV"
+  "32) 🇮🇸 1984-REF"
+  "33) 🇮🇱 Stark-IL"
+)
+
+formatted_options=$(printf "%s\n" "${options[@]}" | column -c 80)
+
 echo "请选择:"
-echo "01) 🇭🇰 Cera-HKG"
-echo "02) 🇭🇰 HKBN-HKG"
-echo "03) 🇭🇰 IPRaft-HKG1"
-echo "04) 🇭🇰 IPRaft-HKG2"
-echo "05) 🇭🇰 IPRaft-HKG3"
-echo "06) 🇭🇰 IPRaft-HKG4"
-echo "07) 🇭🇰 Miku-HKG"
-echo "21) 🇺🇸 IPRaft-SJC"
-echo "31) 🇺🇦 GlobalVM-IEV"
-echo "32) 🇮🇸 1984-REF"
-echo "33) 🇮🇱 Stark-IL"
+echo "$formatted_options"
 
 read -p "输入选择:" choice
 
@@ -21,7 +27,7 @@ case $choice in
     ssh root@156.251.180.64 -p 40000
     ;;
   02)
-    echo "🇭🇰 HKBN-HKG"
+    echo "🇭🇰 HKBN-HKG"
     ssh root@hkbn.miaoddns.top -p 40000
     ;;
   03)
@@ -39,7 +45,7 @@ case $choice in
   06)
     echo "🇭🇰 IPRaft-HKG4"
     ssh root@209.146.125.105 -p 40000
-    ;
+    ;;
   07)
     echo "🇭🇰 Miku-HKG"
     ssh root@38.150.15.114 -p 40000
@@ -53,11 +59,11 @@ case $choice in
     ssh root@2a13:b487:4f00::50
     ;;
   32)
-    echo "🇮🇸 1984-REF"
+    echo "🇮🇸 1984-REF"
     ssh root@is.1984.wx2021.buzz -p 20031
     ;;
   33)
-    echo "🇮🇱 Stark-IL"
+    echo "🇮🇱 Stark-IL"
     ssh root@il.sisl.wx2021.buzz -p 10016
     ;;
   *)
