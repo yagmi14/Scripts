@@ -2,7 +2,7 @@
 
 echo "请选择:"
 echo "01) 🇭🇰 Cera-HKG"
-echo "02) 🇭🇰 IPRaft-HKG4"
+echo "02) 🇭🇰 IPRaft-HKG3"
 echo "21) 🇺🇦 GlobalVM-IEV"
 echo "22) 🇮🇸 1984-REF"
 echo "23) 🇮🇱 Stark-IL"
@@ -15,7 +15,7 @@ case $choice in
     ssh root@156.251.180.64 -p 40000
     ;;
   02)
-    echo "🇭🇰 IPRaft-HKG4"
+    echo "🇭🇰 IPRaft-HKG3"
     ssh root@209.146.125.19 -p 53022
     ;;
   21)
