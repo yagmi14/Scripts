@@ -14,7 +14,7 @@ options=(
   "33) 🇮🇱 Stark-IL"
 )
 
-formatted_options=$(printf "%-120s\n" "${options[@]}" | column -t)
+formatted_options=$(printf "%-10s %-20s %-30s\n" "${options[@]}" | column -t)
 
 echo "请选择:"
 echo "$formatted_options"
