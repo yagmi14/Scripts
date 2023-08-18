@@ -14,7 +14,7 @@ options=(
   "33) 🇮🇱 Stark-IL"
 )
 
-formatted_options=$(printf "%s\n" "${options[@]}" | column -c 120)  # 调整了列宽
+formatted_options=$(printf "%-120s\n" "${options[@]}" | column -t)
 
 echo "请选择:"
 echo "$formatted_options"
