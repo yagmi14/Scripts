@@ -85,7 +85,7 @@ case $choice in
     ;;
   6)
     echo "shadowsocks+shadowsocks"
-    read -p "Select method:
+    read -p "Select inbounds method:
     1. 2022-blake3-aes-256-gcm
     2. aes-256-gcm
     (press plz): " method_choice1
@@ -98,7 +98,7 @@ case $choice in
       method1="2022-blake3-aes-256-gcm"
     fi
 
-    read -p "Select method:
+    read -p "Select outbounds method:
     1. 2022-blake3-aes-256-gcm
     2. aes-256-gcm
     (press plz): " method_choice2
