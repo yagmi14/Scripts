@@ -23,7 +23,7 @@ dns:
     - tls://dns.google:853
 
 proxies:
-  - {name: 🇭🇰 Apernet-HKG | XMN-CU, server: 6007.foamddns.online, port: 40002, client-fingerprint: chrome, type: ss, cipher: 2022-blake3-aes-256-gcm, password: W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=, tfo: false}
+
   - {name: "test1", server: 156.251.180.64, port: 443, type: vless, uuid: f8b5cc81-d25c-4d22-92b6-d10a055f7e98, network: grpc, tls: true, udp: true, servername: "www.cuhk.edu.hk", client-fingerprint: chrome, reality-opts: {public-key: h2R5BJbjYH0Le3R8ilNqrRKjKQ0WRVjjDKCnRgTEVFk, short-id: 4c10a4acb2917613}}
   - name: test
     type: vless
@@ -35,8 +35,6 @@ proxies:
     udp: true
     client-fingerprint: chrome
     servername: www.cuhk.edu.hk
-    grpc-opts:
-      grpc-service-name: "grpc"
     reality-opts:
       public-key: h2R5BJbjYH0Le3R8ilNqrRKjKQ0WRVjjDKCnRgTEVFk
       short-id: 4c10a4acb2917613
@@ -47,7 +45,7 @@ proxy-groups:
     proxies:
       - test
       - test1
-      - 🇭🇰 Apernet-HKG | XMN-CU
+
 
 rules:
   - GEOSITE,geolocation-!cn,PROXY  
