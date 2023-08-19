@@ -35,6 +35,8 @@ proxies:
     udp: true
     client-fingerprint: chrome
     servername: www.cuhk.edu.hk
+    grpc-opts:
+      grpc-service-name:
     reality-opts:
       public-key: h2R5BJbjYH0Le3R8ilNqrRKjKQ0WRVjjDKCnRgTEVFk
       short-id: 4c10a4acb2917613
