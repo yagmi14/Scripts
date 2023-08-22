@@ -1,5 +1,6 @@
 #!/bin/bash
 
-read -p "请输入IP地址: " ip_address
+echo "Enter an IP address: "
+read ip_address
 
 nexttrace $ip_address
