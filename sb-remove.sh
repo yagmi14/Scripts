@@ -2,4 +2,10 @@
 
 read -p "name:" name
 
-systemctl disable --now $([ -f /etc/systemd/system/$name.service ] && echo $name); rm -f /etc/systemd/system/$name.service; rm -rf /usr/local/etc/$name
+if [ -f /etc/systemd/system/$name.service ]; then
+  systemctl disable --now $name
+  rm -f /etc/systemd/system/$name.service
+  rm -rf /usr/local/etc/$name
+else
+  echo "Service $name does not exist."
+fi
