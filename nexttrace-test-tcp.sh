@@ -16,7 +16,7 @@ case $choice in
     nexttrace -T -p 65499 124.74.52.254 && \ 
     nexttrace -T -p 65499 61.144.6.18 && \
     nexttrace -T -p 65499 61.240.159.62 && \
-    nexttrace -T -p 65499 220.196.190.38 && \
+    nexttrace -T -p 65499 210.51.57.10 && \
     nexttrace -T -p 65499 163.177.38.106 && \
     nexttrace -T -p 65499 111.62.68.52 && \
     nexttrace -T -p 65499 120.204.34.2 && \
