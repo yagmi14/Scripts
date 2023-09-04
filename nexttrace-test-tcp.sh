@@ -18,7 +18,7 @@ case $choice in
     nexttrace -T -p 65499 61.240.159.62 && \
     nexttrace -T -p 65499 210.51.57.10 && \
     nexttrace -T -p 65499 163.177.38.106 && \
-    nexttrace -T -p 65499 111.62.68.52 && \
+    nexttrace -T 111.62.68.4 && \
     nexttrace -T -p 65499 120.204.34.2 && \
     nexttrace -T -p 65499 120.198.26.254 && \
     nexttrace -T -p 40001 58.32.4.1 && \
@@ -50,7 +50,7 @@ case $choice in
   3)
     echo "China Mobile"
     nexttrace -T 111.13.111.99 && \
-    nexttrace -T -p 65499 111.62.68.52 && \
+    nexttrace -T 111.62.68.4 && \
     nexttrace -T 211.139.80.33 && \
     nexttrace -T -p 65499 120.204.34.2 && \
     nexttrace -T 111.8.9.73 && \
