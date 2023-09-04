@@ -6,4 +6,4 @@ read ip
 echo "Enter port number:"
 read port
 
-nping -c 1 -p $port $ip --tcp
+nping -c 1 -p $port $ip/24 --tcp
