@@ -104,7 +104,7 @@ try:
             subprocess.call(["nexttrace", "-T", "23.26.90.5"]) # Nearoute-HKG
             subprocess.call(["nexttrace", "-T", "202.8.105.130"]) # NeroCloud-HKG
             subprocess.call(["nexttrace", "-T", "103.213.4.13"]) # Skywolf-HKG
-            subprocess.call(["nexttrace", "202.64.1.1"]) # WTT-HKG
+            subprocess.call(["nexttrace", "-T", "43.251.133.7"]) # WTT-HKG
             subprocess.call(["nexttrace", "-T", "157.119.103.1"]) # xTom-HKG
             subprocess.call(["nexttrace", "-T", "156.59.103.1"]) # Zenlayer-HKG
             # Add more tracing commands for HK option as needed
