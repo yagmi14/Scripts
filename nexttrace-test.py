@@ -121,7 +121,7 @@ try:
             subprocess.call(["nexttrace", "-T", "103.170.232.48"]) # Misaka-NRT
             subprocess.call(["nexttrace", "-T", "89.116.88.2"]) # Nearoute-NRT
             subprocess.call(["nexttrace", "-T", "103.90.136.3"]) # NeroCloud-NRT
-            subprocess.call(["nexttrace", "-T", "126.40.32.7"]) # Softbank-NRT
+            subprocess.call(["nexttrace", "-T", "126.40.32.15"]) # Softbank-NRT
             subprocess.call(["nexttrace", "-T", "149.62.44.1"]) # xTom-NRT
         elif choice == 7:
             # SG
