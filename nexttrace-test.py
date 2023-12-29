@@ -135,7 +135,7 @@ try:
             subprocess.call(["nexttrace", "-T", "103.142.140.1"]) # Kirino-SIN
             subprocess.call(["nexttrace", "-T", "194.156.163.2"]) # Misaka-SIN
             subprocess.call(["nexttrace", "-T", "185.151.146.2"]) # Nearoute-SIN
-            subprocess.call(["nexttrace", "-T", "103.136.124.3"]) # NeroCloud-SIN
+            subprocess.call(["nexttrace", "-T", "-p", "40001", "103.136.124.1"]) # NeroCloud-SIN
             # Add more tracing commands for SG option as needed
         elif choice == 8:
             # EU
