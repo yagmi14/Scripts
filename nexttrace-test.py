@@ -128,7 +128,7 @@ try:
             subprocess.call(["nexttrace", "-T", "103.142.140.1"]) # Kirino-SIN
             subprocess.call(["nexttrace", "-T", "194.156.163.2"]) # Misaka-SIN
             subprocess.call(["nexttrace", "-T", "185.151.146.2"]) # Nearoute-SIN
-            subprocess.call(["nexttrace", "-T", "-p", "40001", "103.136.124.1"]) # NeroCloud-SIN
+            subprocess.call(["nexttrace", "-T", "178.173.235.128"]) # NeroCloud-SIN
             subprocess.call(["nexttrace", "-T", "54.254.128.1"]) # AWS-SIN
             subprocess.call(["nexttrace", "-T", "s3southeastasia.blob.core.windows.net"]) # Azure-SIN
             # Add more tracing commands for SG option as needed
