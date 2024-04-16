@@ -108,11 +108,11 @@ try:
             # JP
             subprocess.call(["nexttrace", "-T", "45.88.193.5"]) # Dmit-NRT
             subprocess.call(["nexttrace", "-T", "103.168.154.1"]) # Eons-NRT
-            subprocess.call(["nexttrace", "-T", "34.97.105.8"]) # GCP-KIX
+            subprocess.call(["nexttrace", "-T", "34.97.105.10"]) # GCP-KIX
             subprocess.call(["nexttrace", "-T", "185.188.5.1"]) # Jinx-NRT
             subprocess.call(["nexttrace", "-T", "212.107.30.1"]) # Kirino-NRT
             subprocess.call(["nexttrace", "-T", "103.170.232.48"]) # Misaka-NRT
-            subprocess.call(["nexttrace", "-T", "89.116.88.2"]) # Nearoute-NRT
+            subprocess.call(["nexttrace", "-T", "89.116.88.18"]) # Nearoute-NRT
             subprocess.call(["nexttrace", "-T", "103.90.136.3"]) # NeroCloud-NRT
             subprocess.call(["nexttrace", "-T", "126.40.32.15"]) # Softbank-NRT
             subprocess.call(["nexttrace", "-T", "149.62.44.1"]) # xTom-NRT
