@@ -56,7 +56,6 @@ try:
             # CT
             subprocess.call(["nexttrace", "-T", "-p", "65499", "219.141.150.166"])
             subprocess.call(["nexttrace", "-T", "-p", "65499", "27.185.201.1"])
-            subprocess.call(["nexttrace", "-T", "-p", "65499", "61.178.65.90"])
             subprocess.call(["nexttrace", "-T", "-p", "65499", "124.74.52.254"])
             subprocess.call(["nexttrace", "-T", "-p", "65499", "61.150.151.122"])
             subprocess.call(["nexttrace", "-T", "-p", "65499", "61.144.6.18"])
@@ -64,8 +63,6 @@ try:
             # CU
             subprocess.call(["nexttrace", "-T", "-p", "65499", "61.135.214.54"])
             subprocess.call(["nexttrace", "-T", "-p", "65499", "61.240.159.62"])
-            subprocess.call(["nexttrace", "-T", "-p", "65499", "60.13.41.246"])
-            subprocess.call(["nexttrace", "-T", "-p", "40001", "cu.lightnovel.cn"])
             subprocess.call(["nexttrace", "-T", "-p", "65499", "210.51.57.10"])
             subprocess.call(["nexttrace", "-T", "-p", "65499", "58.20.176.94"])
             subprocess.call(["nexttrace", "-T", "-p", "65499", "163.177.38.106"])
@@ -73,7 +70,6 @@ try:
             # CMCC
             subprocess.call(["nexttrace", "-T", "112.34.111.194"])
             subprocess.call(["nexttrace", "-T", "111.62.68.59"])
-            subprocess.call(["nexttrace", "-T", "211.139.80.33"])
             subprocess.call(["nexttrace", "-T", "-p", "65499", "120.204.34.2"])
             subprocess.call(["nexttrace", "-T", "111.8.9.73"])
             subprocess.call(["nexttrace", "-T", "-p", "65499", "120.198.26.254"])
