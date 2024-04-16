@@ -87,23 +87,23 @@ try:
             subprocess.call(["nexttrace", "-T", "103.177.248.2"]) # Akari-HKG
             subprocess.call(["nexttrace", "-T", "47.243.243.2"]) # Alibaba-HKG
             subprocess.call(["nexttrace", "-T", "23.247.139.3"]) # Apernet-HKG
-            subprocess.call(["nexttrace", "-T", "18.162.80.8"]) # AWS-HKG
-            subprocess.call(["nexttrace", "-T", "s3eastasia.blob.core.windows.net"]) # Azure-HKG
             subprocess.call(["nexttrace", "-T", "156.251.180.1"]) # Cera-HKG
             subprocess.call(["nexttrace", "-T", "154.3.33.110"]) # Dmit-HKG
             subprocess.call(["nexttrace", "-T", "209.146.125.124"]) # Eons-HKG
             subprocess.call(["nexttrace", "-T", "35.220.230.27"]) # GCP-HKG
-            subprocess.call(["nexttrace", "-T", "42.3.27.8"]) # HKT-HKG
-            subprocess.call(["nexttrace", "-T", "38.150.15.1"]) # Hytron-HKG
+            subprocess.call(["nexttrace", "-T", "42.3.27.15"]) # HKT-HKG
             subprocess.call(["nexttrace", "-T", "103.116.72.2"]) # Jinx-HKG
             subprocess.call(["nexttrace", "-T", "38.59.254.150"]) # Kirino-HKG
             subprocess.call(["nexttrace", "-T", "45.11.104.3"]) # Misaka-HKG
             subprocess.call(["nexttrace", "-T", "23.26.90.5"]) # Nearoute-HKG
             subprocess.call(["nexttrace", "-T", "202.8.105.130"]) # NeroCloud-HKG
             subprocess.call(["nexttrace", "-T", "103.213.4.13"]) # Skywolf-HKG
-            subprocess.call(["nexttrace", "-T", "43.251.133.4"]) # WTT-HKG
+            subprocess.call(["nexttrace", "-T", "43.251.133.7"]) # WTT-HKG
             subprocess.call(["nexttrace", "-T", "157.119.103.1"]) # xTom-HKG
             subprocess.call(["nexttrace", "-T", "156.59.103.1"]) # Zenlayer-HKG
+            subprocess.call(["nexttrace", "-T", "18.162.80.8"]) # AWS-HKG
+            subprocess.call(["nexttrace", "-T", "s3eastasia.blob.core.windows.net"]) # Azure-HKG
+
             # Add more tracing commands for HK option as needed
         elif choice == 6:
             # JP
