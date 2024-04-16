@@ -103,12 +103,9 @@ try:
             subprocess.call(["nexttrace", "-T", "156.59.103.1"]) # Zenlayer-HKG
             subprocess.call(["nexttrace", "-T", "18.162.80.8"]) # AWS-HKG
             subprocess.call(["nexttrace", "-T", "s3eastasia.blob.core.windows.net"]) # Azure-HKG
-
             # Add more tracing commands for HK option as needed
         elif choice == 6:
             # JP
-            subprocess.call(["nexttrace", "-T", "13.112.63.251"]) # AWS-NRT
-            subprocess.call(["nexttrace", "-T", "s3japaneast.blob.core.windows.net"]) # Azure-NRT
             subprocess.call(["nexttrace", "-T", "45.88.193.5"]) # Dmit-NRT
             subprocess.call(["nexttrace", "-T", "103.168.154.1"]) # Eons-NRT
             subprocess.call(["nexttrace", "-T", "34.97.105.8"]) # GCP-KIX
@@ -119,12 +116,12 @@ try:
             subprocess.call(["nexttrace", "-T", "103.90.136.3"]) # NeroCloud-NRT
             subprocess.call(["nexttrace", "-T", "126.40.32.15"]) # Softbank-NRT
             subprocess.call(["nexttrace", "-T", "149.62.44.1"]) # xTom-NRT
+            subprocess.call(["nexttrace", "-T", "13.112.63.251"]) # AWS-NRT
+            subprocess.call(["nexttrace", "-T", "s3japaneast.blob.core.windows.net"]) # Azure-NRT
         elif choice == 7:
             # SG
             subprocess.call(["nexttrace", "-T", "-4", "speedtest.singapore.linode.com"]) # Akamai-SIN
             subprocess.call(["nexttrace", "-T", "103.84.216.2"]) # Akari-SIN
-            subprocess.call(["nexttrace", "-T", "54.254.128.1"]) # AWS-SIN
-            subprocess.call(["nexttrace", "-T", "s3southeastasia.blob.core.windows.net"]) # Azure-SIN
             subprocess.call(["nexttrace", "-T", "159.89.192.4"]) # DigitalOcean-SIN
             subprocess.call(["nexttrace", "-T", "38.150.8.1"]) # Eons-SIN
             subprocess.call(["nexttrace", "-T", "159.138.84.2"]) # Huawei-SIN
@@ -132,6 +129,8 @@ try:
             subprocess.call(["nexttrace", "-T", "194.156.163.2"]) # Misaka-SIN
             subprocess.call(["nexttrace", "-T", "185.151.146.2"]) # Nearoute-SIN
             subprocess.call(["nexttrace", "-T", "-p", "40001", "103.136.124.1"]) # NeroCloud-SIN
+            subprocess.call(["nexttrace", "-T", "54.254.128.1"]) # AWS-SIN
+            subprocess.call(["nexttrace", "-T", "s3southeastasia.blob.core.windows.net"]) # Azure-SIN
             # Add more tracing commands for SG option as needed
         elif choice == 8:
             # EU
