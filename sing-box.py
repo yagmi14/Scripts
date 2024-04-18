@@ -61,7 +61,7 @@ def main():
             if os.path.exists(service_file):
                 start_service(f"sb{port}")
             else:
-                subprocess.run(["/usr/local/bin/sing-box", "run", "-c", f"{config_path}"])
+                subprocess.run(["/usr/bin/sing-box", "run", "-c", f"{config_path}"])
 
         elif choice == "2":
             print("vless-xtls-vision-reality")
@@ -88,7 +88,7 @@ def main():
             if os.path.exists(service_file):
                 start_service(f"sb{port}")
             else:
-                subprocess.run(["/usr/local/bin/sing-box", "run", "-c", f"{config_path}"])
+                subprocess.run(["/usr/bin/sing-box", "run", "-c", f"{config_path}"])
 
         elif choice == "3":
             print("shadowsocks")
@@ -126,7 +126,7 @@ def main():
             if os.path.exists(service_file):
                 start_service(f"sb{port}")
             else:
-                subprocess.run(["/usr/local/bin/sing-box", "run", "-c", f"{config_path}"])
+                subprocess.run(["/usr/bin/sing-box", "run", "-c", f"{config_path}"])
 
         elif choice == "4":
             print("ShadowTLS v3")
@@ -152,7 +152,7 @@ def main():
             if os.path.exists(service_file):
                 start_service(f"sb{port}")
             else:
-                subprocess.run(["/usr/local/bin/sing-box", "run", "-c", f"{config_path}"])
+                subprocess.run(["/usr/bin/sing-box", "run", "-c", f"{config_path}"])
 
         elif choice == "5":
             print("grpc-reality+shadowsocks")
@@ -197,7 +197,7 @@ def main():
             if os.path.exists(service_file):
                 start_service(f"sb{port1}")
             else:
-                subprocess.run(["/usr/local/bin/sing-box", "run", "-c", f"{config_path}"])
+                subprocess.run(["/usr/bin/sing-box", "run", "-c", f"{config_path}"])
 
         elif choice == "6":
             print("tcp-reality+shadowsocks")
@@ -242,7 +242,7 @@ def main():
             if os.path.exists(service_file):
                 start_service(f"sb{port1}")
             else:
-                subprocess.run(["/usr/local/bin/sing-box", "run", "-c", f"{config_path}"])
+                subprocess.run(["/usr/bin/sing-box", "run", "-c", f"{config_path}"])
 
         elif choice == "7":
             print("shadowsocks+shadowsocks")
@@ -298,7 +298,7 @@ def main():
             if os.path.exists(service_file):
                 start_service(f"sb{port1}")
             else:
-                subprocess.run(["/usr/local/bin/sing-box", "run", "-c", f"{config_path}"])
+                subprocess.run(["/usr/bin/sing-box", "run", "-c", f"{config_path}"])
 
     except KeyboardInterrupt:
         print("\nThe program has been interrupted.")
