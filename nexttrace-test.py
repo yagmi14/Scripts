@@ -84,7 +84,7 @@ try:
             # Add more tracing commands for Others option as needed
         elif choice == 5:
             # HK
-            subprocess.call(["nexttrace", "-T", "103.177.248.2"]) # Akari-HKG
+            subprocess.call(["nexttrace", "-T", "103.177.248.6"]) # Akari-HKG
             subprocess.call(["nexttrace", "-T", "47.243.243.2"]) # Alibaba-HKG
             subprocess.call(["nexttrace", "-T", "23.247.139.3"]) # Apernet-HKG
             subprocess.call(["nexttrace", "-T", "156.251.180.1"]) # Cera-HKG
