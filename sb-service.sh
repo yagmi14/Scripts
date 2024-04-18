@@ -11,7 +11,7 @@ After=network.target nss-lookup.target
 [Service]
 CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
 AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
-ExecStart=/usr/local/bin/sing-box run -c /usr/local/etc/$name/config.json
+ExecStart=/usr/bin/sing-box run -c /usr/local/etc/$name/config.json
 Restart=on-failure
 RestartSec=1800s
 TasksMax=infinity
