@@ -7,8 +7,9 @@ read -p "请输入要操作的服务名称: " service_name
 echo "请选择要执行的操作:"
 echo "1. 启动服务"
 echo "2. 重启服务"
-echo "3. 查看服务状态"
-read -p "输入操作编号 (1/2/3): " choice
+echo "3. 关闭服务"
+echo "4. 查看服务状态"
+read -p "输入操作编号: " choice
 
 # 根据用户选择执行相应的操作
 case $choice in
@@ -19,8 +20,12 @@ case $choice in
   2)
     sudo systemctl restart $service_name
     echo "$service_name 服务已重启"
-    ;;
+    ;;  
   3)
+    sudo systemctl stop $service_name
+    echo "$service_name 服务已关闭"
+    ;;  
+  4)
     systemctl status $service_name
     ;;
   *)
