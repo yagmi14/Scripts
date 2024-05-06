@@ -26,9 +26,14 @@ def main():
 
         choice = input("Please select:")
         
+        if choice == "" or choice.isspace():
+            choice = "3"
+        
         if choice == "3":
             print("shadowsocks")
             port = input("listening port: ")
+            if port == "":
+                port = "40001"
 
             print("Please select the method:")
             print("1. 2022-blake3-aes-256-gcm")
@@ -57,6 +62,9 @@ def main():
         if choice == "4":
             print("ShadowTLS")
             port = input("listening port: ")
+            if port == "":
+                port = "40003"
+            
             domain = input("domain: ")
             if domain == "":
                 domain = "cdn-design.tesla.com"
