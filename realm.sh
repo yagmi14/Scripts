@@ -82,17 +82,20 @@ uninstall_realm() {
 }
 
 # 删除转发规则的函数
+
 delete_forward() {
     echo "当前转发规则："
     local IFS=$'\n' # 设置IFS仅以换行符作为分隔符
-    local lines=($(grep -n 'remote =' /root/realm/config.toml)) # 搜索所有包含转发规则的行
-    if [ ${#lines[@]} -eq 0 ]; then
+    local endpoints_lines=($(grep -n '[[endpoints]]' /root/realm/config.toml)) # 搜索所有包含[[endpoints]]的行
+    if [ ${#endpoints_lines[@]} -eq 0 ]; then
         echo "没有发现任何转发规则。"
         return
     fi
     local index=1
-    for line in "${lines[@]}"; do
-        echo "${index}. $(echo $line | cut -d '"' -f 2)" # 提取并显示端口信息
+    for line in "${endpoints_lines[@]}"; do
+        local endpoint_line_number=$(echo $line | cut -d ':' -f 1)
+        local remote_line=$(sed -n "${endpoint_line_number},/^\[\[endpoints\]\]/p" /root/realm/config.toml | grep 'remote =' | cut -d '"' -f 2)
+        echo "${index}. $remote_line" # 提取并显示端口信息
         let index+=1
     done
 
@@ -108,23 +111,28 @@ delete_forward() {
         return
     fi
 
-    if [ $choice -lt 1 ] || [ $choice -gt ${#lines[@]} ]; then
+    if [ $choice -lt 1 ] || [ $choice -gt ${#endpoints_lines[@]} ]; then
         echo "选择超出范围，请输入有效序号。"
         return
     fi
 
-    local chosen_line=${lines[$((choice-1))]} # 根据用户选择获取相应行
-    local line_number=$(echo $chosen_line | cut -d ':' -f 1) # 获取行号
+    local chosen_line=${endpoints_lines[$((choice-1))]}
+    local start_line=$(echo $chosen_line | cut -d ':' -f 1)
+    local end_line
+    if [ $choice -eq ${#endpoints_lines[@]} ]; then
+        end_line=$(wc -l /root/realm/config.toml | awk '{print $1}')
+    else
+        end_line=$(echo ${endpoints_lines[$choice]} | cut -d ':' -f 1)
+        end_line=$((end_line-1))
+    fi
 
-    # 计算要删除的范围，从listen开始到remote结束
-    local start_line=$line_number
-    local end_line=$(($line_number + 2))
-
-    # 使用sed删除选中的转发规则
+    # 使用sed删除选中的转发规则区块
     sed -i "${start_line},${end_line}d" /root/realm/config.toml
 
     echo "转发规则已删除。"
 }
+
+
 
 
 
