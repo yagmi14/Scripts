@@ -30,7 +30,8 @@ show_menu() {
     echo "3. 删除转发"
     echo "4. 启动服务"
     echo "5. 停止服务"
-    echo "6. 一键卸载"
+    echo "6. 重启服务"
+    echo "7. 一键卸载"
     echo "================="
     echo -e "realm 状态：${realm_status_color}${realm_status}\033[0m"
     echo -n "realm 转发状态："
@@ -159,6 +160,12 @@ stop_service() {
     echo "realm服务已停止。"
 }
 
+# 重启服务
+restart_service() {
+    systemctl restart realm
+    echo "realm服务已重启。"
+}
+
 # 主循环
 while true; do
     show_menu
@@ -180,6 +187,9 @@ while true; do
             stop_service
             ;;
         6)
+            restart_service
+            ;;
+        7)
             uninstall_realm
             ;;
         *)
