@@ -17,8 +17,10 @@ VERSION=$(curl -s https://api.github.com/repos/zhboner/realm/releases/latest \
     | cut -d ":" -f2 \
     | sed 's/\"//g;s/\,//g;s/\ //g;s/v//')
 
-curl -Lo realm.tar.gz "https://github.com/zhboner/realm/releases/download/v${VERSION}/realm-${ARCH_RAW}-unknown-linux-gnu.tar.gz"
+curl -Lo realm.tar.gz "https://github.com/zhboner/realm/releases/download/v${VERSION}/realm-${ARCH_RAW}-unknown-linux-gnu.tar.gz" && \
 
-sudo tar -xvf realm.tar.gz && sudo chown root:root /root/realm && sudo chmod +x realm
-sudo mv realm /usr/local/bin/realm && sudo rm realm.tar.gz
-
+sudo tar -xvf realm.tar.gz && \
+sudo chown root:root /root/realm && \
+sudo chmod +x realm && \
+sudo mv realm /usr/local/bin/realm && \
+sudo rm realm.tar.gz
