@@ -130,12 +130,13 @@ delete_forward() {
 # 添加转发规则
 add_forward() {
     while true; do
+        read -p "请输入监听端口: " port1
         read -p "请输入IP: " ip
-        read -p "请输入端口: " port
+        read -p "请输入端口: " port2
         # 追加到config.toml文件
         echo "[[endpoints]]
-listen = \"0.0.0.0:$port\"
-remote = \"$ip:$port\"" >> /root/realm/config.toml
+listen = \"0.0.0.0:$port1\"
+remote = \"$ip:$port2\"" >> /root/realm/config.toml
         
         read -p "是否继续添加(Y/N)? " answer
         if [[ $answer != "Y" && $answer != "y" ]]; then
