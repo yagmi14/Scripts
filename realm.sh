@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 检查realm是否已安装
-if [ -f "/root/realm/realm" ]; then
+if [ -f "/usr/local/bin/realm" ]; then
     echo "检测到realm已安装。"
     realm_status="已安装"
     realm_status_color="\033[0;32m" # 绿色
@@ -40,11 +40,8 @@ show_menu() {
 
 # 部署环境的函数
 deploy_realm() {
-    mkdir -p /root/realm
-    cd /root/realm
-    wget -O realm.tar.gz https://github.com/zhboner/realm/releases/download/v2.5.3/realm-x86_64-unknown-linux-gnu.tar.gz
-    tar -xvf realm.tar.gz
-    chmod +x realm
+    bash <(curl -Lso- https://raw.githubusercontent.com/yagmi14/Scripts/main/realm-install.sh) && \
+    mkdir -p /usr/local/etc/realm
     # 创建服务文件
     echo "[Unit]
 Description=realm
@@ -57,8 +54,7 @@ User=root
 Restart=on-failure
 RestartSec=5s
 DynamicUser=true
-WorkingDirectory=/root/realm
-ExecStart=/root/realm/realm -c /root/realm/config.toml
+ExecStart=/usr/local/bin/realm -c /usr/local/etc/realm/config.toml
 [Install]
 WantedBy=multi-user.target" > /etc/systemd/system/realm.service
     systemctl daemon-reload
@@ -74,7 +70,8 @@ uninstall_realm() {
     systemctl disable realm
     rm -f /etc/systemd/system/realm.service
     systemctl daemon-reload
-    rm -rf /root/realm
+    rm -rf /usr/local/bin/realm
+    rm -rf /usr/local/etc/realm
     echo "realm已被卸载。"
     # 更新realm状态变量
     realm_status="未安装"
@@ -86,7 +83,7 @@ uninstall_realm() {
 delete_forward() {
     echo "当前转发规则："
     local IFS=$'\n' # 设置IFS仅以换行符作为分隔符
-    local endpoints_lines=($(grep -n '[[endpoints]]' /root/realm/config.toml)) # 搜索所有包含[[endpoints]]的行
+    local endpoints_lines=($(grep -n '[[endpoints]]' /usr/local/etc/realm/config.toml)) # 搜索所有包含[[endpoints]]的行
     if [ ${#endpoints_lines[@]} -eq 0 ]; then
         echo "没有发现任何转发规则。"
         return
@@ -94,7 +91,7 @@ delete_forward() {
     local index=1
     for line in "${endpoints_lines[@]}"; do
         local endpoint_line_number=$(echo $line | cut -d ':' -f 1)
-        local remote_line=$(sed -n "${endpoint_line_number},/^\[\[endpoints\]\]/p" /root/realm/config.toml | grep 'remote =' | cut -d '"' -f 2)
+        local remote_line=$(sed -n "${endpoint_line_number},/^\[\[endpoints\]\]/p" /usr/local/etc/realm/config.toml | grep 'remote =' | cut -d '"' -f 2)
         echo "${index}. $remote_line" # 提取并显示端口信息
         let index+=1
     done
@@ -120,16 +117,18 @@ delete_forward() {
     local start_line=$(echo $chosen_line | cut -d ':' -f 1)
     local end_line
     if [ $choice -eq ${#endpoints_lines[@]} ]; then
-        end_line=$(wc -l /root/realm/config.toml | awk '{print $1}')
+        end_line=$(wc -l /usr/local/etc/realm/config.toml | awk '{print $1}')
     else
         end_line=$(echo ${endpoints_lines[$choice]} | cut -d ':' -f 1)
         end_line=$((end_line-1))
     fi
 
     # 使用sed删除选中的转发规则区块
-    sed -i "${start_line},${end_line}d" /root/realm/config.toml
+    sed -i "${start_line},${end_line}d" /usr/local/etc/realm/config.toml
 
-    echo "转发规则已删除。"
+    echo "转发规则已删除。" && \
+    systemctl restart realm && \
+    echo "realm服务已重启。"
 }
 
 
@@ -145,13 +144,15 @@ add_forward() {
         # 追加到config.toml文件
         echo "[[endpoints]]
 listen = \"0.0.0.0:$port1\"
-remote = \"$ip:$port2\"" >> /root/realm/config.toml
+remote = \"$ip:$port2\"" >> /usr/local/etc/realm/config.toml
         
         read -p "是否继续添加(Y/N)? " answer
         if [[ $answer != "Y" && $answer != "y" ]]; then
             break
         fi
-    done
+    done && \
+    systemctl restart realm && \
+    echo "realm服务已重启。"
 }
 
 # 启动服务
