@@ -91,7 +91,7 @@ try:
             subprocess.call(["nexttrace", "-T", "154.3.33.110"]) # Dmit-HKG
             subprocess.call(["nexttrace", "-T", "209.146.125.124"]) # Eons-HKG
             subprocess.call(["nexttrace", "-T", "35.220.230.27"]) # GCP-HKG
-            subprocess.call(["nexttrace", "-T", "42.3.27.15"]) # HKT-HKG
+            subprocess.call(["nexttrace", "-T", "42.3.27.27"]) # HKT-HKG
             subprocess.call(["nexttrace", "-T", "103.116.72.2"]) # Jinx-HKG
             subprocess.call(["nexttrace", "-T", "38.59.254.150"]) # Kirino-HKG
             subprocess.call(["nexttrace", "-T", "45.11.104.3"]) # Misaka-HKG
