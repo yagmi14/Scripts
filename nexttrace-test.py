@@ -82,7 +82,8 @@ try:
             subprocess.call(["nexttrace", "-MT", "166.111.4.39"])
             subprocess.call(["nexttrace", "-MT", "159.226.254.1"])
             subprocess.call(["nexttrace", "-MT", "52.80.5.207"]) # AWS-PEK
-            subprocess.call(["nexttrace", "-MT", "52.83.214.12"]) # AWS-Ningxia    
+            subprocess.call(["nexttrace", "-MT", "52.83.214.12"]) # AWS-Ningxia
+            subprocess.call(["nexttrace", "-MT", "42.159.154.10"]) # Azure-SHA    
             # Add more tracing commands for Others option as needed
         elif choice == 5:
             # HK
