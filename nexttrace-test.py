@@ -42,7 +42,7 @@ try:
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "210.51.57.10"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "163.177.38.106"])
             # CMCC
-            subprocess.call(["nexttrace", "-MT", "111.62.68.59"])
+            subprocess.call(["nexttrace", "-MT", "111.62.68.17"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.204.34.2"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.198.26.254"])
             # Others
@@ -69,7 +69,7 @@ try:
         elif choice == 3:
             # CMCC
             subprocess.call(["nexttrace", "-MT", "112.34.111.194"])
-            subprocess.call(["nexttrace", "-MT", "111.62.68.59"])
+            subprocess.call(["nexttrace", "-MT", "111.62.68.17"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.204.34.2"])
             subprocess.call(["nexttrace", "-MT", "111.8.9.73"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.198.26.254"])
