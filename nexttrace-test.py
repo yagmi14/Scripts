@@ -139,7 +139,8 @@ try:
             # Add more tracing commands for SG option as needed
         elif choice == 8:
             # EU
-            subprocess.call(["nexttrace", "-MT", "38.59.228.2"]) # AkkoCloud-FRA
+            subprocess.call(["nexttrace", "-MT4", "hel1-speed.hetzner.com"]) # Hetzner-NUE
+            subprocess.call(["nexttrace", "-MT", "38.59.228.2"]) # Kirino-FRA            
             # Add more tracing commands for SG option as needed
     else:
         print("无效输入，请重试！")
