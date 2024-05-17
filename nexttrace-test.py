@@ -139,7 +139,7 @@ try:
             # Add more tracing commands for SG option as needed
         elif choice == 8:
             # EU
-            subprocess.call(["nexttrace", "-MT", "38.59.228.4"]) # AkkoCloud-FRA
+            subprocess.call(["nexttrace", "-MT", "38.59.228.2"]) # AkkoCloud-FRA
             # Add more tracing commands for SG option as needed
     else:
         print("无效输入，请重试！")
