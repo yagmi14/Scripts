@@ -81,10 +81,12 @@ try:
             subprocess.call(["nexttrace", "-MT", "211.156.140.17"])
             subprocess.call(["nexttrace", "-MT", "166.111.4.39"])
             subprocess.call(["nexttrace", "-MT", "159.226.254.1"])
+            subprocess.call(["nexttrace", "-MT", "oss-cn-guangzhou.aliyuncs.com"]) # Alibaba-CAN                            
             subprocess.call(["nexttrace", "-MT", "52.80.5.207"]) # AWS-PEK
             subprocess.call(["nexttrace", "-MT", "52.83.214.0"]) # AWS-Ningxia
             subprocess.call(["nexttrace", "-MT", "42.159.128.11"]) # Azure-SHA
-            subprocess.call(["nexttrace", "-MT", "110.41.83.4"]) # Huawei-CAN                
+            subprocess.call(["nexttrace", "-MT", "110.41.83.4"]) # Huawei-CAN
+            subprocess.call(["nexttrace", "-MT", "cos.ap-guangzhou.myqcloud.com"]) # Tencent-CAN                            
             # Add more tracing commands for Others option as needed
         elif choice == 5:
             # HK
