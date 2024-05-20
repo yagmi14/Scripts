@@ -91,7 +91,7 @@ try:
         elif choice == 5:
             # HK
             subprocess.call(["nexttrace", "-MT", "103.229.54.1"]) # Akari-HKG
-            subprocess.call(["nexttrace", "-MT", "47.243.243.2"]) # Alibaba-HKG
+            subprocess.call(["nexttrace", "-MT", "oss-cn-hongkong.aliyuncs.com"]) # Alibaba-HKG
             subprocess.call(["nexttrace", "-MT", "23.247.139.3"]) # Apernet-HKG
             subprocess.call(["nexttrace", "-MT", "156.251.180.1"]) # Cera-HKG
             subprocess.call(["nexttrace", "-MT", "154.3.33.110"]) # Dmit-HKG
