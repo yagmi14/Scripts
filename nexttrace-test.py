@@ -165,7 +165,7 @@ try:
             # Add more tracing commands for SG option as needed
         elif choice == 12:
             # AU
-            subprocess.call(["nexttrace", "-MT4", "speedtest.syd1.linode.com"]) # Akamai-LAX            
+            subprocess.call(["nexttrace", "-MT4", "speedtest.syd1.linode.com"]) # Akamai-SDY            
     else:
         print("无效输入，请重试！")
 except ValueError:
