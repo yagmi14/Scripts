@@ -11,9 +11,10 @@ options = [
     "4) 🇨🇳 Others",
     "5) 🇨🇳 IPV6",
     "6) 🇭🇰 HK",
-    "7) 🇯🇵 JP",
-    "8) 🇸🇬 SG",
-    "9) 🇪🇺 EU",
+    "7) 🇹🇼 TW",
+    "8) 🇯🇵 JP",
+    "9) 🇸🇬 SG",
+    "10) 🇪🇺 EU",
 ]
 
 num_columns = 3
@@ -116,6 +117,9 @@ try:
             subprocess.call(["nexttrace", "-MT", "s3eastasia.blob.core.windows.net"]) # Azure-HKG
             # Add more tracing commands for HK option as needed
         elif choice == 7:
+            # TW
+            subprocess.call(["nexttrace", "-MT", "hinet.net"]) # HiNet-TPE       
+        elif choice == 8:
             # JP
             subprocess.call(["nexttrace", "-MT", "45.88.193.5"]) # Dmit-NRT
             subprocess.call(["nexttrace", "-MT", "103.168.154.1"]) # Eons-NRT
@@ -130,7 +134,7 @@ try:
             subprocess.call(["nexttrace", "-MT", "149.62.44.1"]) # xTom-NRT
             subprocess.call(["nexttrace", "-MT", "13.112.63.251"]) # AWS-NRT
             subprocess.call(["nexttrace", "-MT", "s3japaneast.blob.core.windows.net"]) # Azure-NRT
-        elif choice == 8:
+        elif choice == 9:
             # SG
             subprocess.call(["nexttrace", "-MT", "-4", "speedtest.singapore.linode.com"]) # Akamai-SIN
             subprocess.call(["nexttrace", "-MT", "103.84.216.2"]) # Akari-SIN
@@ -144,7 +148,7 @@ try:
             subprocess.call(["nexttrace", "-MT", "54.254.128.1"]) # AWS-SIN
             subprocess.call(["nexttrace", "-MT", "s3southeastasia.blob.core.windows.net"]) # Azure-SIN
             # Add more tracing commands for SG option as needed
-        elif choice == 9:
+        elif choice == 10:
             # EU
             subprocess.call(["nexttrace", "-MT4", "hel1-speed.hetzner.com"]) # Hetzner-NUE
             subprocess.call(["nexttrace", "-MT", "38.59.228.2"]) # Kirino-FRA
