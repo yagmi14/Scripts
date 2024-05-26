@@ -157,6 +157,7 @@ try:
             subprocess.call(["nexttrace", "-MT4", "speedtest.los-angeles.linode.com"]) # Akamai-LAX        
         elif choice == 11:
             # EU
+            subprocess.call(["nexttrace", "-MT4", "speedtest.frankfurt.linode.com"]) # Akamai-FRA            
             subprocess.call(["nexttrace", "-MT4", "hel1-speed.hetzner.com"]) # Hetzner-NUE
             subprocess.call(["nexttrace", "-MT", "38.59.228.2"]) # Kirino-FRA
             subprocess.call(["nexttrace", "-MT", "45.142.247.3"]) # Misaka-BER
