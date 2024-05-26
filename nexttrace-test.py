@@ -14,7 +14,9 @@ options = [
     "7) 🇹🇼 TW",
     "8) 🇯🇵 JP",
     "9) 🇸🇬 SG",
-    "10) 🇪🇺 EU",
+    "10) 🇺🇸 US",    
+    "11) 🇪🇺 EU",
+    "12) 🇦🇺 AU",    
 ]
 
 num_columns = 3
@@ -122,6 +124,7 @@ try:
             subprocess.call(["nexttrace", "-MT", "hinet.net"]) # HiNet-TPE       
         elif choice == 8:
             # JP
+            subprocess.call(["nexttrace", "-MT4", "speedtest.tokyo2.linode.com"]) # Akamai-NRT            
             subprocess.call(["nexttrace", "-MT", "45.88.193.5"]) # Dmit-NRT
             subprocess.call(["nexttrace", "-MT", "103.168.154.1"]) # Eons-NRT
             subprocess.call(["nexttrace", "-MT", "34.97.105.37"]) # GCP-KIX
@@ -150,6 +153,9 @@ try:
             subprocess.call(["nexttrace", "-MT", "s3southeastasia.blob.core.windows.net"]) # Azure-SIN
             # Add more tracing commands for SG option as needed
         elif choice == 10:
+            # US
+            subprocess.call(["nexttrace", "-MT4", "speedtest.los-angeles.linode.com"]) # Akamai-LAX        
+        elif choice == 11:
             # EU
             subprocess.call(["nexttrace", "-MT4", "hel1-speed.hetzner.com"]) # Hetzner-NUE
             subprocess.call(["nexttrace", "-MT", "38.59.228.2"]) # Kirino-FRA
@@ -157,6 +163,9 @@ try:
             subprocess.call(["nexttrace", "-MT", "45.131.69.1"]) # Misaka-MOW                                             
             subprocess.call(["nexttrace", "-MT", "3.64.0.0"]) # AWS-FRA                                 
             # Add more tracing commands for SG option as needed
+        elif choice == 12:
+            # AU
+            subprocess.call(["nexttrace", "-MT4", "speedtest.syd1.linode.com"]) # Akamai-LAX            
     else:
         print("无效输入，请重试！")
 except ValueError:
