@@ -169,7 +169,7 @@ try:
             subprocess.call(["nexttrace", "-MT", "77.247.126.11"]) # Clouvider-LAX
             subprocess.call(["nexttrace", "-MT4", "lax.download.datapacket.com"]) # Datacamp-LAX                                    
             subprocess.call(["nexttrace", "-MT4", "hil-speed.hetzner.com"]) # Hetzner-HIL 
-            subprocess.call(["nexttrace", "-MT4", "mia.hostodo.com"]) # Hivelocity-TPA 
+            subprocess.call(["nexttrace", "-MT4", "mia.hostodo.com"]) # Hostodo-TPA 
             subprocess.call(["nexttrace", "-MT4", "hil.proof.ovh.us"]) # OVH-HIL  
             subprocess.call(["nexttrace", "-MT4", "lax-ca-us-ping.vultr.com"]) # Vultr-LAX                                    
             subprocess.call(["nexttrace", "-MT", "18.236.0.0"]) # AWS-PDX                     
