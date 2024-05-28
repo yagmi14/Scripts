@@ -167,7 +167,8 @@ try:
             # US
             subprocess.call(["nexttrace", "-MT4", "speedtest.los-angeles.linode.com"]) # Akamai-LAX
             subprocess.call(["nexttrace", "-MT", "77.247.126.11"]) # Clouvider-LAX
-            subprocess.call(["nexttrace", "-MT4", "lax.download.datapacket.com"]) # Datacamp-LAX                                    
+            subprocess.call(["nexttrace", "-MT4", "lax.download.datapacket.com"]) # Datacamp-LAX
+            subprocess.call(["nexttrace", "-MT4", "speedtest.lv.buyvm.net"]) # FranTech-LAS            
             subprocess.call(["nexttrace", "-MT4", "hil-speed.hetzner.com"]) # Hetzner-HIL 
             subprocess.call(["nexttrace", "-MT4", "mia.hostodo.com"]) # Hostodo-TPA 
             subprocess.call(["nexttrace", "-MT4", "hil.proof.ovh.us"]) # OVH-HIL  
@@ -177,11 +178,12 @@ try:
             # EU
             subprocess.call(["nexttrace", "-MT4", "speedtest.frankfurt.linode.com"]) # Akamai-FRA 
             subprocess.call(["nexttrace", "-MT", "185.42.223.2"]) # Clouvider-LHR
-            subprocess.call(["nexttrace", "-MT4", "par.download.datapacket.com"]) # Datacamp-PAR            
+            subprocess.call(["nexttrace", "-MT4", "par.download.datapacket.com"]) # Datacamp-PAR
+            subprocess.call(["nexttrace", "-MT4", "speedtest.lu.buyvm.net"]) # FranTech-LUX            
             subprocess.call(["nexttrace", "-MT4", "nbg1-speed.hetzner.com"]) # Hetzner-NUE
             subprocess.call(["nexttrace", "-MT4", "speedtest.fra1.hivelocity.net"]) # Hivelocity-FRA                                           
             subprocess.call(["nexttrace", "-MT", "38.59.228.2"]) # Kirino-FRA
-            subprocess.call(["nexttrace", "-MT", "45.142.247.3"]) # Misaka-BER
+            subprocess.call(["nexttrace", "-MT", "45.142.247.4"]) # Misaka-BER
             subprocess.call(["nexttrace", "-MT", "45.131.69.1"]) # Misaka-MOW 
             subprocess.call(["nexttrace", "-MT4", "lookingglass.netcup.net"]) # Netcup-NUE 
             subprocess.call(["nexttrace", "-MT4", "gra.proof.ovh.net"]) # OVH-GRA              
