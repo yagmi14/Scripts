@@ -124,7 +124,8 @@ try:
             # Add more tracing commands for HK option as needed
         elif choice == 7:
             # TW
-            subprocess.call(["nexttrace", "-MT", "hinet.net"]) # HiNet-TPE       
+            subprocess.call(["nexttrace", "-MT", "35.229.225.5"]) # GCP-TW
+            subprocess.call(["nexttrace", "-MT", "hinet.net"]) # HiNet-TPE              
         elif choice == 8:
             # JP
             subprocess.call(["nexttrace", "-MT4", "speedtest.tokyo2.linode.com"]) # Akamai-NRT 
@@ -132,6 +133,7 @@ try:
             subprocess.call(["nexttrace", "-MT", "45.88.193.5"]) # Dmit-NRT
             subprocess.call(["nexttrace", "-MT", "103.168.154.1"]) # Eons-NRT
             subprocess.call(["nexttrace", "-MT", "34.97.105.37"]) # GCP-KIX
+            subprocess.call(["nexttrace", "-MT", "34.146.177.16"]) # GCP-NRT            
             subprocess.call(["nexttrace", "-MT", "185.188.5.1"]) # Jinx-NRT
             subprocess.call(["nexttrace", "-MT", "106.180.224.1"]) # Kddi-NRT            
             subprocess.call(["nexttrace", "-MT", "212.107.30.1"]) # Kirino-NRT
@@ -152,6 +154,7 @@ try:
             subprocess.call(["nexttrace", "-MT4", "sgp.download.datapacket.com"]) # Datacamp-SIN            
             subprocess.call(["nexttrace", "-MT", "159.89.192.4"]) # DigitalOcean-SIN
             subprocess.call(["nexttrace", "-MT", "38.150.8.1"]) # Eons-SIN
+            subprocess.call(["nexttrace", "-MT", "34.87.56.16"]) # GCP-SIN            
             subprocess.call(["nexttrace", "-MT", "159.138.84.2"]) # Huawei-SIN
             subprocess.call(["nexttrace", "-MT", "103.142.140.1"]) # Kirino-SIN
             subprocess.call(["nexttrace", "-MT", "194.156.163.2"]) # Misaka-SIN
@@ -159,7 +162,8 @@ try:
             subprocess.call(["nexttrace", "-MT", "178.173.235.128"]) # NeroCloud-SIN
             subprocess.call(["nexttrace", "-MT4", "sgp.proof.ovh.net"]) # OVH-SIN
             subprocess.call(["nexttrace", "-MT4", "sg.lg.speedypage.com"]) # SpeedyPage-SIN            
-            subprocess.call(["nexttrace", "-MT4", "sgp-ping.vultr.com"]) # Vultr-SIN                        
+            subprocess.call(["nexttrace", "-MT4", "sgp-ping.vultr.com"]) # Vultr-SIN
+               subprocess.call(["nexttrace", "-MT", "185.194.54.1"]) # xTom-SIN         
             subprocess.call(["nexttrace", "-MT", "54.254.128.1"]) # AWS-SIN
             subprocess.call(["nexttrace", "-MT", "s3southeastasia.blob.core.windows.net"]) # Azure-SIN
             # Add more tracing commands for SG option as needed
@@ -168,18 +172,20 @@ try:
             subprocess.call(["nexttrace", "-MT4", "speedtest.los-angeles.linode.com"]) # Akamai-LAX
             subprocess.call(["nexttrace", "-MT", "77.247.126.11"]) # Clouvider-LAX
             subprocess.call(["nexttrace", "-MT4", "lax.download.datapacket.com"]) # Datacamp-LAX
-            subprocess.call(["nexttrace", "-MT4", "speedtest.lv.buyvm.net"]) # FranTech-LAS            
+            subprocess.call(["nexttrace", "-MT4", "speedtest.lv.buyvm.net"]) # FranTech-LAS
+            subprocess.call(["nexttrace", "-MT", "35.247.10.20"]) # GCP-OR
             subprocess.call(["nexttrace", "-MT4", "hil-speed.hetzner.com"]) # Hetzner-HIL 
-            subprocess.call(["nexttrace", "-MT4", "mia.hostodo.com"]) # Hostodo-TPA 
+            subprocess.call(["nexttrace", "-MT4", "mia.hostodo.com"]) # Hostodo-MIA 
             subprocess.call(["nexttrace", "-MT4", "hil.proof.ovh.us"]) # OVH-HIL  
             subprocess.call(["nexttrace", "-MT4", "lax-ca-us-ping.vultr.com"]) # Vultr-LAX                                    
-            subprocess.call(["nexttrace", "-MT", "18.236.0.0"]) # AWS-PDX                     
+            subprocess.call(["nexttrace", "-MT", "18.236.0.0"]) # AWS-OR                     
         elif choice == 11:
             # EU
             subprocess.call(["nexttrace", "-MT4", "speedtest.frankfurt.linode.com"]) # Akamai-FRA 
             subprocess.call(["nexttrace", "-MT", "185.42.223.2"]) # Clouvider-LHR
             subprocess.call(["nexttrace", "-MT4", "par.download.datapacket.com"]) # Datacamp-PAR
-            subprocess.call(["nexttrace", "-MT4", "speedtest.lu.buyvm.net"]) # FranTech-LUX            
+            subprocess.call(["nexttrace", "-MT4", "speedtest.lu.buyvm.net"]) # FranTech-LUX
+            subprocess.call(["nexttrace", "-MT", "34.89.121.0"]) # GCP-LON            
             subprocess.call(["nexttrace", "-MT4", "nbg1-speed.hetzner.com"]) # Hetzner-NUE
             subprocess.call(["nexttrace", "-MT4", "speedtest.fra1.hivelocity.net"]) # Hivelocity-FRA                                           
             subprocess.call(["nexttrace", "-MT", "38.59.228.2"]) # Kirino-FRA
@@ -192,7 +198,8 @@ try:
             # Add more tracing commands for SG option as needed
         elif choice == 12:
             # AU
-            subprocess.call(["nexttrace", "-MT4", "speedtest.syd1.linode.com"]) # Akamai-SDY   
+            subprocess.call(["nexttrace", "-MT4", "speedtest.syd1.linode.com"]) # Akamai-SDY
+            subprocess.call(["nexttrace", "-MT", "34.116.127.53"]) # GCP-SDY            
             subprocess.call(["nexttrace", "-MT", "13.236.0.253"]) # AWS-SDY                        
     else:
         print("无效输入，请重试！")
