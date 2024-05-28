@@ -94,7 +94,9 @@ try:
             # Add more tracing commands for Others option as needed
         elif choice == 5:
             # IPV6
-            subprocess.call(["nexttrace", "-MT", "-p", "443", "img2.doubanio.com"])        
+            subprocess.call(["nexttrace", "-MT", "dlied4.csy.tcdnos.com"]) # CT
+            subprocess.call(["nexttrace", "-MT", "ml-dlied4.bytes.tcdnos.com"]) # CU
+            subprocess.call(["nexttrace", "-MT", "875e1151af8aa9e3b793f51f6049996d.dlied1.cdntips.net"]) # CM            
         elif choice == 6:
             # HK
             subprocess.call(["nexttrace", "-MT", "103.229.54.1"]) # Akari-HKG
