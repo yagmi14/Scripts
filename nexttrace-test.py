@@ -157,7 +157,8 @@ try:
             subprocess.call(["nexttrace", "-MT", "194.156.163.2"]) # Misaka-SIN
             subprocess.call(["nexttrace", "-MT", "185.151.146.2"]) # Nearoute-SIN
             subprocess.call(["nexttrace", "-MT", "178.173.235.128"]) # NeroCloud-SIN
-            subprocess.call(["nexttrace", "-MT4", "sgp.proof.ovh.net"]) # OVH-SIN   
+            subprocess.call(["nexttrace", "-MT4", "sgp.proof.ovh.net"]) # OVH-SIN
+            subprocess.call(["nexttrace", "-MT4", "sg.lg.speedypage.com"]) # SpeedyPage-SIN            
             subprocess.call(["nexttrace", "-MT4", "sgp-ping.vultr.com"]) # Vultr-SIN                        
             subprocess.call(["nexttrace", "-MT", "54.254.128.1"]) # AWS-SIN
             subprocess.call(["nexttrace", "-MT", "s3southeastasia.blob.core.windows.net"]) # Azure-SIN
