@@ -154,14 +154,18 @@ try:
             # Add more tracing commands for SG option as needed
         elif choice == 10:
             # US
-            subprocess.call(["nexttrace", "-MT4", "speedtest.los-angeles.linode.com"]) # Akamai-LAX        
+            subprocess.call(["nexttrace", "-MT4", "speedtest.los-angeles.linode.com"]) # Akamai-LAX
+            subprocess.call(["nexttrace", "-MT", "77.247.126.11"]) # Clouvider-LAX                                    
+            subprocess.call(["nexttrace", "-MT4", "hil-speed.hetzner.com"]) # Hetzner-HIL            
         elif choice == 11:
             # EU
-            subprocess.call(["nexttrace", "-MT4", "speedtest.frankfurt.linode.com"]) # Akamai-FRA            
-            subprocess.call(["nexttrace", "-MT4", "hel1-speed.hetzner.com"]) # Hetzner-NUE
+            subprocess.call(["nexttrace", "-MT4", "speedtest.frankfurt.linode.com"]) # Akamai-FRA 
+            subprocess.call(["nexttrace", "-MT", "185.42.223.2"]) # Clouvider-LHR                        
+            subprocess.call(["nexttrace", "-MT4", "nbg1-speed.hetzner.com"]) # Hetzner-NUE
             subprocess.call(["nexttrace", "-MT", "38.59.228.2"]) # Kirino-FRA
             subprocess.call(["nexttrace", "-MT", "45.142.247.3"]) # Misaka-BER
-            subprocess.call(["nexttrace", "-MT", "45.131.69.1"]) # Misaka-MOW                                             
+            subprocess.call(["nexttrace", "-MT", "45.131.69.1"]) # Misaka-MOW 
+            subprocess.call(["nexttrace", "-MT4", "lookingglass.netcup.net"]) # Netcup-NUE                                                         
             subprocess.call(["nexttrace", "-MT", "3.64.0.0"]) # AWS-FRA                                 
             # Add more tracing commands for SG option as needed
         elif choice == 12:
