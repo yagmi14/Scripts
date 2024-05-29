@@ -4,21 +4,21 @@
 import subprocess
 
 options = [
+    "0) 🇨🇳 IPV6",    
     "1) 🇨🇳 CT",
     "2) 🇨🇳 CU",
     "3) 🇨🇳 CM",
     "4) 🇨🇳 Others",
-    "5) 🇨🇳 IPV6",
-    "6) 🇭🇰 HK",
-    "7) 🇹🇼 TW",
-    "8) 🇯🇵 JP",
-    "9) 🇸🇬 SG",
-    "10) 🇺🇸 US",    
-    "11) 🇪🇺 EU",
-    "12) 🇦🇺 AU",
-    "13) 🇨🇳 SJW",    
-    "14) 🇨🇳 SHA",
-    "15) 🇨🇳 CAN",    
+    "5) 🇨🇳 SJW",    
+    "6) 🇨🇳 SHA",
+    "7) 🇨🇳 CAN",    
+    "8) 🇭🇰 HK",
+    "9) 🇹🇼 TW",
+    "10) 🇯🇵 JP",
+    "11) 🇸🇬 SG",
+    "12) 🇺🇸 US",    
+    "13) 🇪🇺 EU",
+    "14) 🇦🇺 AU",
 ]
 
 num_columns = 3
@@ -34,27 +34,15 @@ for i in range(num_rows):
 print("请选择:")
 print(formatted_options)
 
-valid_choices = list(range(0, 15)) + list(range(21, 24))  # 定义有效的选择范围
-
 try:
     choice = int(input("输入选择: "))
-    if 1 <= choice < num_options:
+    if 0 <= choice < num_options:
         print(f"您选择了: {options[choice]}")
-        if choice == 13:
-            # SJW
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "27.185.201.1"])
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.240.159.62"])
-            subprocess.call(["nexttrace", "-MT", "111.62.68.17"])
-        elif choice == 14:
-            # SHA
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "124.74.52.254"])            
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "210.51.57.10"])
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.204.34.2"])
-        elif choice == 15:
-            # CAN
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.144.6.18"])
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "163.177.38.106"])           
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.198.26.254"])
+        if choice == 0:
+            # IPV6
+            subprocess.call(["nexttrace", "-MT", "dlied4.csy.tcdnos.com"]) # CT
+            subprocess.call(["nexttrace", "-MT", "ml-dlied4.bytes.tcdnos.com"]) # CU
+            subprocess.call(["nexttrace", "-MT", "875e1151af8aa9e3b793f51f6049996d.dlied1.cdntips.net"]) # CM        
         elif choice == 1:
             # CT
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "219.141.150.166"])
@@ -92,11 +80,21 @@ try:
             subprocess.call(["nexttrace", "-MT", "cos.ap-guangzhou.myqcloud.com"]) # Tencent-CAN                            
             # Add more tracing commands for Others option as needed
         elif choice == 5:
-            # IPV6
-            subprocess.call(["nexttrace", "-MT", "dlied4.csy.tcdnos.com"]) # CT
-            subprocess.call(["nexttrace", "-MT", "ml-dlied4.bytes.tcdnos.com"]) # CU
-            subprocess.call(["nexttrace", "-MT", "875e1151af8aa9e3b793f51f6049996d.dlied1.cdntips.net"]) # CM            
+            # SJW
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "27.185.201.1"])
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.240.159.62"])
+            subprocess.call(["nexttrace", "-MT", "111.62.68.17"])
         elif choice == 6:
+            # SHA
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "124.74.52.254"])            
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "210.51.57.10"])
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.204.34.2"])
+        elif choice == 7:
+            # CAN
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.144.6.18"])
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "163.177.38.106"])           
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.198.26.254"])        
+        elif choice == 8:
             # HK
             subprocess.call(["nexttrace", "-MT", "103.229.54.1"]) # Akari-HKG
             subprocess.call(["nexttrace", "-MT", "oss-cn-hongkong.aliyuncs.com"]) # Alibaba-HKG
@@ -121,11 +119,11 @@ try:
             subprocess.call(["nexttrace", "-MT", "18.162.80.8"]) # AWS-HKG
             subprocess.call(["nexttrace", "-MT", "s3eastasia.blob.core.windows.net"]) # Azure-HKG
             # Add more tracing commands for HK option as needed
-        elif choice == 7:
+        elif choice == 9:
             # TW
             subprocess.call(["nexttrace", "-MT", "35.229.225.5"]) # GCP-TW
             subprocess.call(["nexttrace", "-MT", "hinet.net"]) # HiNet-TPE              
-        elif choice == 8:
+        elif choice == 10:
             # JP
             subprocess.call(["nexttrace", "-MT4", "speedtest.tokyo2.linode.com"]) # Akamai-NRT 
             subprocess.call(["nexttrace", "-MT4", "tyo.download.datapacket.com"]) # Datacamp-NRT                        
@@ -146,7 +144,7 @@ try:
             subprocess.call(["nexttrace", "-MT", "149.62.44.1"]) # xTom-NRT
             subprocess.call(["nexttrace", "-MT", "13.112.63.251"]) # AWS-NRT
             subprocess.call(["nexttrace", "-MT", "s3japaneast.blob.core.windows.net"]) # Azure-NRT
-        elif choice == 9:
+        elif choice == 11:
             # SG
             subprocess.call(["nexttrace", "-MT", "-4", "speedtest.singapore.linode.com"]) # Akamai-SIN
             subprocess.call(["nexttrace", "-MT", "103.84.216.2"]) # Akari-SIN
@@ -166,7 +164,7 @@ try:
             subprocess.call(["nexttrace", "-MT", "54.254.128.1"]) # AWS-SIN
             subprocess.call(["nexttrace", "-MT", "s3southeastasia.blob.core.windows.net"]) # Azure-SIN
             # Add more tracing commands for SG option as needed
-        elif choice == 10:
+        elif choice == 12:
             # US
             subprocess.call(["nexttrace", "-MT4", "speedtest.los-angeles.linode.com"]) # Akamai-LAX
             subprocess.call(["nexttrace", "-MT", "77.247.126.11"]) # Clouvider-LAX
@@ -178,7 +176,7 @@ try:
             subprocess.call(["nexttrace", "-MT4", "hil.proof.ovh.us"]) # OVH-HIL  
             subprocess.call(["nexttrace", "-MT4", "lax-ca-us-ping.vultr.com"]) # Vultr-LAX                                    
             subprocess.call(["nexttrace", "-MT", "18.236.0.0"]) # AWS-OR                     
-        elif choice == 11:
+        elif choice == 13:
             # EU
             subprocess.call(["nexttrace", "-MT4", "speedtest.frankfurt.linode.com"]) # Akamai-FRA 
             subprocess.call(["nexttrace", "-MT", "185.42.223.2"]) # Clouvider-LHR
@@ -195,11 +193,11 @@ try:
             subprocess.call(["nexttrace", "-MT4", "fra-de-ping.vultr.com"]) # Vultr-FRA                                                                     
             subprocess.call(["nexttrace", "-MT", "3.64.0.0"]) # AWS-FRA                                 
             # Add more tracing commands for SG option as needed
-        elif choice == 12:
+        elif choice == 14:
             # AU
             subprocess.call(["nexttrace", "-MT4", "speedtest.syd1.linode.com"]) # Akamai-SDY
             subprocess.call(["nexttrace", "-MT", "34.116.127.53"]) # GCP-SDY            
-            subprocess.call(["nexttrace", "-MT", "13.236.0.253"]) # AWS-SDY                        
+            subprocess.call(["nexttrace", "-MT", "13.236.0.253"]) # AWS-SDY
 
     else:
         print("无效输入，请重试！")
