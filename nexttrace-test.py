@@ -17,7 +17,7 @@ options = [
     "10) 🇺🇸 US",    
     "11) 🇪🇺 EU",
     "12) 🇦🇺 AU",
-    "13) 🇨🇳 SHA",
+    "21) 🇨🇳 SHA",
     "14) 🇨🇳 CAN",    
 ]
 
@@ -34,6 +34,8 @@ for i in range(num_rows):
 print("请选择:")
 print(formatted_options)
 
+valid_choices = list(range(0, 15)) + list(range(21, 24))  # 定义有效的选择范围
+
 try:
     choice = int(input("输入选择: "))
     if 0 <= choice < num_options:
@@ -43,7 +45,7 @@ try:
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "27.185.201.1"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.240.159.62"])
             subprocess.call(["nexttrace", "-MT", "111.62.68.17"])
-        elif choice == 13:
+        elif choice == 21:
             # SHA
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "124.74.52.254"])            
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "210.51.57.10"])
