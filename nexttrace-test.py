@@ -36,7 +36,7 @@ print(formatted_options)
 
 try:
     choice = int(input("输入选择: "))
-    if a <= choice < num_options:
+    if 0 <= choice < num_options:
         print(f"您选择了: {options[choice]}")
         if choice == a:
             # SJW
