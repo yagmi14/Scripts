@@ -37,9 +37,20 @@ print(formatted_options)
 valid_choices = list(range(0, 15)) + list(range(21, 24))  # 定义有效的选择范围
 
 try:
-    choice = int(input("输入选择: "))
-    if 0 <= choice < num_options:
-        print(f"您选择了: {options[choice]}")
+    choice = input("输入选择: ")
+    if choice.isdigit():
+        choice = int(choice)
+        if choice in valid_choices:
+            # 如果输入在有效范围内
+            print(f"您选择了: {options[choice]}")
+            # 根据选择执行相应的操作
+            # ...
+        else:
+            print("输入无效，请输入一个有效的数字")
+    else:
+        print("输入无效，请输入一个有效的数字")
+except ValueError:
+    print("发生错误，请确保输入的是有效的数字")
         if choice == 0:
             # SJW
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "27.185.201.1"])
