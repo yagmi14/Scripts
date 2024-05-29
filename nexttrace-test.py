@@ -133,14 +133,14 @@ try:
             subprocess.call(["nexttrace", "-MT", "45.88.193.5"]) # Dmit-NRT
             subprocess.call(["nexttrace", "-MT", "103.168.154.1"]) # Eons-NRT
             subprocess.call(["nexttrace", "-MT", "34.97.105.37"]) # GCP-KIX
-            subprocess.call(["nexttrace", "-MT", "34.146.177.16"]) # GCP-NRT            
+            subprocess.call(["nexttrace", "-MT", "34.146.177.6"]) # GCP-NRT            
             subprocess.call(["nexttrace", "-MT", "185.188.5.1"]) # Jinx-NRT
             subprocess.call(["nexttrace", "-MT", "106.180.224.1"]) # Kddi-NRT            
             subprocess.call(["nexttrace", "-MT", "212.107.30.1"]) # Kirino-NRT
             subprocess.call(["nexttrace", "-MT", "103.170.232.48"]) # Misaka-NRT
             subprocess.call(["nexttrace", "-MT", "89.116.88.18"]) # Nearoute-NRT
             subprocess.call(["nexttrace", "-MT", "103.90.136.3"]) # NeroCloud-NRT
-            subprocess.call(["nexttrace", "-MT", "140.227.118.6"]) # Ntt&PC-NRT            
+            subprocess.call(["nexttrace", "-MT", "140.227.118.6"]) # NttPC-NRT            
             subprocess.call(["nexttrace", "-MT", "157.254.198.1"]) # Sharon-NRT         
             subprocess.call(["nexttrace", "-MT", "126.40.32.17"]) # Softbank-NRT
             subprocess.call(["nexttrace", "-MT4", "hnd-jp-ping.vultr.com"]) # Vultr-NRT                                    
