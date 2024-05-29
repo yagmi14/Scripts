@@ -4,9 +4,7 @@
 import subprocess
 
 options = [
-    "21) 🇨🇳 SJW",
-    "22) 🇨🇳 SHA",
-    "23) 🇨🇳 CAN",
+    "0) 🇨🇳 SJW",
     "1) 🇨🇳 CT",
     "2) 🇨🇳 CU",
     "3) 🇨🇳 CM",
@@ -18,7 +16,9 @@ options = [
     "9) 🇸🇬 SG",
     "10) 🇺🇸 US",    
     "11) 🇪🇺 EU",
-    "12) 🇦🇺 AU",    
+    "12) 🇦🇺 AU",
+    "21) 🇨🇳 SHA",
+    "22) 🇨🇳 CAN",    
 ]
 
 num_columns = 3
@@ -38,17 +38,17 @@ try:
     choice = int(input("输入选择: "))
     if 0 <= choice < num_options:
         print(f"您选择了: {options[choice]}")
-        if choice == 21:
+        if choice == 0:
             # SJW
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "27.185.201.1"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.240.159.62"])
             subprocess.call(["nexttrace", "-MT", "111.62.68.17"])
-        elif choice == 22:
+        elif choice == 21:
             # SHA
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "124.74.52.254"])            
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "210.51.57.10"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.204.34.2"])
-        elif choice == 23:
+        elif choice == 22:
             # CAN
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.144.6.18"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "163.177.38.106"])           
