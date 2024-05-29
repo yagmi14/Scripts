@@ -4,7 +4,6 @@
 import subprocess
 
 options = [
-    "0) 🇨🇳 SJW",
     "1) 🇨🇳 CT",
     "2) 🇨🇳 CU",
     "3) 🇨🇳 CM",
@@ -17,8 +16,9 @@ options = [
     "10) 🇺🇸 US",    
     "11) 🇪🇺 EU",
     "12) 🇦🇺 AU",
-    "21) 🇨🇳 SHA",
-    "14) 🇨🇳 CAN",    
+    "13) 🇨🇳 SJW",    
+    "14) 🇨🇳 SHA",
+    "15) 🇨🇳 CAN",    
 ]
 
 num_columns = 3
@@ -37,25 +37,20 @@ print(formatted_options)
 valid_choices = list(range(0, 15)) + list(range(21, 24))  # 定义有效的选择范围
 
 try:
-    choice = input("输入选择: ")
-    if choice.isdigit():
-        choice = int(choice)
-        if choice in valid_choices:
-            # 如果输入在有效范围内
-            print(f"您选择了: {options[choice]}")
-            # 根据选择执行相应的操作
-            # ...
-        if choice == 0:
+    choice = int(input("输入选择: "))
+    if 1 <= choice < num_options:
+        print(f"您选择了: {options[choice]}")
+        if choice == 13:
             # SJW
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "27.185.201.1"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.240.159.62"])
             subprocess.call(["nexttrace", "-MT", "111.62.68.17"])
-        elif choice == 21:
+        elif choice == 14:
             # SHA
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "124.74.52.254"])            
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "210.51.57.10"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.204.34.2"])
-        elif choice == 14:
+        elif choice == 15:
             # CAN
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.144.6.18"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "163.177.38.106"])           
@@ -206,9 +201,9 @@ try:
             subprocess.call(["nexttrace", "-MT", "34.116.127.53"]) # GCP-SDY            
             subprocess.call(["nexttrace", "-MT", "13.236.0.253"]) # AWS-SDY                        
 
-        else:
-            print("输入无效，请输入一个有效的数字")
     else:
-        print("输入无效，请输入一个有效的数字")
+        print("无效输入，请重试！")
 except ValueError:
-    print("发生错误，请确保输入的是有效的数字")
+    print("无效输入，请输入一个数字。")
+except KeyboardInterrupt:
+    print("\n程序已被中断。")
