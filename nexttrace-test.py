@@ -4,10 +4,12 @@
 import subprocess
 
 options = [
-    "0) 🇨🇳 CN",
+    "a) 🇨🇳 SJW",
+    "b) 🇨🇳 SHA",
+    "c) 🇨🇳 CAN",
     "1) 🇨🇳 CT",
     "2) 🇨🇳 CU",
-    "3) 🇨🇳 CMCC",
+    "3) 🇨🇳 CM",
     "4) 🇨🇳 Others",
     "5) 🇨🇳 IPV6",
     "6) 🇭🇰 HK",
@@ -36,26 +38,21 @@ try:
     choice = int(input("输入选择: "))
     if 0 <= choice < num_options:
         print(f"您选择了: {options[choice]}")
-        if choice == 0:
-            # CT
+        if choice == a:
+            # SJW
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "27.185.201.1"])
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "124.74.52.254"])
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.144.6.18"])
-            # CU
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.240.159.62"])
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "210.51.57.10"])
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "163.177.38.106"])
-            # CMCC
             subprocess.call(["nexttrace", "-MT", "111.62.68.17"])
+        elif choice == b:
+            # SHA
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "124.74.52.254"])            
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "210.51.57.10"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.204.34.2"])
+        elif choice == c:
+            # CAN
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.144.6.18"])
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "163.177.38.106"])           
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.198.26.254"])
-            # Others
-            subprocess.call(["nexttrace", "-MT", "58.32.4.1"])
-            subprocess.call(["nexttrace", "-MT", "210.13.67.106"])
-            subprocess.call(["nexttrace", "-MT", "223.70.155.77"])
-            subprocess.call(["nexttrace", "-MT", "211.156.140.17"])
-            subprocess.call(["nexttrace", "-MT", "166.111.4.39"])
-            subprocess.call(["nexttrace", "-MT", "159.226.254.1"])
         elif choice == 1:
             # CT
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "219.141.150.166"])
@@ -71,7 +68,7 @@ try:
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "58.20.176.94"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "163.177.38.106"])
         elif choice == 3:
-            # CMCC
+            # CM
             subprocess.call(["nexttrace", "-MT", "112.34.111.194"])
             subprocess.call(["nexttrace", "-MT", "111.62.68.17"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.204.34.2"])
