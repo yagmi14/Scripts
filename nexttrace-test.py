@@ -45,12 +45,6 @@ try:
             print(f"您选择了: {options[choice]}")
             # 根据选择执行相应的操作
             # ...
-        else:
-            print("输入无效，请输入一个有效的数字")
-    else:
-        print("输入无效，请输入一个有效的数字")
-except ValueError:
-    print("发生错误，请确保输入的是有效的数字")
         if choice == 0:
             # SJW
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "27.185.201.1"])
@@ -211,9 +205,10 @@ except ValueError:
             subprocess.call(["nexttrace", "-MT4", "speedtest.syd1.linode.com"]) # Akamai-SDY
             subprocess.call(["nexttrace", "-MT", "34.116.127.53"]) # GCP-SDY            
             subprocess.call(["nexttrace", "-MT", "13.236.0.253"]) # AWS-SDY                        
+
+        else:
+            print("输入无效，请输入一个有效的数字")
     else:
-        print("无效输入，请重试！")
+        print("输入无效，请输入一个有效的数字")
 except ValueError:
-    print("无效输入，请输入一个数字。")
-except KeyboardInterrupt:
-    print("\n程序已被中断。")
+    print("发生错误，请确保输入的是有效的数字")
