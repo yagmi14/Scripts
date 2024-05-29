@@ -4,9 +4,9 @@
 import subprocess
 
 options = [
-    "a) 🇨🇳 SJW",
-    "b) 🇨🇳 SHA",
-    "c) 🇨🇳 CAN",
+    "21) 🇨🇳 SJW",
+    "22) 🇨🇳 SHA",
+    "23) 🇨🇳 CAN",
     "1) 🇨🇳 CT",
     "2) 🇨🇳 CU",
     "3) 🇨🇳 CM",
@@ -38,17 +38,17 @@ try:
     choice = int(input("输入选择: "))
     if 0 <= choice < num_options:
         print(f"您选择了: {options[choice]}")
-        if choice == a:
+        if choice == 21:
             # SJW
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "27.185.201.1"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.240.159.62"])
             subprocess.call(["nexttrace", "-MT", "111.62.68.17"])
-        elif choice == b:
+        elif choice == 22:
             # SHA
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "124.74.52.254"])            
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "210.51.57.10"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.204.34.2"])
-        elif choice == c:
+        elif choice == 23:
             # CAN
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.144.6.18"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "163.177.38.106"])           
