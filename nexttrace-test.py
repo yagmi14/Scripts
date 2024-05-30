@@ -196,7 +196,7 @@ try:
         elif choice == 14:
             # AU
             subprocess.call(["nexttrace", "-MT4", "speedtest.syd1.linode.com"]) # Akamai-SDY
-            subprocess.call(["nexttrace", "-MT", "34.116.127.53"]) # GCP-SDY            
+            subprocess.call(["nexttrace", "-MT", "34.116.127.75"]) # GCP-SDY            
             subprocess.call(["nexttrace", "-MT", "13.236.0.253"]) # AWS-SDY
 
     else:
