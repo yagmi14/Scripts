@@ -9,6 +9,7 @@ echo "1. 启动服务"
 echo "2. 重启服务"
 echo "3. 关闭服务"
 echo "4. 查看服务状态"
+echo "5. 重新加载配置文件"
 read -p "输入操作编号: " choice
 
 # 根据用户选择执行相应的操作
@@ -28,6 +29,9 @@ case $choice in
   4)
     systemctl status $service_name
     ;;
+  5)
+    systemctl daemon-reload
+    ;;    
   *)
     echo "无效的操作编号"
     ;;
