@@ -100,6 +100,7 @@ try:
             subprocess.call(["nexttrace", "-MT", "oss-cn-hongkong.aliyuncs.com"]) # Alibaba-HKG
             subprocess.call(["nexttrace", "-MT", "23.247.139.3"]) # Apernet-HKG
             subprocess.call(["nexttrace", "-MT", "156.251.180.1"]) # Cera-HKG
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "161.81.216.1"]) # CMHK-HKG            
             subprocess.call(["nexttrace", "-MT4", "hkg.download.datapacket.com"]) # Datacamp-HKG                        
             subprocess.call(["nexttrace", "-MT", "154.3.33.110"]) # Dmit-HKG
             subprocess.call(["nexttrace", "-MT", "209.146.125.124"]) # Eons-HKG
