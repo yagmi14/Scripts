@@ -19,7 +19,7 @@ def main():
         print("1) grpc_reality")
         print("2) vless-xtls-vision-reality")
         print("3) shadowsocks")
-        print("4) ShadowTLS v3")
+        print("4) ShadowTLS")
         print("5) grpc-reality+shadowsocks")
         print("6) tcp-reality+shadowsocks")
         print("7) shadowsocks+shadowsocks")
