@@ -16,7 +16,7 @@ def status_service():
 def main():
     try:
         print("Please select:")
-        print("1) vless-xtls-grpc-reality")
+        print("1) grpc_reality")
         print("2) vless-xtls-vision-reality")
         print("3) shadowsocks")
         print("4) ShadowTLS v3")
@@ -28,6 +28,27 @@ def main():
         
         if choice == "" or choice.isspace():
             choice = "3"
+
+        if choice == "1":
+            print("grpc_reality")
+            
+            port = input("listening port: ")
+            if port == "":
+                port = "40005"
+            print(port)
+            
+            domain = input("domain: ")
+            if domain == "":
+                domain = "cdn-design.tesla.com"
+            print(domain)
+
+            config_content = ('{"inbounds":[{"type":"vless","tag":"vless-in","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"transport":{"type":"grpc","service_name":"rWZXzPnJ"},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
+
+            config_path = generate_config_file(config_content, port)
+            
+            restart_service()
+            
+            status_service()        
             
         if choice == "2":
             print("vless-xtls-vision-reality")
