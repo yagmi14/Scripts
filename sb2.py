@@ -139,6 +139,8 @@ def main():
             print(ip)
             
             port_2 = input("remote port: ")            
+            if port_2 == "":
+                port_2 = "40001"
             print(port_2)
             
             print("Please select the method:")
