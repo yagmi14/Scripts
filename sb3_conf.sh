@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+bash <(curl -fsSL https://sing-box.app/deb-install.sh)
+
 mkdir -p /usr/local/etc/sing-box/conf
 
 echo '{"log":{"disabled":false,"level":"info","timestamp":true}}' > /usr/local/etc/sing-box/conf/00_log.json
