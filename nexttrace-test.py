@@ -56,7 +56,7 @@ try:
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.240.159.62"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "210.51.57.10"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "58.20.176.94"])
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "163.177.38.106"])
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "218.107.8.18"])
         elif choice == 3:
             # CM
             subprocess.call(["nexttrace", "-MT", "112.34.111.194"])
@@ -92,7 +92,7 @@ try:
         elif choice == 7:
             # CAN
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.144.6.18"])
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "163.177.38.106"])           
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "218.107.8.18"])           
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.198.26.254"])        
         elif choice == 8:
             # HK
