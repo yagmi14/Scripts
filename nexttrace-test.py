@@ -63,7 +63,7 @@ try:
             subprocess.call(["nexttrace", "-MT", "111.62.68.17"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.204.34.2"])
             subprocess.call(["nexttrace", "-MT", "111.8.9.73"])
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.198.26.254"])
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "218.204.182.226"])
         elif choice == 4:
             # Others
             subprocess.call(["nexttrace", "-MT", "58.32.4.1"])
@@ -91,9 +91,9 @@ try:
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.204.34.2"])
         elif choice == 7:
             # CAN
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.144.6.18"])
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "218.107.8.18"])           
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.198.26.254"])        
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.144.6.18"]) # CAN-CT
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "218.107.8.18"]) # CAN-CU
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "218.204.182.226"]) # CAN-CM
         elif choice == 8:
             # HK
             subprocess.call(["nexttrace", "-MT", "103.229.54.1"]) # Akari-HKG
