@@ -16,13 +16,13 @@ def status_service():
 def main():
     try:
         print("Please select:")
-        print("1) grpc_reality")
-        print("2) tcp_reality")
-        print("3) shadowsocks")
+        print("1) VLESS-gRPC-REALITY")
+        print("2) VLESS-Vision-REALITY")
+        print("3) Shadowsocks")
         print("4) ShadowTLS")
-        print("5) grpc_reality+shadowsocks")
-        print("6) tcp_reality+shadowsocks")
-        print("7) shadowsocks+shadowsocks")
+        print("5) VLESS-gRPC-REALITY+Shadowsocks")
+        print("6) VLESS-Vision-REALITY+Shadowsocks")
+        print("7) Shadowsocks+Shadowsocks")
 
         choice = input("Please select:")                
         
@@ -30,7 +30,7 @@ def main():
             choice = "3"
 
         if choice == "1":
-            print("grpc_reality")
+            print("VLESS-gRPC-REALITY")
             
             port = input("listening port: ")
             if port == "":
@@ -51,7 +51,7 @@ def main():
             status_service()        
             
         if choice == "2":
-            print("tcp_reality")
+            print("VLESS-Vision-REALITY")
             
             port = input("listening port: ")
             if port == "":
@@ -72,7 +72,7 @@ def main():
             status_service()    
         
         if choice == "3":
-            print("shadowsocks")
+            print("Shadowsocks")
             port = input("listening port: ")
             if port == "":
                 port = "40001"
@@ -125,7 +125,7 @@ def main():
             status_service()
         
         if choice == "5":
-            print("grpc_reality+shadowsocks")
+            print("VLESS-gRPC-REALITY+Shadowsocks")
             
             port = input("listening port: ")
             print(port)
