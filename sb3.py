@@ -2,7 +2,7 @@ import os
 import subprocess
 
 def generate_config_file(config_content, port):
-    config_path = f"/usr/local/etc/sing-box/conf/sb_{port}.json"
+    config_path = f"/usr/local/etc/sb3/conf/sb_{port}.json"
     with open(config_path, "w") as config_file:
         config_file.write(config_content)
     return config_path
