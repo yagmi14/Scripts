@@ -9,7 +9,7 @@ echo '{"log":{"disabled":false,"level":"info","timestamp":true}}' > /usr/local/e
 
 echo '{"route":{"rule_set":[{"tag":"geosite-openai","type":"remote","format":"binary","url":"https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-openai.srs"}],"rules":[{"domain":"api.openai.com","outbound":"direct"},{"rule_set":"geosite-openai","outbound":"direct"}]}}' > /usr/local/etc/sing-box/conf/02_route.json
 
-echo '{"experimental":{"cache_file":{"enabled":true,"path":"/etc/sing-box/cache.db"}}}' > /usr/local/etc/sing-box/conf/03_experimental.json
+echo '{"experimental":{"cache_file":{"enabled":true,"path":"/usr/local/etc/sing-box/cache.db"}}}' > /usr/local/etc/sing-box/conf/03_experimental.json
 
 echo '{"dns":{"servers":[{"address":"local"}]}}' > /usr/local/etc/sing-box/conf/04_dns.json
 
