@@ -16,62 +16,21 @@ def status_service():
 def main():
     try:
         print("Please select:")
-        print("1) VLESS-gRPC-REALITY")
+        print("1) Shadowsocks")
         print("2) VLESS-Vision-REALITY")
-        print("3) Shadowsocks")
-        print("4) ShadowTLS")
-        print("5) VLESS-gRPC-REALITY+Shadowsocks")
-        print("6) VLESS-Vision-REALITY+Shadowsocks")
-        print("7) Shadowsocks+Shadowsocks")
+        print("3) VLESS-gRPC-REALITY")
+        print("4) VLESS-HTTP2-REALITY")
+        print("5) ShadowTLS")
+        print("6) VLESS-gRPC-REALITY+Shadowsocks")
+        print("7) VLESS-Vision-REALITY+Shadowsocks")
+        print("8) Shadowsocks+Shadowsocks")
 
         choice = input("Please select:")                
         
         if choice == "" or choice.isspace():
-            choice = "3"
-
+            choice = "1"
+            
         if choice == "1":
-            print("VLESS-gRPC-REALITY")
-            
-            port = input("listening port: ")
-            if port == "":
-                port = "40005"
-            print(port)
-            
-            domain = input("domain: ")
-            if domain == "":
-                domain = "cdn-design.tesla.com"
-            print(domain)
-
-            config_content = ('{"inbounds":[{"type":"vless","tag":"vless-in","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"transport":{"type":"grpc","service_name":"rWZXzPnJ"},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
-
-            config_path = generate_config_file(config_content, port)
-            
-            restart_service()
-            
-            status_service()        
-            
-        if choice == "2":
-            print("VLESS-Vision-REALITY")
-            
-            port = input("listening port: ")
-            if port == "":
-                port = "40004"
-            print(port)
-            
-            domain = input("domain: ")
-            if domain == "":
-                domain = "cdn-design.tesla.com"
-            print(domain)
-
-            config_content = ('{"inbounds":[{"type":"vless","tag":"vless-in","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98","flow":"xtls-rprx-vision"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
-
-            config_path = generate_config_file(config_content, port)
-            
-            restart_service()
-            
-            status_service()    
-        
-        if choice == "3":
             print("Shadowsocks")
             port = input("listening port: ")
             if port == "":
@@ -101,8 +60,71 @@ def main():
             restart_service()
             
             status_service()
+            
+        if choice == "2":
+            print("VLESS-Vision-REALITY")
+            
+            port = input("listening port: ")
+            if port == "":
+                port = "40004"
+            print(port)
+            
+            domain = input("domain: ")
+            if domain == "":
+                domain = "cdn-design.tesla.com"
+            print(domain)
+
+            config_content = ('{"inbounds":[{"type":"vless","tag":"vless-in","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98","flow":"xtls-rprx-vision"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
+
+            config_path = generate_config_file(config_content, port)
+            
+            restart_service()
+            
+            status_service()    
         
+        if choice == "3":
+            print("VLESS-gRPC-REALITY")
+            
+            port = input("listening port: ")
+            if port == "":
+                port = "40005"
+            print(port)
+            
+            domain = input("domain: ")
+            if domain == "":
+                domain = "cdn-design.tesla.com"
+            print(domain)
+
+            config_content = ('{"inbounds":[{"type":"vless","tag":"vless-in","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"transport":{"type":"grpc","service_name":"rWZXzPnJ"},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
+
+            config_path = generate_config_file(config_content, port)
+            
+            restart_service()
+            
+            status_service()
+            
         if choice == "4":
+            print("VLESS-HTTP2-REALITY")
+            
+            port = input("listening port: ")
+            if port == "":
+                port = "40006"
+            print(port)
+            
+            domain = input("domain: ")
+            if domain == "":
+                domain = "cdn-design.tesla.com"
+            print(domain)
+
+            config_content = ('{"inbounds":[{"type":"vless","tag":"vless-in","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"transport":{"type":"http"},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
+
+            config_path = generate_config_file(config_content, port)
+            
+            restart_service()
+            
+            status_service()            
+        
+        if choice == "5":
             print("ShadowTLS")
             port = input("listening port: ")
             if port == "":
@@ -124,7 +146,7 @@ def main():
             
             status_service()
         
-        if choice == "5":
+        if choice == "6":
             print("VLESS-gRPC-REALITY+Shadowsocks")
             
             port = input("listening port: ")
