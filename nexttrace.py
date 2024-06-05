@@ -142,7 +142,7 @@ try:
             subprocess.call(["nexttrace", "-M", "103.90.136.3"]) # NeroCloud-NRT
             subprocess.call(["nexttrace", "-M", "140.227.118.6"]) # NttPC-NRT            
             subprocess.call(["nexttrace", "-M", "157.254.198.1"]) # Sharon-NRT         
-            subprocess.call(["nexttrace", "-M", "126.40.32.17"]) # Softbank-NRT
+            subprocess.call(["nexttrace", "-M", "126.40.32.184"]) # Softbank-NRT
             subprocess.call(["nexttrace", "-M4", "hnd-jp-ping.vultr.com"]) # Vultr-NRT                                    
             subprocess.call(["nexttrace", "-M", "149.62.44.1"]) # xTom-NRT
             subprocess.call(["nexttrace", "-M", "13.112.63.251"]) # AWS-NRT
