@@ -44,7 +44,7 @@ case $choice in
         echo "规则已添加。"
         ;;
     3)
-        read -p "请输入要删除的规则的端口号（例如40007）: " del_port
+        read -p "请输入要删除的规则的端口号: " del_port
         echo "正在删除所有转发到端口$del_port的NAT规则..."
         sudo iptables -t nat -D PREROUTING -p udp -m udp --dport 49000:50000 -m comment --comment "NAT 49000:50000 to $del_port (Sing-box Family Bucket)" -j DNAT --to-destination :$del_port
         sudo iptables-save > /etc/iptables/rules.v4
