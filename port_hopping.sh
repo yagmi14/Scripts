@@ -15,7 +15,6 @@ then
 fi
 
 # 启用IP转发
-echo "启用IP转发..."
 echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward > /dev/null
 
 # 查看、添加和删除规则的选项
