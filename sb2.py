@@ -21,9 +21,7 @@ def main():
         print("3) VLESS-gRPC-REALITY")
         print("4) VLESS-HTTP2-REALITY")
         print("5) ShadowTLS")
-        print("6) VLESS-gRPC-REALITY+Shadowsocks")
-        print("7) VLESS-Vision-REALITY+Shadowsocks")
-        print("8) Shadowsocks+Shadowsocks")
+        print("6) Hysteria2")
 
         choice = input("Please select:")                
         
@@ -145,47 +143,22 @@ def main():
             restart_service()
             
             status_service()
-        
-        if choice == "6":
-            print("VLESS-gRPC-REALITY+Shadowsocks")
             
+        if choice == "6":
+            print("Hysteria2")
             port = input("listening port: ")
+            if port == "":
+                port = "40007"
+            
             print(port)
             
-            domain = input("domain: ")
-            if domain == "":
-                domain = "cdn-design.tesla.com"
-            print(domain)
+            config_content = ('{"inbounds":[{"type":"hysteria2","sniff":true,"sniff_override_destination":true,"tag":"hysteria2","listen":"::","listen_port": ' + port + ',"users":[{"password":"de0e3ecb-2349-4f17-b4a6-b044a895160c"}],"ignore_client_bandwidth":false,"tls":{"enabled":true,"server_name":"","alpn":["h3"],"min_version":"1.3","max_version":"1.3","certificate_path":"/etc/sing-box/cert/cert.pem","key_path":"/etc/sing-box/cert/private.key"}}]}')
             
-            ip = input("remote ip: ")
-            print(ip)
-            
-            port_2 = input("remote port: ")            
-            if port_2 == "":
-                port_2 = "40001"
-            print(port_2)
-            
-            print("Please select the method:")
-            print("1. 2022-blake3-aes-256-gcm")
-            print("2. aes-256-gcm")
-            method = input("method: ")
-            if method == "":
-                method = "2022-blake3-aes-256-gcm"
-            elif method == "1":
-                method = "2022-blake3-aes-256-gcm"
-            elif method == "2":
-                method = "aes-256-gcm"
-            else:
-                print("Incorrect input, please re-enter.")
-            print(method)
-
-            config_content = ('{"inbounds":[{"type":"vless","tag":"vless-in","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"transport":{"type":"grpc","service_name":"rWZXzPnJ"},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}],"outbounds":[{"type":"shadowsocks","tag":"shadowsocks-out","server":"' + ip + '","server_port":' + port_2 + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4="}]}')
-
             config_path = generate_config_file(config_content, port)
             
             restart_service()
             
-            status_service()
+            status_service()                    
     
     except KeyboardInterrupt:
         print("\nThe program has been interrupted.")
