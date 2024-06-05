@@ -58,6 +58,7 @@ ExecStart=/usr/local/bin/realm -c /usr/local/etc/realm/config.toml
 [Install]
 WantedBy=multi-user.target" > /etc/systemd/system/realm.service
     systemctl daemon-reload
+    systemctl enable realm
     # 更新realm状态变量
     realm_status="已安装"
     realm_status_color="\033[0;32m" # 绿色
