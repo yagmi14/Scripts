@@ -64,7 +64,7 @@ def main():
             
             port = input("listening port: ")
             if port == "":
-                port = "40004"
+                port = "40002"
             print(port)
             
             domain = input("domain: ")
@@ -85,7 +85,7 @@ def main():
             
             port = input("listening port: ")
             if port == "":
-                port = "40005"
+                port = "40003"
             print(port)
             
             domain = input("domain: ")
@@ -106,7 +106,7 @@ def main():
             
             port = input("listening port: ")
             if port == "":
-                port = "40006"
+                port = "40004"
             print(port)
             
             domain = input("domain: ")
@@ -126,7 +126,7 @@ def main():
             print("ShadowTLS")
             port = input("listening port: ")
             if port == "":
-                port = "40003"
+                port = "40005"
             
             print(port)
             
@@ -148,7 +148,7 @@ def main():
             print("Hysteria2")
             port = input("listening port: ")
             if port == "":
-                port = "40007"
+                port = "40006"
             
             print(port)
             
