@@ -201,3 +201,10 @@ try:
             subprocess.call(["nexttrace", "-M4", "speedtest.syd1.linode.com"]) # Akamai-SDY
             subprocess.call(["nexttrace", "-M", "34.116.127.76"]) # GCP-SDY            
             subprocess.call(["nexttrace", "-M", "13.236.0.253"]) # AWS-SDY
+
+    else:
+        print("无效输入，请重试！")
+except ValueError:
+    print("无效输入，请输入一个数字。")
+except KeyboardInterrupt:
+    print("\n程序已被中断。")
