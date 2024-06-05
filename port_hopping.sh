@@ -31,14 +31,20 @@ case $choice in
         sudo iptables -t nat -L PREROUTING
         ;;
     2)
+        read -p "请输入要重定向的端口范围: " port_range
+        if [ -z "$port_range" ]
+        then
+            port_range="49000:50000"
+        fi
         read -p "请输入要重定向到的端口: " port
         if [ -z "$port" ]
         then
             port=40007
         fi
+        echo "你输入的端口范围是：$port_range"
         echo "你输入的端口号是：$port"
-        echo "添加NAT规则，将49000:50000端口转发到$port..."
-        sudo iptables -t nat -A PREROUTING -p udp -m udp --dport 49000:50000 -m comment --comment "NAT 49000:50000 to $port (Sing-box Family Bucket)" -j DNAT --to-destination :$port
+        echo "添加NAT规则，将$port_range端口转发到$port..."
+        sudo iptables -t nat -A PREROUTING -p udp -m udp --dport $port_range -m comment --comment "NAT $port_range to $port (Sing-box Family Bucket)" -j DNAT --to-destination :$port
         sudo iptables-save > /etc/iptables/rules.v4
         sudo iptables-save > /etc/iptables/rules.v6
         echo "规则已添加。"
@@ -46,10 +52,19 @@ case $choice in
     3)
         read -p "请输入要删除的规则的端口号: " del_port
         echo "正在删除所有转发到端口$del_port的NAT规则..."
-        sudo iptables -t nat -D PREROUTING -p udp -m udp --dport 49000:50000 -m comment --comment "NAT 49000:50000 to $del_port (Sing-box Family Bucket)" -j DNAT --to-destination :$del_port
-        sudo iptables-save > /etc/iptables/rules.v4
-        sudo iptables-save > /etc/iptables/rules.v6
-        echo "规则已删除。"
+        # 查找与del_port相关的规则行号
+        rule_line_numbers=$(sudo iptables -t nat -L PREROUTING --line-numbers | grep "to:$del_port" | awk '{print $1}' | tac)
+        # 如果找到规则，则逐行删除
+        if [ -n "$rule_line_numbers" ]; then
+            for line in $rule_line_numbers; do
+                sudo iptables -t nat -D PREROUTING $line
+            done
+            sudo iptables-save > /etc/iptables/rules.v4
+            sudo iptables-save > /etc/iptables/rules.v6
+            echo "规则已删除。"
+        else
+            echo "没有找到转发到端口$del_port的规则。"
+        fi
         ;;
     4)
         echo "退出脚本。"
