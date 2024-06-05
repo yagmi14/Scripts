@@ -53,7 +53,7 @@ case $choice in
         read -p "请输入要删除的规则的端口号: " del_port
         echo "正在删除所有转发到端口$del_port的NAT规则..."
         # 查找与del_port相关的规则行号
-        rule_line_numbers=$(sudo iptables -t nat -L PREROUTING --line-numbers | grep "to:$del_port" | awk '{print $1}' | tac)
+        rule_line_numbers=$(sudo iptables -t nat -L PREROUTING --line-numbers | grep "to::$del_port" | awk '{print $1}' | tac)
         # 如果找到规则，则逐行删除
         if [ -n "$rule_line_numbers" ]; then
             for line in $rule_line_numbers; do
