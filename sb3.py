@@ -6,8 +6,6 @@ import datetime
 now = datetime.datetime.now()
 timestamp = now.strftime('%Y%m%d%H%M%S')
 
-# 使用时间戳生成变量名
-
 def generate_config_file(config_content, port):
     config_path = f"/usr/local/etc/sb3/conf/sb_{port}.json"
     with open(config_path, "w") as config_file:
@@ -37,9 +35,10 @@ def main():
         if choice == "2":
             print("VLESS-Vision-REALITY+Shadowsocks")
 
-            tag-in = "vless-in"
-            tag_in_time = f"{tag-in}_{timestamp}"
-            ss_out_time = f"ss-out_{timestamp}"
+            tag_in = "vless-in"
+            tag_in_time = f"{tag_in}_{timestamp}"
+            tag_out = "ss-out"
+            tag_out_time = f"{tag_out}_{timestamp}"
             
             port = input("listening port: ")
             print(port)
@@ -71,7 +70,7 @@ def main():
                 print("Incorrect input, please re-enter.")
             print(method)
 
-            config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_time + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98","flow":"xtls-rprx-vision"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}],"outbounds":[{"type":"shadowsocks","tag":"' + ss_out_time + '","server":"' + ip + '","server_port":' + port_2 + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
+            config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_time + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98","flow":"xtls-rprx-vision"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}],"outbounds":[{"type":"shadowsocks","tag":"' + tag_out_time + '","server":"' + ip + '","server_port":' + port_2 + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
 
             config_path = generate_config_file(config_content, port)
             
@@ -82,9 +81,10 @@ def main():
         if choice == "3":
             print("VLESS-gRPC-REALITY+Shadowsocks")
 
-            tag-in = "vless-in"
-            tag_in_time = f"{tag-in}_{timestamp}"
-            ss_out_time = f"ss-out_{timestamp}"
+            tag_in = "vless-in"
+            tag_in_time = f"{tag_in}_{timestamp}"
+            tag_out = "ss-out"
+            tag_out_time = f"{tag_out}_{timestamp}"
             
             port = input("listening port: ")
             print(port)
@@ -116,7 +116,7 @@ def main():
                 print("Incorrect input, please re-enter.")
             print(method)
 
-            config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_time + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"transport":{"type":"grpc","service_name":"rWZXzPnJ"},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}],"outbounds":[{"type":"shadowsocks","tag":"' + ss_out_time + '","server":"' + ip + '","server_port":' + port_2 + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
+            config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_time + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"transport":{"type":"grpc","service_name":"rWZXzPnJ"},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}],"outbounds":[{"type":"shadowsocks","tag":"' + tag_out_time + '","server":"' + ip + '","server_port":' + port_2 + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
 
             config_path = generate_config_file(config_content, port)
             
@@ -127,9 +127,10 @@ def main():
         if choice == "4":
             print("VLESS-HTTP2-REALITY+Shadowsocks")
 
-            tag-in = "vless-in"
-            tag_in_time = f"{tag-in}_{timestamp}"
-            ss_out_time = f"ss-out_{timestamp}"
+            tag_in = "vless-in"
+            tag_in_time = f"{tag_in}_{timestamp}"
+            tag_out = "ss-out"
+            tag_out_time = f"{tag_out}_{timestamp}"
             
             port = input("listening port: ")
             print(port)
@@ -161,7 +162,7 @@ def main():
                 print("Incorrect input, please re-enter.")
             print(method)
 
-            config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_time + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"transport":{"type":"http"},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}],"outbounds":[{"type":"shadowsocks","tag":"' + ss_out_time + '","server":"' + ip + '","server_port":' + port_2 + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
+            config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_time + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"transport":{"type":"http"},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}],"outbounds":[{"type":"shadowsocks","tag":"' + tag_out_time + '","server":"' + ip + '","server_port":' + port_2 + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
 
             config_path = generate_config_file(config_content, port)
             
@@ -172,9 +173,10 @@ def main():
         if choice == "5":
             print("Hysteria2+Shadowsocks")
 
-            tag-in = "hysteria2-in"
-            tag_in_time = f"{tag-in}_{timestamp}"
-            ss_out_time = f"ss-out_{timestamp}"
+            tag_in = "hysteria2-in"
+            tag_in_time = f"{tag_in}_{timestamp}"
+            tag_out = "ss-out"
+            tag_out_time = f"{tag_out}_{timestamp}"
             
             port = input("listening port: ")
             print(port)         
@@ -201,7 +203,7 @@ def main():
                 print("Incorrect input, please re-enter.")
             print(method)
 
-            config_content = ('{"inbounds":[{"type":"hysteria2","sniff":true,"sniff_override_destination":true,"tag":"' + tag_in_time + '","listen":"::","listen_port":' + port + ',"users":[{"password":"de0e3ecb-2349-4f17-b4a6-b044a895160c"}],"ignore_client_bandwidth":false,"tls":{"enabled":true,"server_name":"","alpn":["h3"],"min_version":"1.3","max_version":"1.3","certificate_path":"/etc/sing-box/cert/cert.pem","key_path":"/etc/sing-box/cert/private.key"}}],"outbounds":[{"type":"shadowsocks","tag":"' + ss_out_time + '","server":"' + ip + '","server_port":' + port_2 + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
+            config_content = ('{"inbounds":[{"type":"hysteria2","sniff":true,"sniff_override_destination":true,"tag":"' + tag_in_time + '","listen":"::","listen_port":' + port + ',"users":[{"password":"de0e3ecb-2349-4f17-b4a6-b044a895160c"}],"ignore_client_bandwidth":false,"tls":{"enabled":true,"server_name":"","alpn":["h3"],"min_version":"1.3","max_version":"1.3","certificate_path":"/etc/sing-box/cert/cert.pem","key_path":"/etc/sing-box/cert/private.key"}}],"outbounds":[{"type":"shadowsocks","tag":"' + tag_out_time + '","server":"' + ip + '","server_port":' + port_2 + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
 
             config_path = generate_config_file(config_content, port)
             
