@@ -16,10 +16,12 @@ read -p "输入操作编号: " choice
 case $choice in
   1)
     sudo systemctl start $service_name
+    sudo systemctl status $service_name
     echo "$service_name 服务已启动"
     ;;
   2)
     sudo systemctl restart $service_name
+    sudo systemctl status $service_name
     echo "$service_name 服务已重启"
     ;;  
   3)
@@ -27,10 +29,10 @@ case $choice in
     echo "$service_name 服务已关闭"
     ;;  
   4)
-    systemctl status $service_name
+    sudo systemctl status $service_name
     ;;
   5)
-    systemctl daemon-reload
+    sudo systemctl daemon-reload
     ;;    
   *)
     echo "无效的操作编号"
