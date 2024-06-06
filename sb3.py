@@ -29,6 +29,7 @@ def main():
         print("2) VLESS-Vision-REALITY+Shadowsocks")        
         print("3) VLESS-gRPC-REALITY+Shadowsocks")
         print("4) VLESS-HTTP2-REALITY+Shadowsocks")
+        print("5) Hysteria2+Shadowsocks")
 
         choice = input("Please select:")                
         
@@ -156,7 +157,43 @@ def main():
             
             restart_service()
             
-            status_service()            
+            status_service()
+
+        if choice == "5":
+            print("Hysteria2+Shadowsocks")
+
+            port = input("listening port: ")
+            print(port)         
+            
+            ip = input("remote ip: ")
+            print(ip)
+            
+            port_2 = input("remote port: ")            
+            if port_2 == "":
+                port_2 = "40001"
+            print(port_2)
+            
+            print("Please select the method:")
+            print("1. 2022-blake3-aes-256-gcm")
+            print("2. aes-256-gcm")
+            method = input("method: ")
+            if method == "":
+                method = "2022-blake3-aes-256-gcm"
+            elif method == "1":
+                method = "2022-blake3-aes-256-gcm"
+            elif method == "2":
+                method = "aes-256-gcm"
+            else:
+                print("Incorrect input, please re-enter.")
+            print(method)
+
+            config_content = ('{"inbounds":[{"type":"hysteria2","sniff":true,"sniff_override_destination":true,"tag":"hysteria2","listen":"::","listen_port":' + port + ',"users":[{"password":"de0e3ecb-2349-4f17-b4a6-b044a895160c"}],"ignore_client_bandwidth":false,"tls":{"enabled":true,"server_name":"","alpn":["h3"],"min_version":"1.3","max_version":"1.3","certificate_path":"/etc/sing-box/cert/cert.pem","key_path":"/etc/sing-box/cert/private.key"}}],"outbounds":[{"type":"shadowsocks","tag":"' + ss_out_time + '","server":"' + ip + '","server_port":' + port_2 + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4="}]}')
+
+            config_path = generate_config_file(config_content, port)
+            
+            restart_service()
+            
+            status_service()    
     
     except KeyboardInterrupt:
         print("\nThe program has been interrupted.")
