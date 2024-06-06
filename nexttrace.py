@@ -98,7 +98,7 @@ try:
 
         elif choice == 8:
             # HK
-            subprocess.call(["nexttrace", "-M", "103.229.54.1"]) # Akari-HKG
+            subprocess.call(["nexttrace", "-M", "103.229.54.254"]) # Akari-HKG
             subprocess.call(["nexttrace", "-M", "oss-cn-hongkong.aliyuncs.com"]) # Alibaba-HKG
             subprocess.call(["nexttrace", "-M", "23.247.139.3"]) # Apernet-HKG
             subprocess.call(["nexttrace", "-M", "156.251.180.1"]) # Cera-HKG
@@ -124,7 +124,7 @@ try:
             # Add more tracing commands for HK option as needed
         elif choice == 9:
             # TW
-            subprocess.call(["nexttrace", "-M", "35.229.225.5"]) # GCP-TW
+            subprocess.call(["nexttrace", "-M", "35.229.225.8"]) # GCP-TW
             subprocess.call(["nexttrace", "-M", "hinet.net"]) # HiNet-TPE              
         elif choice == 10:
             # JP
@@ -132,8 +132,7 @@ try:
             subprocess.call(["nexttrace", "-M4", "tyo.download.datapacket.com"]) # Datacamp-NRT                        
             subprocess.call(["nexttrace", "-M", "45.88.193.5"]) # Dmit-NRT
             subprocess.call(["nexttrace", "-M", "103.168.154.1"]) # Eons-NRT
-            subprocess.call(["nexttrace", "-M", "34.97.105.37"]) # GCP-KIX
-            subprocess.call(["nexttrace", "-M", "34.146.177.6"]) # GCP-NRT            
+            subprocess.call(["nexttrace", "-M", "34.146.177.11"]) # GCP-NRT            
             subprocess.call(["nexttrace", "-M", "185.188.5.1"]) # Jinx-NRT
             subprocess.call(["nexttrace", "-M", "106.180.224.1"]) # Kddi-NRT            
             subprocess.call(["nexttrace", "-M", "212.107.30.1"]) # Kirino-NRT
@@ -154,7 +153,7 @@ try:
             subprocess.call(["nexttrace", "-M4", "sgp.download.datapacket.com"]) # Datacamp-SIN            
             subprocess.call(["nexttrace", "-M", "159.89.192.4"]) # DigitalOcean-SIN
             subprocess.call(["nexttrace", "-M", "38.150.8.1"]) # Eons-SIN
-            subprocess.call(["nexttrace", "-M", "34.87.56.16"]) # GCP-SIN            
+            subprocess.call(["nexttrace", "-M", "34.87.56.6"]) # GCP-SIN            
             subprocess.call(["nexttrace", "-M", "159.138.84.2"]) # Huawei-SIN
             subprocess.call(["nexttrace", "-M", "103.142.140.1"]) # Kirino-SIN
             subprocess.call(["nexttrace", "-M", "194.156.163.2"]) # Misaka-SIN
@@ -173,7 +172,7 @@ try:
             subprocess.call(["nexttrace", "-M", "77.247.126.11"]) # Clouvider-LAX
             subprocess.call(["nexttrace", "-M4", "lax.download.datapacket.com"]) # Datacamp-LAX
             subprocess.call(["nexttrace", "-M4", "speedtest.lv.buyvm.net"]) # FranTech-LAS
-            subprocess.call(["nexttrace", "-M", "35.247.10.20"]) # GCP-OR
+            subprocess.call(["nexttrace", "-M", "35.247.10.7"]) # GCP-OR
             subprocess.call(["nexttrace", "-M4", "hil-speed.hetzner.com"]) # Hetzner-HIL 
             subprocess.call(["nexttrace", "-M4", "mia.hostodo.com"]) # Hostodo-MIA 
             subprocess.call(["nexttrace", "-M4", "hil.proof.ovh.us"]) # OVH-HIL  
@@ -188,7 +187,7 @@ try:
             subprocess.call(["nexttrace", "-M", "34.89.121.0"]) # GCP-LON            
             subprocess.call(["nexttrace", "-M4", "nbg1-speed.hetzner.com"]) # Hetzner-NUE
             subprocess.call(["nexttrace", "-M4", "speedtest.fra1.hivelocity.net"]) # Hivelocity-FRA                                           
-            subprocess.call(["nexttrace", "-M", "38.59.228.2"]) # Kirino-FRA
+            subprocess.call(["nexttrace", "-M", "38.59.228.10"]) # Kirino-FRA
             subprocess.call(["nexttrace", "-M", "45.142.247.4"]) # Misaka-BER
             subprocess.call(["nexttrace", "-M", "45.131.69.1"]) # Misaka-MOW 
             subprocess.call(["nexttrace", "-M4", "lookingglass.netcup.net"]) # Netcup-NUE 
