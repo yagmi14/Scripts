@@ -34,7 +34,7 @@ def main():
     try:
         print("Please select:")
         print("1) Shadowsocks+Shadowsocks")
-        print("2) VLESS-Vision-REALITY+Shadowsocks")        
+        print("2) VLESS-Vision-REALITY")        
         print("3) VLESS-gRPC-REALITY+Shadowsocks")
         print("4) VLESS-HTTP2-REALITY+Shadowsocks")
         print("5) Hysteria2+Shadowsocks")
