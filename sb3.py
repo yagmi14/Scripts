@@ -33,31 +33,16 @@ def status_service():
 def main():
     try:
         print("Please select:")
-        print("1) Shadowsocks+Shadowsocks")
-        print("2) VLESS-Vision-REALITY")        
-        print("3) VLESS-gRPC-REALITY+Shadowsocks")
-        print("4) VLESS-HTTP2-REALITY+Shadowsocks")
-        print("5) Hysteria2+Shadowsocks")
-        print("11) Shadowsocks")
+        print("1) inbounds")
+        print("2) outbounds")
 
         choice = input("Please select:")                
         
         if choice == "" or choice.isspace():
-            choice = "2"
-            
-        if choice == "2":
-            print("VLESS-Vision-REALITY")
-            
-            port = input("listening port: ")
-            print(port)
+            choice = "1"
 
-            tag_in = "vless-in"
-            tag_in_port = f"{tag_in}_{port}"            
-            
-            domain = input("domain: ")
-            if domain == "":
-                domain = "cdn-design.tesla.com"
-            print(domain)
+        if choice == "1":
+            print("inbounds")
 
             # 指定目录路径
             directory_path = '/usr/local/etc/sb3/conf/'
@@ -83,6 +68,28 @@ def main():
                 print(f"Selected file: {tag_out}")
             else:
                 print("您输入的序号不正确，请重新输入。")
+            
+            print("1) Shadowsocks")
+            print("2) VLESS-Vision-REALITY")        
+            print("3) VLESS-gRPC-REALITY")
+            print("4) VLESS-HTTP2-REALITY")
+            print("5) Hysteria2")
+
+            choice = input("Please select:")
+            
+            if choice == "2":
+                print("VLESS-Vision-REALITY")
+            
+                port = input("listening port: ")
+                print(port)
+
+                tag_in = "vless-in"
+                tag_in_port = f"{tag_in}_{port}"            
+            
+                domain = input("domain: ")
+                if domain == "":
+                    domain = "cdn-design.tesla.com"
+                print(domain)
 
                 route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"' + tag_out + '"}]}}')
                 inbounds_config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_port + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98","flow":"xtls-rprx-vision"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
@@ -94,139 +101,86 @@ def main():
             
                 status_service()            
         
-        if choice == "3":
-            print("VLESS-gRPC-REALITY+Shadowsocks")
+            if choice == "3":
+                print("VLESS-gRPC-REALITY")
 
-            tag_in = "vless-in"
-            tag_in_time = f"{tag_in}_{timestamp}"
-            tag_out = "ss-out"
-            tag_out_time = f"{tag_out}_{timestamp}"
+                port = input("listening port: ")
+                print(port)
+
+                tag_in = "vless-in"
+                tag_in_port = f"{tag_in}_{port}"            
             
-            port = input("listening port: ")
+                domain = input("domain: ")
+                if domain == "":
+                    domain = "cdn-design.tesla.com"
+                print(domain)
+
+                route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"' + tag_out + '"}]}}')
+                inbounds_config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_port + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"transport":{"type":"grpc","service_name":"rWZXzPnJ"},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
+
+                route_config_path = generate_route_config(route_config_content, port)
+                inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
+            
+                restart_service()
+            
+                status_service()
+            
+            if choice == "4":
+                print("VLESS-HTTP2-REALITY")
+
+                port = input("listening port: ")
+                print(port)
+
+                tag_in = "vless-in"
+                tag_in_port = f"{tag_in}_{port}"            
+            
+                domain = input("domain: ")
+                if domain == "":
+                    domain = "cdn-design.tesla.com"
+                print(domain)
+
+                route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"' + tag_out + '"}]}}')              
+                inbounds_config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_port + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"transport":{"type":"http"},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
+
+                route_config_path = generate_route_config(route_config_content, port)
+                inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
+            
+                restart_service()
+            
+                status_service()
+
+            if choice == "5":
+                print("Hysteria2")
+
+                port = input("listening port: ")
+                print(port)
+
+                tag_in = "hysteria2-in"
+                tag_in_port = f"{tag_in}_{port}"
+
+                route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"' + tag_out + '"}]}}')               
+                inbounds_config_content = ('{"inbounds":[{"type":"hysteria2","sniff":true,"sniff_override_destination":true,"tag":"' + tag_in_port + '","listen":"::","listen_port":' + port + ',"users":[{"password":"de0e3ecb-2349-4f17-b4a6-b044a895160c"}],"ignore_client_bandwidth":false,"tls":{"enabled":true,"server_name":"","alpn":["h3"],"min_version":"1.3","max_version":"1.3","certificate_path":"/etc/sing-box/cert/cert.pem","key_path":"/etc/sing-box/cert/private.key"}}]}')
+
+                route_config_path = generate_route_config(route_config_content, port)
+                inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
+            
+                restart_service()
+            
+                status_service()
+
+        if choice == "2":
+            print(outbounds")
+
+            tag = input("outbounds tag: ")
+
+            tag_out = "shadowsocks-out"
+            tag_out_port = f"{tag_out}_{port}"
+
+            port = input("remote port: ")
             print(port)
-            
-            domain = input("domain: ")
-            if domain == "":
-                domain = "cdn-design.tesla.com"
-            print(domain)
-            
-            ip = input("remote ip: ")
-            print(ip)
-            
-            port_2 = input("remote port: ")            
-            if port_2 == "":
-                port_2 = "40001"
-            print(port_2)
-            
-            print("Please select the method:")
-            print("1. 2022-blake3-aes-256-gcm")
-            print("2. aes-256-gcm")
-            method = input("method: ")
-            if method == "":
-                method = "2022-blake3-aes-256-gcm"
-            elif method == "1":
-                method = "2022-blake3-aes-256-gcm"
-            elif method == "2":
-                method = "aes-256-gcm"
-            else:
-                print("Incorrect input, please re-enter.")
-            print(method)
 
-            config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_time + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"transport":{"type":"grpc","service_name":"rWZXzPnJ"},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}],"outbounds":[{"type":"shadowsocks","tag":"' + tag_out_time + '","server":"' + ip + '","server_port":' + port_2 + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
-
-            config_path = generate_config_file(config_content, port)
-            
-            restart_service()
-            
-            status_service()
-            
-        if choice == "4":
-            print("VLESS-HTTP2-REALITY+Shadowsocks")
-
-            tag_in = "vless-in"
-            tag_in_time = f"{tag_in}_{timestamp}"
-            tag_out = "ss-out"
-            tag_out_time = f"{tag_out}_{timestamp}"
-            
-            port = input("listening port: ")
-            print(port)
-            
-            domain = input("domain: ")
-            if domain == "":
-                domain = "cdn-design.tesla.com"
-            print(domain)
-            
-            ip = input("remote ip: ")
-            print(ip)
-            
-            port_2 = input("remote port: ")            
-            if port_2 == "":
-                port_2 = "40001"
-            print(port_2)
-            
-            print("Please select the method:")
-            print("1. 2022-blake3-aes-256-gcm")
-            print("2. aes-256-gcm")
-            method = input("method: ")
-            if method == "":
-                method = "2022-blake3-aes-256-gcm"
-            elif method == "1":
-                method = "2022-blake3-aes-256-gcm"
-            elif method == "2":
-                method = "aes-256-gcm"
-            else:
-                print("Incorrect input, please re-enter.")
-            print(method)
-
-            config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_time + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"transport":{"type":"http"},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}],"outbounds":[{"type":"shadowsocks","tag":"' + tag_out_time + '","server":"' + ip + '","server_port":' + port_2 + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
-
-            config_path = generate_config_file(config_content, port)
-            
-            restart_service()
-            
-            status_service()
-
-        if choice == "5":
-            print("Hysteria2+Shadowsocks")
-
-            tag_in = "hysteria2-in"
-            tag_in_time = f"{tag_in}_{timestamp}"
-            tag_out = "ss-out"
-            tag_out_time = f"{tag_out}_{timestamp}"
-            
-            port = input("listening port: ")
-            print(port)         
-            
-            ip = input("remote ip: ")
-            print(ip)
-            
-            port_2 = input("remote port: ")            
-            if port_2 == "":
-                port_2 = "40001"
-            print(port_2)
-            
-            print("Please select the method:")
-            print("1. 2022-blake3-aes-256-gcm")
-            print("2. aes-256-gcm")
-            method = input("method: ")
-            if method == "":
-                method = "2022-blake3-aes-256-gcm"
-            elif method == "1":
-                method = "2022-blake3-aes-256-gcm"
-            elif method == "2":
-                method = "aes-256-gcm"
-            else:
-                print("Incorrect input, please re-enter.")
-            print(method)
-
-            config_content = ('{"inbounds":[{"type":"hysteria2","sniff":true,"sniff_override_destination":true,"tag":"' + tag_in_time + '","listen":"::","listen_port":' + port + ',"users":[{"password":"de0e3ecb-2349-4f17-b4a6-b044a895160c"}],"ignore_client_bandwidth":false,"tls":{"enabled":true,"server_name":"","alpn":["h3"],"min_version":"1.3","max_version":"1.3","certificate_path":"/etc/sing-box/cert/cert.pem","key_path":"/etc/sing-box/cert/private.key"}}],"outbounds":[{"type":"shadowsocks","tag":"' + tag_out_time + '","server":"' + ip + '","server_port":' + port_2 + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
-
-            config_path = generate_config_file(config_content, port)
-            
-            restart_service()
-            
-            status_service()    
-    
+                  
+        
     except KeyboardInterrupt:
         print("\nThe program has been interrupted.")
 
