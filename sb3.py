@@ -68,7 +68,7 @@ def main():
             # 对文件名进行排序，确保序号的连续性
             outbound_files.sort()
             # 初始化一个空字典来存储序号和文件标识
-            file_dict = {index: filename for index, filename in enumerate(outbound_files, start=1)}
+            file_dict = {index: filename.replace('outbounds_', '').replace('.json', '') for index, filename in enumerate(outbound_files, start=1)}
             # 打印序号和文件名
             for index, filename in file_dict.items():
                 print(f"{index}) {filename}")
