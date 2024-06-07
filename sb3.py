@@ -49,7 +49,7 @@ def main():
             print("VLESS-Vision-REALITY")
 
             # 指定目录路径
-            directory_path = '/path/to/your/directory'
+            directory_path = '/usr/local/etc/sb3/conf/'
             # 获取目录下所有文件名
             files = os.listdir(directory_path)
             # 过滤出以 'outbounds_' 开头并且以 '.json' 结尾的文件
