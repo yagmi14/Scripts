@@ -169,7 +169,7 @@ def main():
                 status_service()
 
         if choice == "2":
-            print(outbounds")
+            print("outbounds")
 
             tag_out = input("outbounds tag: ")
             print(tag_out)
@@ -178,6 +178,8 @@ def main():
             print(ip)
 
             port = input("remote port: ")
+            if port == "":
+                port = "40001"
             print(port)
 
             print("Please select the method:")
