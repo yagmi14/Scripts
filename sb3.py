@@ -73,8 +73,10 @@ def main():
             for index, filename in file_dict.items():
                 print(f"{index}) {filename}")
 
+            choice = input("请选择: ")
+
             # 如果用户选择了序号
-            if choice in file_dict:
+            if int(choice) in file_dict:
                 # 从字典中获取对应的文件名
                 tag_out = file_dict[int(choice)]
                 # 打印结果
