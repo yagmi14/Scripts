@@ -35,6 +35,8 @@ def main():
         print("Please select:")
         print("1) inbounds")
         print("2) outbounds")
+        print("3) inbounds_rm")
+        print("4) outbounds_rm")
 
         choice = input("Please select:")                
         
@@ -202,6 +204,36 @@ def main():
                   
             outbounds_config_path = generate_outbounds_config(outbounds_config_content, tag_out)
             
+            restart_service()
+            
+            status_service()
+
+        if choice == "3":
+            print("inbounds_rm")
+
+            port = input("listen port: ")
+            print(port)
+
+            route_remove = f"rm -f /usr/local/etc/sb3/conf/route_{port}.json"
+            inbounds_remove = f"rm -f /usr/local/etc/sb3/conf/inbounds_{port}.json"
+            
+            subprocess.run(route_remove, shell=True)
+            subprocess.run(inbounds_remove, shell=True)
+
+            restart_service()
+            
+            status_service()
+
+        if choice == "4":
+            print("outbounds_rm")
+
+            tag_out = input("outbounds tag: ")
+            print(tag_out)
+
+            outbounds_remove = f"rm -f /usr/local/etc/sb3/conf/outbounds_{tag_out}.json"
+            
+            subprocess.run(outbounds_remove, shell=True)
+
             restart_service()
             
             status_service()
