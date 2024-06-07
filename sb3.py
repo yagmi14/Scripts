@@ -47,6 +47,27 @@ def main():
             
         if choice == "2":
             print("VLESS-Vision-REALITY")
+
+            # 指定目录路径
+            directory_path = '/path/to/your/directory'
+            # 获取目录下所有文件名
+            files = os.listdir(directory_path)
+            # 过滤出以 'outbounds_' 开头并且以 '.json' 结尾的文件
+            outbound_files = [file for file in files if file.startswith('outbounds_') and file.endswith('.json')]
+            # 对文件名进行排序，确保序号的连续性
+            outbound_files.sort()
+            # 初始化一个空字典来存储序号和文件标识
+            file_dict = {index: filename for index, filename in enumerate(outbound_files, start=1)}
+            # 打印序号和文件名
+            for index, filename in file_dict.items():
+                print(f"{index}) {filename}")
+
+            # 如果用户选择了序号
+            if choice in file_dict:
+                # 从字典中获取对应的文件名
+                tag_out = file_dict[int(choice)]
+                # 打印结果
+                print(f"Selected file: {tag_out}")            
             
             port = input("listening port: ")
             print(port)
@@ -59,7 +80,7 @@ def main():
                 domain = "cdn-design.tesla.com"
             print(domain)
 
-            route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"HK-Akari"}]}}')
+            route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"' + tag_out + '"}]}}')
             inbounds_config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_port + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98","flow":"xtls-rprx-vision"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
 
             config_path = generate_config_file(config_content, port)
