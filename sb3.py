@@ -18,8 +18,8 @@ def generate_inbounds_config(inbounds_config_content, port):
         inbounds_config.write(inbounds_config_content)
     return inbounds_config_path
 
-def generate_outbounds_config(outbounds_config_content, tag):
-    outbounds_config_path = f"/usr/local/etc/sb3/conf/outbounds_{tag}.json"
+def generate_outbounds_config(outbounds_config_content, tag_out):
+    outbounds_config_path = f"/usr/local/etc/sb3/conf/outbounds_{tag_out}.json"
     with open(outbounds_config_path, "w") as outbounds_config:
         outbounds_config.write(outbounds_config_content)
     return outbounds_config_path
@@ -200,7 +200,7 @@ def main():
 
             outbounds_config_content = ('{"outbounds":[{"type":"shadowsocks","tag":"' + tag_out + '","server":"' + ip + '","server_port":' + port + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')            
                   
-            outbounds_config_path = generate_outbounds_config(outbounds_config_content, tag)
+            outbounds_config_path = generate_outbounds_config(outbounds_config_content, tag_out)
             
             restart_service()
             
