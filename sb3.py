@@ -7,16 +7,16 @@ now = datetime.datetime.now()
 timestamp = now.strftime('%Y%m%d%H%M%S')
 
 def generate_route_config(route_config_content, port):
-    config_path = f"/usr/local/etc/sb3/conf/route_{port}.json"
-    with open(config_path, "w") as config_file:
-        config_file.write(route_config_content)
-    return config_path
+    route_config_path = f"/usr/local/etc/sb3/conf/route_{port}.json"
+    with open(route_config_path, "w") as route_config:
+        route_config.write(route_config_content)
+    return route_config_path
 
 def generate_inbounds_config(inbounds_config_content, port):
-    config_path = f"/usr/local/etc/sb3/conf/inbounds_{port}.json"
-    with open(config_path, "w") as config_file:
-        config_file.write(inbounds_config_content)
-    return config_path
+    inbounds_config_path = f"/usr/local/etc/sb3/conf/inbounds_{port}.json"
+    with open(inbounds_config_path, "w") as inbounds_config:
+        inbounds_config.write(inbounds_config_content)
+    return inbounds_config_path
 
 def generate_outbounds_config(outbounds_config_content, tag):
     config_path = f"/usr/local/etc/sb3/conf/outbounds_{tag}.json"
@@ -85,8 +85,9 @@ def main():
                 route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"' + tag_out + '"}]}}')
                 inbounds_config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_port + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98","flow":"xtls-rprx-vision"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
 
-                config_path = generate_config_file(config_content, port)
-            
+                route_config_path = generate_route_config(route_config_content, port)
+                inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
+                
                 restart_service()
             
                 status_service()            
