@@ -19,10 +19,10 @@ def generate_inbounds_config(inbounds_config_content, port):
     return inbounds_config_path
 
 def generate_outbounds_config(outbounds_config_content, tag):
-    config_path = f"/usr/local/etc/sb3/conf/outbounds_{tag}.json"
-    with open(config_path, "w") as config_file:
-        config_file.write(outbounds_config_content)
-    return config_path
+    outbounds_config_path = f"/usr/local/etc/sb3/conf/outbounds_{tag}.json"
+    with open(outbounds_config_path, "w") as outbounds_config:
+        outbounds_config.write(outbounds_config_content)
+    return outbounds_config_path
 
 def restart_service():
     subprocess.run(["systemctl", "restart", "sb3"])
@@ -122,7 +122,7 @@ def main():
                 inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
             
                 restart_service()
-            
+                
                 status_service()
             
             if choice == "4":
@@ -146,7 +146,7 @@ def main():
                 inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
             
                 restart_service()
-            
+                
                 status_service()
 
             if choice == "5":
@@ -165,22 +165,45 @@ def main():
                 inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
             
                 restart_service()
-            
+                
                 status_service()
 
         if choice == "2":
             print(outbounds")
 
-            tag = input("outbounds tag: ")
+            tag_out = input("outbounds tag: ")
+            print(tag_out)
 
-            tag_out = "shadowsocks-out"
-            tag_out_port = f"{tag_out}_{port}"
+            ip = input("remote ip: ")
+            print(ip)
 
             port = input("remote port: ")
             print(port)
 
+            print("Please select the method:")
+            print("1. 2022-blake3-aes-256-gcm")
+            print("2. aes-256-gcm")
+
+            method = input("method: ")
+            if method == "":
+                method = "2022-blake3-aes-256-gcm"
+            elif method == "1":
+                method = "2022-blake3-aes-256-gcm"
+            elif method == "2":
+                method = "aes-256-gcm"
+            else:
+                print("Incorrect input, please re-enter.")
+
+            print("Your selected method is:", method)
+
+            outbounds_config_content = ('{"outbounds":[{"type":"shadowsocks","tag":"' + tag_out + '","server":"' + ip + '","server_port":' + port + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')            
                   
-        
+            outbounds_config_path = generate_outbounds_config(outbounds_config_content, tag)
+            
+            restart_service()
+            
+            status_service()
+    
     except KeyboardInterrupt:
         print("\nThe program has been interrupted.")
 
