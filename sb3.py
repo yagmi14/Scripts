@@ -47,6 +47,17 @@ def main():
             
         if choice == "2":
             print("VLESS-Vision-REALITY")
+            
+            port = input("listening port: ")
+            print(port)
+
+            tag_in = "vless-in"
+            tag_in_port = f"{tag_in}_{port}"            
+            
+            domain = input("domain: ")
+            if domain == "":
+                domain = "cdn-design.tesla.com"
+            print(domain)
 
             # 指定目录路径
             directory_path = '/usr/local/etc/sb3/conf/'
@@ -67,27 +78,16 @@ def main():
                 # 从字典中获取对应的文件名
                 tag_out = file_dict[int(choice)]
                 # 打印结果
-                print(f"Selected file: {tag_out}")            
-            
-            port = input("listening port: ")
-            print(port)
+                print(f"Selected file: {tag_out}")                        
 
-            tag_in = "vless-in"
-            tag_in_port = f"{tag_in}_{port}"            
-            
-            domain = input("domain: ")
-            if domain == "":
-                domain = "cdn-design.tesla.com"
-            print(domain)
+                route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"' + tag_out + '"}]}}')
+                inbounds_config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_port + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98","flow":"xtls-rprx-vision"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
 
-            route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"' + tag_out + '"}]}}')
-            inbounds_config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_port + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98","flow":"xtls-rprx-vision"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
-
-            config_path = generate_config_file(config_content, port)
+                config_path = generate_config_file(config_content, port)
             
-            restart_service()
+                restart_service()
             
-            status_service()            
+                status_service()            
         
         if choice == "3":
             print("VLESS-gRPC-REALITY+Shadowsocks")
