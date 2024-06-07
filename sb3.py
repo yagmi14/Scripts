@@ -6,10 +6,22 @@ import datetime
 now = datetime.datetime.now()
 timestamp = now.strftime('%Y%m%d%H%M%S')
 
-def generate_config_file(config_content, port):
-    config_path = f"/usr/local/etc/sb3/conf/sb_{port}.json"
+def generate_route_config(route_config_content, port):
+    config_path = f"/usr/local/etc/sb3/conf/route_{port}.json"
     with open(config_path, "w") as config_file:
-        config_file.write(config_content)
+        config_file.write(route_config_content)
+    return config_path
+
+def generate_inbounds_config(inbounds_config_content, port):
+    config_path = f"/usr/local/etc/sb3/conf/inbounds_{port}.json"
+    with open(config_path, "w") as config_file:
+        config_file.write(inbounds_config_content)
+    return config_path
+
+def generate_outbounds_config(outbounds_config_content, tag):
+    config_path = f"/usr/local/etc/sb3/conf/outbounds_{tag}.json"
+    with open(config_path, "w") as config_file:
+        config_file.write(outbounds_config_content)
     return config_path
 
 def restart_service():
@@ -26,6 +38,7 @@ def main():
         print("3) VLESS-gRPC-REALITY+Shadowsocks")
         print("4) VLESS-HTTP2-REALITY+Shadowsocks")
         print("5) Hysteria2+Shadowsocks")
+        print("11) Shadowsocks")
 
         choice = input("Please select:")                
         
@@ -33,44 +46,21 @@ def main():
             choice = "2"
             
         if choice == "2":
-            print("VLESS-Vision-REALITY+Shadowsocks")
-
-            tag_in = "vless-in"
-            tag_in_time = f"{tag_in}_{timestamp}"
-            tag_out = "ss-out"
-            tag_out_time = f"{tag_out}_{timestamp}"
+            print("VLESS-Vision-REALITY")
             
             port = input("listening port: ")
             print(port)
+
+            tag_in = "vless-in"
+            tag_in_port = f"{tag_in}_{port}"            
             
             domain = input("domain: ")
             if domain == "":
                 domain = "cdn-design.tesla.com"
             print(domain)
-            
-            ip = input("remote ip: ")
-            print(ip)
-            
-            port_2 = input("remote port: ")            
-            if port_2 == "":
-                port_2 = "40001"
-            print(port_2)
-            
-            print("Please select the method:")
-            print("1. 2022-blake3-aes-256-gcm")
-            print("2. aes-256-gcm")
-            method = input("method: ")
-            if method == "":
-                method = "2022-blake3-aes-256-gcm"
-            elif method == "1":
-                method = "2022-blake3-aes-256-gcm"
-            elif method == "2":
-                method = "aes-256-gcm"
-            else:
-                print("Incorrect input, please re-enter.")
-            print(method)
 
-            config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_time + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98","flow":"xtls-rprx-vision"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}],"outbounds":[{"type":"shadowsocks","tag":"' + tag_out_time + '","server":"' + ip + '","server_port":' + port_2 + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
+            route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"HK-Akari"}]}}')
+            inbounds_config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_port + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98","flow":"xtls-rprx-vision"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}},"multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
 
             config_path = generate_config_file(config_content, port)
             
