@@ -44,6 +44,84 @@ def main():
             choice = "1"
 
         if choice == "1":
+            option_1()
+            continue  # 确保返回主菜单循环的开始
+
+        elif choice == "2":
+            print("outbounds")
+
+            tag_out = input("outbounds tag: ")
+            print(tag_out)
+
+            ip = input("remote ip: ")
+            print(ip)
+
+            port = input("remote port: ")
+            if port == "":
+                port = "40001"
+            print(port)
+
+            print("Please select the method:")
+            print("1. 2022-blake3-aes-256-gcm")
+            print("2. aes-256-gcm")
+
+            method = input("method: ")
+            if method == "":
+                method = "2022-blake3-aes-256-gcm"
+            elif method == "1":
+                method = "2022-blake3-aes-256-gcm"
+            elif method == "2":
+                method = "aes-256-gcm"
+            else:
+                print("Incorrect input, please re-enter.")
+
+            print("Your selected method is:", method)
+
+            outbounds_config_content = ('{"outbounds":[{"type":"shadowsocks","tag":"' + tag_out + '","server":"' + ip + '","server_port":' + port + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')            
+                  
+            outbounds_config_path = generate_outbounds_config(outbounds_config_content, tag_out)
+            
+            restart_service()
+            
+            status_service()
+
+        elif choice == "3":
+            print("inbounds_rm")
+
+            port = input("listen port: ")
+            print(port)
+
+            route_remove = f"rm -f /usr/local/etc/sb3/conf/route_{port}.json"
+            inbounds_remove = f"rm -f /usr/local/etc/sb3/conf/inbounds_{port}.json"
+            
+            subprocess.run(route_remove, shell=True)
+            subprocess.run(inbounds_remove, shell=True)
+
+            restart_service()
+            
+            status_service()
+
+        elif choice == "4":
+            print("outbounds_rm")
+
+            tag_out = input("outbounds tag: ")
+            print(tag_out)
+
+            outbounds_remove = f"rm -f /usr/local/etc/sb3/conf/outbounds_{tag_out}.json"
+            
+            subprocess.run(outbounds_remove, shell=True)
+
+            restart_service()
+            
+            status_service()    
+    
+    except KeyboardInterrupt:
+        print("\nThe program has been interrupted.")
+        break
+
+def option_1():
+    while True:
+        try:
             print("inbounds")
 
             # 指定目录路径
@@ -103,7 +181,7 @@ def main():
             
                 status_service()            
         
-            if choice == "3":
+            elif choice == "3":
                 print("VLESS-gRPC-REALITY")
 
                 port = input("listening port: ")
@@ -127,7 +205,7 @@ def main():
                 
                 status_service()
             
-            if choice == "4":
+            elif choice == "4":
                 print("VLESS-HTTP2-REALITY")
 
                 port = input("listening port: ")
@@ -151,7 +229,7 @@ def main():
                 
                 status_service()
 
-            if choice == "5":
+            elif choice == "5":
                 print("Hysteria2")
 
                 port = input("listening port: ")
@@ -170,76 +248,9 @@ def main():
                 
                 status_service()
 
-        if choice == "2":
-            print("outbounds")
-
-            tag_out = input("outbounds tag: ")
-            print(tag_out)
-
-            ip = input("remote ip: ")
-            print(ip)
-
-            port = input("remote port: ")
-            if port == "":
-                port = "40001"
-            print(port)
-
-            print("Please select the method:")
-            print("1. 2022-blake3-aes-256-gcm")
-            print("2. aes-256-gcm")
-
-            method = input("method: ")
-            if method == "":
-                method = "2022-blake3-aes-256-gcm"
-            elif method == "1":
-                method = "2022-blake3-aes-256-gcm"
-            elif method == "2":
-                method = "aes-256-gcm"
-            else:
-                print("Incorrect input, please re-enter.")
-
-            print("Your selected method is:", method)
-
-            outbounds_config_content = ('{"outbounds":[{"type":"shadowsocks","tag":"' + tag_out + '","server":"' + ip + '","server_port":' + port + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')            
-                  
-            outbounds_config_path = generate_outbounds_config(outbounds_config_content, tag_out)
-            
-            restart_service()
-            
-            status_service()
-
-        if choice == "3":
-            print("inbounds_rm")
-
-            port = input("listen port: ")
-            print(port)
-
-            route_remove = f"rm -f /usr/local/etc/sb3/conf/route_{port}.json"
-            inbounds_remove = f"rm -f /usr/local/etc/sb3/conf/inbounds_{port}.json"
-            
-            subprocess.run(route_remove, shell=True)
-            subprocess.run(inbounds_remove, shell=True)
-
-            restart_service()
-            
-            status_service()
-
-        if choice == "4":
-            print("outbounds_rm")
-
-            tag_out = input("outbounds tag: ")
-            print(tag_out)
-
-            outbounds_remove = f"rm -f /usr/local/etc/sb3/conf/outbounds_{tag_out}.json"
-            
-            subprocess.run(outbounds_remove, shell=True)
-
-            restart_service()
-            
-            status_service()
-    
-    except KeyboardInterrupt:
-        print("\nThe program has been interrupted.")
+        except KeyboardInterrupt:
+            print("\nThe program has been interrupted.")
+            break
 
 if __name__ == "__main__":
     main()
