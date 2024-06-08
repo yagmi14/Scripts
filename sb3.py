@@ -85,20 +85,12 @@ def option_1():
     try:
         print("inbounds")
 
-        # 指定目录路径
+        # 使用示例
         directory_path = '/usr/local/etc/sb3/conf/'
-        # 获取目录下所有文件名
-        files = os.listdir(directory_path)
-        # 过滤出以 'outbounds_' 开头并且以 '.json' 结尾的文件
-        outbound_files = [file for file in files if file.startswith('outbounds_') and file.endswith('.json')]
-        # 对文件名进行排序，确保序号的连续性
-        outbound_files.sort()
-        # 初始化一个空字典来存储序号和文件标识
-        file_dict = {index: filename.replace('outbounds_', '').replace('.json', '') for index, filename in enumerate(outbound_files, start=1)}
-        # 打印序号和文件名
-        for index, filename in file_dict.items():
-            print(f"{index}) {filename}")
-
+        selected_tag = select_outbound_file(directory_path)
+        if selected_tag:
+            print(f"Selected file: {selected_tag}")
+    
         choice = input("请选择: ")
 
         # 如果用户选择了序号
