@@ -31,32 +31,35 @@ def status_service():
     subprocess.run(["systemctl", "status", "sb3"])
 
 def main():
-    try:
-        print("Please select:")
-        print("1) inbounds")
-        print("2) outbounds")
-        print("3) inbounds_rm")
-        print("4) outbounds_rm")
+    while True:
+        try:
+            print("Please select:")
+            print("1) inbounds")
+            print("2) outbounds")
+            print("3) inbounds_rm")
+            print("4) outbounds_rm")
 
-        choice = input("Please select:")                
+            choice = input("Please select:")                
         
-        if choice == "" or choice.isspace():
-            choice = "1"
+            if choice == "" or choice.isspace():
+                choice = "1"
 
-        if choice == "1":
-            option_1()
+            if choice == "1":
+                option_1()
+                continue
 
-        elif choice == "2":
-            option_2()
+            elif choice == "2":
+                option_2()
 
-        elif choice == "3":
-            option_3()
+            elif choice == "3":
+                option_3()
 
-        elif choice == "4":
-            option_4() 
+            elif choice == "4":
+                option_4() 
     
-    except KeyboardInterrupt:
-        print("\nThe program has been interrupted.")
+        except KeyboardInterrupt:
+            print("\nThe program has been interrupted.")
+            break
 
 def option_1():
     while True:
