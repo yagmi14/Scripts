@@ -193,7 +193,7 @@ def option_1():
     except KeyboardInterrupt:
         print("\nThe program has been interrupted.")
     
-    return
+    sys.exit()
 
 def option_2():
     try:
@@ -237,7 +237,7 @@ def option_2():
     except KeyboardInterrupt:
         print("\nThe program has been interrupted.")
     
-    return
+    sys.exit()
 
 def option_3():
     try:
@@ -267,12 +267,37 @@ def option_4():
     try:
         print("outbounds_rm")
 
+        # 指定目录路径
+        directory_path = '/usr/local/etc/sb3/conf/'
+        # 获取目录下所有文件名
+        files = os.listdir(directory_path)
+        # 过滤出以 'outbounds_' 开头并且以 '.json' 结尾的文件
+        outbound_files = [file for file in files if file.startswith('outbounds_') and file.endswith('.json')]
+        # 对文件名进行排序，确保序号的连续性
+        outbound_files.sort()
+        # 初始化一个空字典来存储序号和文件标识
+        file_dict = {index: filename.replace('outbounds_', '').replace('.json', '') for index, filename in enumerate(outbound_files, start=1)}
+        # 打印序号和文件名
+        for index, filename in file_dict.items():
+            print(f"{index}) {filename}")
+
+        choice = input("请选择: ")
+
+        # 如果用户选择了序号
+        if int(choice) in file_dict:
+            # 从字典中获取对应的文件名
+            tag_out = file_dict[int(choice)]
+            # 打印结果
+            print(f"Selected file: {tag_out}")
+        else:
+            print("您输入的序号不正确，请重新输入。")
+
         tag_out = input("outbounds tag: ")
         print(tag_out)
 
-        outbounds_remove = f"rm -f /usr/local/etc/sb3/conf/outbounds_{tag_out}.json"
+        outbounds_config = f"/usr/local/etc/sb3/conf/outbounds_{tag_out}.json"
             
-        subprocess.run(["rm", "-f", outbounds_remove], check=True)
+        subprocess.run(["rm", "-f", outbounds_config], check=True)
         print(f"已删除outbounds_{tag_out}.json")
 
         restart_service()
@@ -282,7 +307,7 @@ def option_4():
     except KeyboardInterrupt:
         print("\nThe program has been interrupted.")
 
-    return
+    sys.exit()
 
 if __name__ == "__main__":
     main()
