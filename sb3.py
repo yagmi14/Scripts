@@ -261,27 +261,29 @@ def option_3():
 
     except KeyboardInterrupt:
         print("\nThe program has been interrupted.")
+    
+    return
 
 def option_4():
-    while True:
-        try:
-            print("outbounds_rm")
+    try:
+        print("outbounds_rm")
 
-            tag_out = input("outbounds tag: ")
-            print(tag_out)
+        tag_out = input("outbounds tag: ")
+        print(tag_out)
 
-            outbounds_remove = f"rm -f /usr/local/etc/sb3/conf/outbounds_{tag_out}.json"
+        outbounds_remove = f"rm -f /usr/local/etc/sb3/conf/outbounds_{tag_out}.json"
             
-            subprocess.run(["rm", "-f", outbounds_remove], check=True)
-            print(f"已删除outbounds_{tag_out}.json")
+        subprocess.run(["rm", "-f", outbounds_remove], check=True)
+        print(f"已删除outbounds_{tag_out}.json")
 
-            restart_service()
+        restart_service()
             
-            status_service()
+        status_service()
 
-        except KeyboardInterrupt:
-            print("\nThe program has been interrupted.")
-            break
+    except KeyboardInterrupt:
+        print("\nThe program has been interrupted.")
+
+    return
 
 if __name__ == "__main__":
     main()
