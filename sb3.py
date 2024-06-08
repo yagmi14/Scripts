@@ -239,30 +239,28 @@ def option_2():
             break
 
 def option_3():
-    while True:
-        try:
-            print("inbounds_rm")
+    try:
+        print("inbounds_rm")
 
-            port = input("listen port: ")
-            print(port)
+        port = input("listen port: ")
+        print(port)
 
-            route_remove = f"rm -f /usr/local/etc/sb3/conf/route_{port}.json"
-            inbounds_remove = f"rm -f /usr/local/etc/sb3/conf/inbounds_{port}.json"
+        route_remove = f"rm -f /usr/local/etc/sb3/conf/route_{port}.json"
+        inbounds_remove = f"rm -f /usr/local/etc/sb3/conf/inbounds_{port}.json"
             
-            subprocess.run(route_remove, shell=True)
-            subprocess.run(inbounds_remove, shell=True)
-            subprocess.run(["rm", "-f", route_remove], check=True)
-            subprocess.run(["rm", "-f", inbounds_remove], check=True)
-            print(f"已删除route_{port}.json")
-            print(f"已删除inbounds_{port}.json")
+        subprocess.run(route_remove, shell=True)
+        subprocess.run(inbounds_remove, shell=True)
+        subprocess.run(["rm", "-f", route_remove], check=True)
+        subprocess.run(["rm", "-f", inbounds_remove], check=True)
+        print(f"已删除route_{port}.json")
+        print(f"已删除inbounds_{port}.json")
             
-            restart_service()
+        restart_service()
             
-            status_service()
+        status_service()
 
-        except KeyboardInterrupt:
-            print("\nThe program has been interrupted.")
-            break
+    except KeyboardInterrupt:
+        print("\nThe program has been interrupted.")
 
 def option_4():
     while True:
