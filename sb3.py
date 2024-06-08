@@ -116,7 +116,6 @@ def main():
     
     except KeyboardInterrupt:
         print("\nThe program has been interrupted.")
-        break
 
 def option_1():
     while True:
