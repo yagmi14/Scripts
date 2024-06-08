@@ -31,6 +31,25 @@ def restart_service():
 def status_service():
     subprocess.run(["systemctl", "status", "sb3"])
 
+def list_outbound_files(directory_path):
+    """
+    列出指定目录下所有以 'outbounds_' 开头并且以 '.json' 结尾的文件。
+    参数:
+        directory_path: 指定的目录路径。
+    返回:
+        file_dict: 一个包含序号和文件标识的字典。
+    """
+    # 获取目录下所有文件名
+    files = os.listdir(directory_path)
+    # 过滤出以 'outbounds_' 开头并且以 '.json' 结尾的文件
+    outbound_files = [file for file in files if file.startswith('outbounds_') and file.endswith('.json')]
+    # 对文件名进行排序，确保序号的连续性
+    outbound_files.sort()
+    # 初始化一个空字典来存储序号和文件标识
+    file_dict = {index: filename.replace('outbounds_', '').replace('.json', '') for index, filename in enumerate(outbound_files, start=1)}
+    # 返回字典
+    return file_dict
+
 def main():
     while True:
         try:
@@ -198,6 +217,13 @@ def option_1():
 def option_2():
     try:
         print("outbounds")
+
+        # 使用函数
+        directory_path = '/usr/local/etc/sb3/conf/'
+        file_dict = list_outbound_files(directory_path)
+        # 打印序号和文件名
+        for index, filename in file_dict.items():
+            print(f"{index}) {filename}")
 
         tag_out = input("outbounds tag: ")
         print(tag_out)
