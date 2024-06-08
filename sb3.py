@@ -292,9 +292,6 @@ def option_4():
         else:
             print("您输入的序号不正确，请重新输入。")
 
-        tag_out = input("outbounds tag: ")
-        print(tag_out)
-
         outbounds_config = f"/usr/local/etc/sb3/conf/outbounds_{tag_out}.json"
             
         subprocess.run(["rm", "-f", outbounds_config], check=True)
