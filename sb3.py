@@ -293,16 +293,9 @@ def option_4():
     try:
         print("outbounds_rm")
 
-        # 指定目录路径
+        # 使用函数
         directory_path = '/usr/local/etc/sb3/conf/'
-        # 获取目录下所有文件名
-        files = os.listdir(directory_path)
-        # 过滤出以 'outbounds_' 开头并且以 '.json' 结尾的文件
-        outbound_files = [file for file in files if file.startswith('outbounds_') and file.endswith('.json')]
-        # 对文件名进行排序，确保序号的连续性
-        outbound_files.sort()
-        # 初始化一个空字典来存储序号和文件标识
-        file_dict = {index: filename.replace('outbounds_', '').replace('.json', '') for index, filename in enumerate(outbound_files, start=1)}
+        file_dict = list_outbound_files(directory_path)
         # 打印序号和文件名
         for index, filename in file_dict.items():
             print(f"{index}) {filename}")
