@@ -85,11 +85,12 @@ def option_1():
     try:
         print("inbounds")
 
-        # 使用示例
+        # 使用函数
         directory_path = '/usr/local/etc/sb3/conf/'
-        selected_tag = select_outbound_file(directory_path)
-        if selected_tag:
-            print(f"Selected file: {selected_tag}")
+        file_dict = list_outbound_files(directory_path)
+        # 打印序号和文件名
+        for index, filename in file_dict.items():
+            print(f"{index}) {filename}")
     
         choice = input("请选择: ")
 
