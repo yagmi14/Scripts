@@ -45,7 +45,6 @@ def main():
 
         if choice == "1":
             option_1()
-            continue  # 确保返回主菜单循环的开始
 
         elif choice == "2":
             print("outbounds")
