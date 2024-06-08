@@ -1,6 +1,7 @@
 import os
 import subprocess
 import datetime
+import sys
 
 # 获取当前时间戳
 now = datetime.datetime.now()
@@ -245,13 +246,11 @@ def option_3():
         port = input("listen port: ")
         print(port)
 
-        route_remove = f"rm -f /usr/local/etc/sb3/conf/route_{port}.json"
-        inbounds_remove = f"rm -f /usr/local/etc/sb3/conf/inbounds_{port}.json"
+        route_config = f"/usr/local/etc/sb3/conf/route_{port}.json"
+        inbounds_config = f"/usr/local/etc/sb3/conf/inbounds_{port}.json"
             
-        subprocess.run(route_remove, shell=True)
-        subprocess.run(inbounds_remove, shell=True)
-        subprocess.run(["rm", "-f", route_remove], check=True)
-        subprocess.run(["rm", "-f", inbounds_remove], check=True)
+        subprocess.run(["rm", "-f", route_config], check=True)
+        subprocess.run(["rm", "-f", inbounds_config], check=True)
         print(f"已删除route_{port}.json")
         print(f"已删除inbounds_{port}.json")
             
@@ -262,7 +261,7 @@ def option_3():
     except KeyboardInterrupt:
         print("\nThe program has been interrupted.")
     
-    return
+    sys.exit()  # 添加这行代码来退出程序
 
 def option_4():
     try:
