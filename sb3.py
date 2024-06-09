@@ -108,7 +108,7 @@ def option_1():
         directory = '/usr/local/etc/sb3/conf/'
         max_num = find_max_number(directory)
         if max_num != -1:
-            print(f'最大的数字是: {max_num}')
+            print(f'max number: {max_num}')
         else:
             print('没有找到符合条件的文件。')
 
