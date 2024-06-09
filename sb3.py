@@ -51,15 +51,17 @@ def list_outbound_files(directory_path):
     # 返回字典
     return file_dict
 
-def find_max_number(directory):
+def find_next_available_port(directory):
     """
-    在指定目录中查找以'inbounds_'开头并以'.json'结尾的文件名中的最大数字。
-
+    在指定目录中查找以'sb_'开头并以'.json'结尾的文件名中的最大数字，
+    将这个数字加1后返回，作为下一个可用的端口号。
+    如果没有找到符合条件的文件，则返回默认的端口号43001。
+    
     参数:
     directory (str): 要搜索的目录路径。
 
     返回:
-    int: 找到的最大数字，如果没有找到符合条件的文件，则返回-1。
+    int: 下一个可用的端口号，如果没有找到符合条件的文件，则返回43001。
     """
     max_number = -1
     for filename in os.listdir(directory):
@@ -67,7 +69,7 @@ def find_max_number(directory):
             number = re.findall(r'inbounds_(\d+).json', filename)
             if number:
                 max_number = max(max_number, int(number[0]))
-    return max_number
+    return max_number + 1 if max_number != -1 else 43001
 
 def main():
     while True:
@@ -106,11 +108,12 @@ def option_1():
 
         # 使用示例
         directory = '/usr/local/etc/sb3/conf/'
-        max_num = find_max_number(directory)
-        if max_num != -1:
-            print(f'max number: {max_num}')
-        else:
-            print('没有找到符合条件的文件。')
+        max_num = find_next_available_port(directory)
+        
+        port = input("port: ")
+        if port == "":                    
+            port = f"{max_num}"
+        print(f'port: {port}')
 
         # 使用函数
         directory_path = '/usr/local/etc/sb3/conf/'
@@ -141,9 +144,6 @@ def option_1():
         if choice == "2":
             print("VLESS-Vision-REALITY")
             
-            port = input("listening port: ")
-            print(port)
-
             tag_in = "vless-in"
             tag_in_port = f"{tag_in}_{port}"            
             
@@ -164,9 +164,6 @@ def option_1():
         
         elif choice == "3":
             print("VLESS-gRPC-REALITY")
-
-            port = input("listening port: ")
-            print(port)
 
             tag_in = "vless-in"
             tag_in_port = f"{tag_in}_{port}"            
@@ -189,9 +186,6 @@ def option_1():
         elif choice == "4":
             print("VLESS-HTTP2-REALITY")
 
-            port = input("listening port: ")
-            print(port)
-
             tag_in = "vless-in"
             tag_in_port = f"{tag_in}_{port}"            
             
@@ -212,9 +206,6 @@ def option_1():
 
         elif choice == "5":
             print("Hysteria2")
-
-            port = input("listening port: ")
-            print(port)
 
             tag_in = "hysteria2-in"
             tag_in_port = f"{tag_in}_{port}"
