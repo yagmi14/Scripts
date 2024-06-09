@@ -2,6 +2,7 @@ import os
 import subprocess
 import datetime
 import sys
+import re
 
 # 获取当前时间戳
 now = datetime.datetime.now()
@@ -50,6 +51,24 @@ def list_outbound_files(directory_path):
     # 返回字典
     return file_dict
 
+def find_max_number(directory):
+    """
+    在指定目录中查找以'inbounds_'开头并以'.json'结尾的文件名中的最大数字。
+
+    参数:
+    directory (str): 要搜索的目录路径。
+
+    返回:
+    int: 找到的最大数字，如果没有找到符合条件的文件，则返回-1。
+    """
+    max_number = -1
+    for filename in os.listdir(directory):
+        if filename.startswith('inbounds_') and filename.endswith('.json'):
+            number = re.findall(r'inbounds_(\d+).json', filename)
+            if number:
+                max_number = max(max_number, int(number[0]))
+    return max_number
+
 def main():
     while True:
         try:
@@ -84,6 +103,14 @@ def main():
 def option_1():
     try:
         print("inbounds")
+
+        # 使用示例
+        directory = '/usr/local/etc/sb3/conf/'
+        max_num = find_max_number(directory)
+        if max_num != -1:
+            print(f'最大的数字是: {max_num}')
+        else:
+            print('没有找到符合条件的文件。')
 
         # 使用函数
         directory_path = '/usr/local/etc/sb3/conf/'
