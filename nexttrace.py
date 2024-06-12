@@ -189,7 +189,7 @@ try:
             subprocess.call(["nexttrace", "-M4", "speedtest.fra1.hivelocity.net"]) # Hivelocity-FRA                                           
             subprocess.call(["nexttrace", "-M", "38.59.228.10"]) # Kirino-FRA
             subprocess.call(["nexttrace", "-M", "45.142.247.4"]) # Misaka-BER
-            subprocess.call(["nexttrace", "-M", "45.131.69.1"]) # Misaka-MOW 
+            subprocess.call(["nexttrace", "-M", "45.142.246.240"]) # Misaka-MOW 
             subprocess.call(["nexttrace", "-M4", "lookingglass.netcup.net"]) # Netcup-NUE 
             subprocess.call(["nexttrace", "-M4", "gra.proof.ovh.net"]) # OVH-GRA              
             subprocess.call(["nexttrace", "-M4", "fra-de-ping.vultr.com"]) # Vultr-FRA                                                                     
