@@ -23,7 +23,7 @@ TRANSFORM_EXPR="s/librespeed-cli_${VERSION}_linux_${ARCH}/librespeed-cli/"
 sudo tar zxvf librespeed-cli.tar.gz --transform="$TRANSFORM_EXPR"
 sudo chown root:root librespeed-cli && sudo chmod +x librespeed-cli && mv librespeed-cli /usr/local/bin/
 cd && rm -rf librespeed-cli librespeed-cli.tar.gz
-grep -qE '^alias[ ]*lsp=' ~/.zshrc || echo "alias lsp ='librespeed-cli'" >> ~/.zshrc
+grep -qE '^alias[ ]*lsp=' ~/.zshrc || echo "alias lsp='librespeed-cli'" >> ~/.zshrc
 grep -qE '^alias[ ]*lspu=' ~/.zshrc || echo "alias lspu='librespeed-cli --no-download'" >> ~/.zshrc
 grep -qE '^alias[ ]*lspus=' ~/.zshrc || echo "alias lspus='librespeed-cli --no-download --concurrent 1'" >> ~/.zshrc
 grep -qE '^alias[ ]*lsps=' ~/.zshrc || echo "alias lsps='librespeed-cli --concurrent 1'" >> ~/.zshrc
