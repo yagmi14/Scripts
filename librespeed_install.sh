@@ -18,7 +18,8 @@ VERSION=$(curl -s https://api.github.com/repos/librespeed/speedtest-cli/releases
     | sed 's/\"//g;s/\,//g;s/\ //g;s/v//')
 
 sudo curl -Lo librespeed-cli.tar.gz "https://github.com/librespeed/speedtest-cli/releases/download/v${VERSION}/librespeed-cli_${VERSION}_linux_${ARCH}.tar.gz"
-sudo tar zxvf librespeed-cli.tar.gz --transform="s/librespeed-cli_\${VERSION}_linux_\${ARCH}/librespeed-cli"
+TRANSFORM_EXPR="s/librespeed-cli_${VERSION}_linux_${ARCH}/librespeed-cli/"
+sudo tar zxvf librespeed-cli.tar.gz --transform="$TRANSFORM_EXPR"
 cd librespeed-cli && sudo chown root:root librespeed-cli && sudo chmod +x librespeed-cli && mv librespeed-cli /usr/local/bin/
 cd && rm -rf librespeed-cli librespeed-cli.tar.gz
 grep -qE '^alias[ ]*lsp=' ~/.zshrc || echo "alias lsp ='librespeed-cli'" >> ~/.zshrc
