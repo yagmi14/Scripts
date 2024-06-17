@@ -62,7 +62,7 @@ try:
             subprocess.call(["nexttrace", "-MT", "112.34.111.194"])
             subprocess.call(["nexttrace", "-MT", "111.62.229.100"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.204.34.2"])
-            subprocess.call(["nexttrace", "-MT", "111.8.9.73"])
+            subprocess.call(["nexttrace", "-MT", "111.8.9.181"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "218.204.182.226"])
         elif choice == 4:
             # Others
