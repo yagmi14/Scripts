@@ -140,8 +140,40 @@ def option_1():
         print("5) Hysteria2")
 
         choice = input("Please select:")
+
+        if choice == "1":
+            print("Shadowsocks")
             
-        if choice == "2":
+            tag_in = "shadowsocks-in"
+            tag_in_port = f"{tag_in}_{port}"
+            
+            print("Please select the method:")
+            print("1. 2022-blake3-aes-256-gcm")
+            print("2. aes-256-gcm")
+
+            method = input("method: ")
+            if method == "":
+                method = "2022-blake3-aes-256-gcm"
+            elif method == "1":
+                method = "2022-blake3-aes-256-gcm"
+            elif method == "2":
+                method = "aes-256-gcm"
+            else:
+                print("Incorrect input, please re-enter.")
+
+            print("Your selected method is:", method)
+
+            route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"' + tag_out + '"}]}}')
+            inbounds_config_content = ('{"inbounds":[{"type":"shadowsocks","tag":"' + tag_in + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
+
+            route_config_path = generate_route_config(route_config_content, port)
+            inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
+                
+            restart_service()
+            
+            status_service()
+            
+        elif choice == "2":
             print("VLESS-Vision-REALITY")
             
             tag_in = "vless-in"
