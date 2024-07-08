@@ -106,8 +106,7 @@ try:
             subprocess.call(["nexttrace", "-M4", "hkg.download.datapacket.com"]) # Datacamp-HKG                        
             subprocess.call(["nexttrace", "-M", "154.3.33.110"]) # Dmit-HKG
             subprocess.call(["nexttrace", "-M", "209.146.125.124"]) # Eons-HKG
-            subprocess.call(["nexttrace", "-M", "91.199.84.1"]) # Gcore-HKG                        
-            subprocess.call(["nexttrace", "-M", "35.220.230.27"]) # GCP-HKG
+            subprocess.call(["nexttrace", "-M", "91.199.84.1"]) # Gcore-HKG
             subprocess.call(["nexttrace", "-M", "42.3.27.27"]) # HKT-HKG
             subprocess.call(["nexttrace", "-M", "103.116.72.2"]) # Jinx-HKG
             subprocess.call(["nexttrace", "-M", "38.59.254.150"]) # Kirino-HKG
@@ -121,6 +120,7 @@ try:
             subprocess.call(["nexttrace", "-M", "156.59.103.1"]) # Zenlayer-HKG
             subprocess.call(["nexttrace", "-M", "ec2.ap-east-1.amazonaws.com"]) # AWS-HKG
             subprocess.call(["nexttrace", "-M", "speedtestea.blob.core.windows.net"]) # Azure-HKG
+            subprocess.call(["nexttrace", "-M", "35.220.230.27"]) # GCP-HKG
             # Add more tracing commands for HK option as needed
         elif choice == 9:
             # TW
@@ -132,7 +132,6 @@ try:
             subprocess.call(["nexttrace", "-M4", "tyo.download.datapacket.com"]) # Datacamp-NRT                        
             subprocess.call(["nexttrace", "-M", "45.88.193.5"]) # Dmit-NRT
             subprocess.call(["nexttrace", "-M", "103.168.154.1"]) # Eons-NRT
-            subprocess.call(["nexttrace", "-M", "34.146.177.11"]) # GCP-NRT            
             subprocess.call(["nexttrace", "-M", "185.188.5.1"]) # Jinx-NRT
             subprocess.call(["nexttrace", "-M", "106.180.224.1"]) # Kddi-NRT            
             subprocess.call(["nexttrace", "-M", "212.107.30.1"]) # Kirino-NRT
@@ -146,6 +145,7 @@ try:
             subprocess.call(["nexttrace", "-M", "149.62.44.1"]) # xTom-NRT
             subprocess.call(["nexttrace", "-M", "ec2.ap-northeast-1.amazonaws.com"]) # AWS-NRT
             subprocess.call(["nexttrace", "-M", "speedtestjpe.blob.core.windows.net"]) # Azure-NRT
+            subprocess.call(["nexttrace", "-M", "34.146.177.11"]) # GCP-NRT            
         elif choice == 11:
             # SG
             subprocess.call(["nexttrace", "-M", "-4", "speedtest.singapore.linode.com"]) # Akamai-SIN
@@ -153,7 +153,6 @@ try:
             subprocess.call(["nexttrace", "-M4", "sgp.download.datapacket.com"]) # Datacamp-SIN            
             subprocess.call(["nexttrace", "-M", "159.89.192.4"]) # DigitalOcean-SIN
             subprocess.call(["nexttrace", "-M", "38.150.8.1"]) # Eons-SIN
-            subprocess.call(["nexttrace", "-M", "34.87.56.6"]) # GCP-SIN            
             subprocess.call(["nexttrace", "-M", "159.138.84.2"]) # Huawei-SIN
             subprocess.call(["nexttrace", "-M", "103.142.140.1"]) # Kirino-SIN
             subprocess.call(["nexttrace", "-M", "194.156.163.2"]) # Misaka-SIN
@@ -165,6 +164,7 @@ try:
             subprocess.call(["nexttrace", "-M", "185.194.54.1"]) # xTom-SIN         
             subprocess.call(["nexttrace", "-M", "ec2.ap-southeast-1.amazonaws.com"]) # AWS-SIN
             subprocess.call(["nexttrace", "-M", "feitsui-s3.azurewebsites.net"]) # Azure-SIN
+            subprocess.call(["nexttrace", "-M", "34.87.56.6"]) # GCP-SIN
             # Add more tracing commands for SG option as needed
         elif choice == 12:
             # US
@@ -172,19 +172,18 @@ try:
             subprocess.call(["nexttrace", "-M", "77.247.126.11"]) # Clouvider-LAX
             subprocess.call(["nexttrace", "-M4", "lax.download.datapacket.com"]) # Datacamp-LAX
             subprocess.call(["nexttrace", "-M4", "speedtest.lv.buyvm.net"]) # FranTech-LAS
-            subprocess.call(["nexttrace", "-M", "35.247.10.7"]) # GCP-OR
             subprocess.call(["nexttrace", "-M4", "hil-speed.hetzner.com"]) # Hetzner-HIL 
             subprocess.call(["nexttrace", "-M4", "mia.hostodo.com"]) # Hostodo-MIA 
             subprocess.call(["nexttrace", "-M4", "hil.proof.ovh.us"]) # OVH-HIL  
             subprocess.call(["nexttrace", "-M4", "lax-ca-us-ping.vultr.com"]) # Vultr-LAX                                    
-            subprocess.call(["nexttrace", "-M", "ec2.us-west-2.amazonaws.com"]) # AWS-OR                     
+            subprocess.call(["nexttrace", "-M", "ec2.us-west-2.amazonaws.com"]) # AWS-OR
+            subprocess.call(["nexttrace", "-M", "35.247.10.7"]) # GCP-OR
         elif choice == 13:
             # EU
             subprocess.call(["nexttrace", "-M4", "speedtest.frankfurt.linode.com"]) # Akamai-FRA 
             subprocess.call(["nexttrace", "-M", "185.42.223.2"]) # Clouvider-LHR
             subprocess.call(["nexttrace", "-M4", "par.download.datapacket.com"]) # Datacamp-PAR
             subprocess.call(["nexttrace", "-M4", "speedtest.lu.buyvm.net"]) # FranTech-LUX
-            subprocess.call(["nexttrace", "-M", "34.89.121.0"]) # GCP-LON            
             subprocess.call(["nexttrace", "-M4", "nbg1-speed.hetzner.com"]) # Hetzner-NUE
             subprocess.call(["nexttrace", "-M4", "speedtest.fra1.hivelocity.net"]) # Hivelocity-FRA                                           
             subprocess.call(["nexttrace", "-M", "38.59.228.10"]) # Kirino-FRA
@@ -193,7 +192,8 @@ try:
             subprocess.call(["nexttrace", "-M4", "lookingglass.netcup.net"]) # Netcup-NUE 
             subprocess.call(["nexttrace", "-M4", "gra.proof.ovh.net"]) # OVH-GRA              
             subprocess.call(["nexttrace", "-M4", "fra-de-ping.vultr.com"]) # Vultr-FRA                                                                     
-            subprocess.call(["nexttrace", "-M", "ec2.eu-central-1.amazonaws.com"]) # AWS-FRA                                 
+            subprocess.call(["nexttrace", "-M", "ec2.eu-central-1.amazonaws.com"]) # AWS-FRA
+            subprocess.call(["nexttrace", "-M", "34.89.121.0"]) # GCP-LON            
             # Add more tracing commands for SG option as needed
         elif choice == 14:
             # AU
