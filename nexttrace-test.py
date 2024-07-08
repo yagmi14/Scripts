@@ -75,7 +75,7 @@ try:
             subprocess.call(["nexttrace", "-MT", "oss-cn-guangzhou.aliyuncs.com"]) # Alibaba-CAN                            
             subprocess.call(["nexttrace", "-MT", "ec2.cn-north-1.amazonaws.com.cn"]) # AWS-PEK
             subprocess.call(["nexttrace", "-MT", "ec2.cn-northwest-1.amazonaws.com.cn"]) # AWS-Ningxia
-            subprocess.call(["nexttrace", "-MT", "42.159.128.11"]) # Azure-SHA
+            subprocess.call(["nexttrace", "-M", "42.159.128.11"]) # Azure-SHA
             subprocess.call(["nexttrace", "-MT", "feitsui-can.obs.cn-south-1.myhuaweicloud.com"]) # Huawei-CAN
             subprocess.call(["nexttrace", "-MT", "cos.ap-guangzhou.myqcloud.com"]) # Tencent-CAN                            
             # Add more tracing commands for Others option as needed
