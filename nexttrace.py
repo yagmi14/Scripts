@@ -119,7 +119,7 @@ try:
             subprocess.call(["nexttrace", "-M", "43.251.133.23"]) # WTT-HKG
             subprocess.call(["nexttrace", "-M", "157.119.103.1"]) # xTom-HKG
             subprocess.call(["nexttrace", "-M", "156.59.103.1"]) # Zenlayer-HKG
-            subprocess.call(["nexttrace", "-M", "18.162.80.8"]) # AWS-HKG
+            subprocess.call(["nexttrace", "-M", "ec2.ap-east-1.amazonaws.com"]) # AWS-HKG
             subprocess.call(["nexttrace", "-M", "speedtestea.blob.core.windows.net"]) # Azure-HKG
             # Add more tracing commands for HK option as needed
         elif choice == 9:
@@ -144,7 +144,7 @@ try:
             subprocess.call(["nexttrace", "-M", "126.40.32.184"]) # Softbank-NRT
             subprocess.call(["nexttrace", "-M4", "hnd-jp-ping.vultr.com"]) # Vultr-NRT                                    
             subprocess.call(["nexttrace", "-M", "149.62.44.1"]) # xTom-NRT
-            subprocess.call(["nexttrace", "-M", "13.112.63.251"]) # AWS-NRT
+            subprocess.call(["nexttrace", "-M", "ec2.ap-northeast-1.amazonaws.com"]) # AWS-NRT
             subprocess.call(["nexttrace", "-M", "speedtestjpe.blob.core.windows.net"]) # Azure-NRT
         elif choice == 11:
             # SG
@@ -163,7 +163,7 @@ try:
             subprocess.call(["nexttrace", "-M4", "sg.lg.speedypage.com"]) # SpeedyPage-SIN            
             subprocess.call(["nexttrace", "-M4", "sgp-ping.vultr.com"]) # Vultr-SIN
             subprocess.call(["nexttrace", "-M", "185.194.54.1"]) # xTom-SIN         
-            subprocess.call(["nexttrace", "-M", "54.254.128.1"]) # AWS-SIN
+            subprocess.call(["nexttrace", "-M", "ec2.ap-southeast-1.amazonaws.com"]) # AWS-SIN
             subprocess.call(["nexttrace", "-M", "feitsui-s3.azurewebsites.net"]) # Azure-SIN
             # Add more tracing commands for SG option as needed
         elif choice == 12:
@@ -177,7 +177,7 @@ try:
             subprocess.call(["nexttrace", "-M4", "mia.hostodo.com"]) # Hostodo-MIA 
             subprocess.call(["nexttrace", "-M4", "hil.proof.ovh.us"]) # OVH-HIL  
             subprocess.call(["nexttrace", "-M4", "lax-ca-us-ping.vultr.com"]) # Vultr-LAX                                    
-            subprocess.call(["nexttrace", "-M", "18.236.0.0"]) # AWS-OR                     
+            subprocess.call(["nexttrace", "-M", "ec2.us-west-2.amazonaws.com"]) # AWS-OR                     
         elif choice == 13:
             # EU
             subprocess.call(["nexttrace", "-M4", "speedtest.frankfurt.linode.com"]) # Akamai-FRA 
@@ -193,13 +193,13 @@ try:
             subprocess.call(["nexttrace", "-M4", "lookingglass.netcup.net"]) # Netcup-NUE 
             subprocess.call(["nexttrace", "-M4", "gra.proof.ovh.net"]) # OVH-GRA              
             subprocess.call(["nexttrace", "-M4", "fra-de-ping.vultr.com"]) # Vultr-FRA                                                                     
-            subprocess.call(["nexttrace", "-M", "3.64.0.0"]) # AWS-FRA                                 
+            subprocess.call(["nexttrace", "-M", "ec2.eu-central-1.amazonaws.com"]) # AWS-FRA                                 
             # Add more tracing commands for SG option as needed
         elif choice == 14:
             # AU
             subprocess.call(["nexttrace", "-M4", "speedtest.syd1.linode.com"]) # Akamai-SDY
             subprocess.call(["nexttrace", "-M", "34.116.127.76"]) # GCP-SDY            
-            subprocess.call(["nexttrace", "-M", "13.236.0.253"]) # AWS-SDY
+            subprocess.call(["nexttrace", "-M", "ec2.ap-southeast-2.amazonaws.com"]) # AWS-SDY
 
     else:
         print("无效输入，请重试！")
