@@ -73,8 +73,8 @@ try:
             subprocess.call(["nexttrace", "-MT", "166.111.4.39"])
             subprocess.call(["nexttrace", "-MT", "159.226.254.1"])
             subprocess.call(["nexttrace", "-MT", "oss-cn-guangzhou.aliyuncs.com"]) # Alibaba-CAN                            
-            subprocess.call(["nexttrace", "-MT", "52.80.5.207"]) # AWS-PEK
-            subprocess.call(["nexttrace", "-MT", "52.83.214.0"]) # AWS-Ningxia
+            subprocess.call(["nexttrace", "-MT", "ec2.cn-north-1.amazonaws.com.cn"]) # AWS-PEK
+            subprocess.call(["nexttrace", "-MT", "ec2.cn-northwest-1.amazonaws.com.cn"]) # AWS-Ningxia
             subprocess.call(["nexttrace", "-MT", "42.159.128.11"]) # Azure-SHA
             subprocess.call(["nexttrace", "-MT", "feitsui-can.obs.cn-south-1.myhuaweicloud.com"]) # Huawei-CAN
             subprocess.call(["nexttrace", "-MT", "cos.ap-guangzhou.myqcloud.com"]) # Tencent-CAN                            
