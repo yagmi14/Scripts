@@ -118,7 +118,7 @@ try:
             subprocess.call(["nexttrace", "-MT", "157.119.103.1"]) # xTom-HKG
             subprocess.call(["nexttrace", "-MT", "156.59.103.1"]) # Zenlayer-HKG
             subprocess.call(["nexttrace", "-MT", "18.162.80.8"]) # AWS-HKG
-            subprocess.call(["nexttrace", "-MT", "s3eastasia.blob.core.windows.net"]) # Azure-HKG
+            subprocess.call(["nexttrace", "-MT", "speedtestea.blob.core.windows.net"]) # Azure-HKG
             # Add more tracing commands for HK option as needed
         elif choice == 9:
             # TW
@@ -144,7 +144,7 @@ try:
             subprocess.call(["nexttrace", "-MT4", "hnd-jp-ping.vultr.com"]) # Vultr-NRT                                    
             subprocess.call(["nexttrace", "-MT", "149.62.44.1"]) # xTom-NRT
             subprocess.call(["nexttrace", "-MT", "13.112.63.251"]) # AWS-NRT
-            subprocess.call(["nexttrace", "-MT", "s3japaneast.blob.core.windows.net"]) # Azure-NRT
+            subprocess.call(["nexttrace", "-MT", "speedtestjpe.blob.core.windows.net"]) # Azure-NRT
         elif choice == 11:
             # SG
             subprocess.call(["nexttrace", "-MT", "-4", "speedtest.singapore.linode.com"]) # Akamai-SIN
@@ -163,7 +163,7 @@ try:
             subprocess.call(["nexttrace", "-MT4", "sgp-ping.vultr.com"]) # Vultr-SIN
             subprocess.call(["nexttrace", "-MT", "185.194.54.1"]) # xTom-SIN         
             subprocess.call(["nexttrace", "-MT", "54.254.128.1"]) # AWS-SIN
-            subprocess.call(["nexttrace", "-MT", "s3southeastasia.blob.core.windows.net"]) # Azure-SIN
+            subprocess.call(["nexttrace", "-MT", "feitsui-s3.azurewebsites.net"]) # Azure-SIN
             # Add more tracing commands for SG option as needed
         elif choice == 12:
             # US
