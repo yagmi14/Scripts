@@ -67,7 +67,7 @@ try:
         elif choice == 4:
             # Others
             subprocess.call(["nexttrace", "-MT", "58.32.4.1"])
-            subprocess.call(["nexttrace", "-MT", "210.13.67.106"])
+            subprocess.call(["nexttrace", "-M", "210.13.67.106"])
             subprocess.call(["nexttrace", "-MT", "223.70.155.77"])
             subprocess.call(["nexttrace", "-MT", "211.156.140.17"])
             subprocess.call(["nexttrace", "-MT", "166.111.4.39"])
