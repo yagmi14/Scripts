@@ -282,6 +282,7 @@ def option_2():
         print("Please select the method:")
         print("1. 2022-blake3-aes-256-gcm")
         print("2. aes-256-gcm")
+        print("3. aes-128-gcm")
 
         method = input("method: ")
         if method == "":
@@ -290,6 +291,8 @@ def option_2():
             method = "2022-blake3-aes-256-gcm"
         elif method == "2":
             method = "aes-256-gcm"
+        elif method == "3":
+            method = "aes-128-gcm"
         else:
             print("Incorrect input, please re-enter.")
 
