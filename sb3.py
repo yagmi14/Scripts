@@ -138,6 +138,7 @@ def option_1():
         print("3) VLESS-gRPC-REALITY")
         print("4) VLESS-HTTP2-REALITY")
         print("5) Hysteria2")
+        print("6) VLESS-Vision-REALITY_2")
 
         choice = input("Please select:")
 
@@ -252,6 +253,27 @@ def option_1():
                 
             status_service()
 
+        elif choice == "6":
+            print("VLESS-Vision-REALITY_2")
+            
+            tag_in = "vless-in"
+            tag_in_port = f"{tag_in}_{port}"            
+            
+            domain = input("domain: ")
+            if domain == "":
+                domain = "cdn-design.tesla.com"
+            print(domain)
+
+            route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"' + tag_out + '"}]}}')
+            inbounds_config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_port + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98","flow":"xtls-rprx-vision"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}}}]}')
+
+            route_config_path = generate_route_config(route_config_content, port)
+            inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
+                
+            restart_service()
+            
+            status_service()    
+
     except KeyboardInterrupt:
         print("\nThe program has been interrupted.")
     
@@ -298,7 +320,12 @@ def option_2():
 
         print("Your selected method is:", method)
 
-        outbounds_config_content = ('{"outbounds":[{"type":"shadowsocks","tag":"' + tag_out + '","server":"' + ip + '","server_port":' + port + ',"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')            
+        password = input("password: ")
+        if password == "":
+            password = "W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4="
+        print(password)
+
+        outbounds_config_content = ('{"outbounds":[{"type":"shadowsocks","tag":"' + tag_out + '","server":"' + ip + '","server_port":' + port + ',"method":"' + method + '","password":"' + password + '","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')            
                   
         outbounds_config_path = generate_outbounds_config(outbounds_config_content, tag_out)
             
