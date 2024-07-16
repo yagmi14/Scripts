@@ -325,13 +325,32 @@ def option_2():
             password = "W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4="
         print(password)
 
-        outbounds_config_content = ('{"outbounds":[{"type":"shadowsocks","tag":"' + tag_out + '","server":"' + ip + '","server_port":' + port + ',"method":"' + method + '","password":"' + password + '","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')            
+        print("1) Shadowsocks")
+        print("2) Shadowsocks_2")
+
+        choice = input("Please select:")
+
+        if choice == "1":
+            print("Shadowsocks")
+
+            outbounds_config_content = ('{"outbounds":[{"type":"shadowsocks","tag":"' + tag_out + '","server":"' + ip + '","server_port":' + port + ',"method":"' + method + '","password":"' + password + '","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')            
                   
-        outbounds_config_path = generate_outbounds_config(outbounds_config_content, tag_out)
+            outbounds_config_path = generate_outbounds_config(outbounds_config_content, tag_out)
             
-        restart_service()
+            restart_service()
             
-        status_service()
+            status_service()
+            
+        elif choice == "2":
+            print("Shadowsocks_2")
+
+            outbounds_config_content = ('{"outbounds":[{"type":"shadowsocks","tag":"' + tag_out + '","server":"' + ip + '","server_port":' + port + ',"method":"' + method + '","password":"' + password + '"}]}')            
+                  
+            outbounds_config_path = generate_outbounds_config(outbounds_config_content, tag_out)
+            
+            restart_service()
+            
+            status_service()
 
     except KeyboardInterrupt:
         print("\nThe program has been interrupted.")
