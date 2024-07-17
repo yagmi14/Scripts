@@ -117,7 +117,7 @@ try:
             subprocess.call(["nexttrace", "-M", "45.11.104.3"]) # Misaka-HKG
             subprocess.call(["nexttrace", "-M", "23.26.90.5"]) # Nearoute-HKG
             subprocess.call(["nexttrace", "-M", "178.173.249.1"]) # NeroCloud-HKG
-            subprocess.call(["nexttrace", "-M", "157.254.32.3"]) # Sharon-HKG
+            subprocess.call(["nexttrace", "-M", "157.254.32.1"]) # Sharon-HKG
             subprocess.call(["nexttrace", "-M", "103.213.4.13"]) # Skywolf-HKG
             subprocess.call(["nexttrace", "-M", "43.251.133.23"]) # WTT-HKG
             subprocess.call(["nexttrace", "-M", "157.119.103.1"]) # xTom-HKG
