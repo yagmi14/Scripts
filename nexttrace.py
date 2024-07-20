@@ -20,6 +20,7 @@ options = [
     "12) 🇺🇸 US",    
     "13) 🇪🇺 EU",
     "14) 🇦🇺 AU",
+    "15) 🇺🇳 TG",
 ]
 
 num_columns = 3
@@ -204,6 +205,11 @@ try:
             subprocess.call(["nexttrace", "-M4", "speedtest.syd1.linode.com"]) # Akamai-SDY
             subprocess.call(["nexttrace", "-M", "34.116.127.76"]) # GCP-SDY            
             subprocess.call(["nexttrace", "-M", "ec2.ap-southeast-2.amazonaws.com"]) # AWS-SDY
+        elif choice == 15:
+            # TG
+            subprocess.call(["nexttrace", "-M", "91.108.56.100"]) # Telegram-SG
+            subprocess.call(["nexttrace", "-M", "149.154.167.100"]) # Telegram-NL            
+            subprocess.call(["nexttrace", "-M", "149.154.175.100"]) # Telegram-US
 
     else:
         print("无效输入，请重试！")
