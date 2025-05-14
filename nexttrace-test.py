@@ -46,7 +46,7 @@ try:
         elif choice == 1:
             # CT
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "219.141.150.166"])
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "27.185.201.1"])
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "222.223.188.18"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "124.74.52.254"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.150.151.122"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.144.6.18"])
@@ -81,7 +81,7 @@ try:
             # Add more tracing commands for Others option as needed
         elif choice == 5:
             # SJW
-            subprocess.call(["nexttrace", "-MT", "-p", "65499", "27.185.201.1"])
+            subprocess.call(["nexttrace", "-MT", "-p", "65499", "222.223.188.18"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.240.159.62"])
             subprocess.call(["nexttrace", "-MT", "111.62.229.100"])
         elif choice == 6:
