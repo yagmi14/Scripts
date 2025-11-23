@@ -60,7 +60,7 @@ try:
         elif choice == 3:
             # CM
             subprocess.call(["nexttrace", "-MT", "112.34.111.194"])
-            subprocess.call(["nexttrace", "-MT", "111.62.229.100"])
+            subprocess.call(["nexttrace", "-MT", "he-cm-v4.ip.zstaticcdn.com"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "120.204.34.2"])
             subprocess.call(["nexttrace", "-MT", "111.8.9.181"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "218.204.182.226"])
@@ -83,7 +83,7 @@ try:
             # SJW
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "222.223.188.18"])
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "61.240.159.62"])
-            subprocess.call(["nexttrace", "-MT", "111.62.229.100"])
+            subprocess.call(["nexttrace", "-MT", "he-cm-v4.ip.zstaticcdn.com"])
         elif choice == 6:
             # SHA
             subprocess.call(["nexttrace", "-MT", "-p", "65499", "124.74.52.254"])            
