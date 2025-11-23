@@ -10,6 +10,7 @@ echo "2. 重启服务"
 echo "3. 关闭服务"
 echo "4. 查看服务状态"
 echo "5. 重新加载配置文件"
+echo "6. 禁用并删除服务文件"
 read -p "输入操作编号: " choice
 
 # 根据用户选择执行相应的操作
@@ -33,7 +34,19 @@ case $choice in
     ;;
   5)
     sudo systemctl daemon-reload
-    ;;    
+    echo "配置文件已重新加载"
+    ;;
+  6)
+    sudo systemctl disable $service_name
+    service_file="/etc/systemd/system/${service_name}.service"
+    if [ -f "$service_file" ]; then
+      sudo rm -f "$service_file"
+      echo "$service_name 服务已禁用并删除 service 文件"
+      sudo systemctl daemon-reload
+    else
+      echo "未找到 $service_name 的 service 文件"
+    fi
+    ;;
   *)
     echo "无效的操作编号"
     ;;
