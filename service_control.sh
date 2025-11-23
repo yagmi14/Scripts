@@ -37,6 +37,7 @@ case $choice in
     echo "配置文件已重新加载"
     ;;
   6)
+    sudo systemctl stop $service_name
     sudo systemctl disable $service_name
     service_file="/etc/systemd/system/${service_name}.service"
     if [ -f "$service_file" ]; then
