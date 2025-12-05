@@ -32,7 +32,7 @@ declare -A DIRS_SYNC=(
 # 说明：copy 只上传新文件，不会删除网盘上已存在的文件
 declare -A DIRS_COPY=(
     # 示例格式： ["/本地源路径/"]="$DEST_PREFIX/网盘目标路径/"
-    # ["/root/data/photos/"]="$DEST_PREFIX/photos/"
+    ["/opt/openlist_backups/"]="$DEST_PREFIX/openlist_backups/"
 )
 
 # ================= 执行区域 =================
