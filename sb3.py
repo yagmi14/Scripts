@@ -276,8 +276,8 @@ def option_1():
             tag_in_port = f"{tag_in}_{port}"            
 
             route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"' + tag_out + '"}]}}')
+            inbounds_config_content = ('{"inbounds": [{"type": "anytls", "tag": "' + tag_in_port + '", "listen": "::", "listen_port": ' + port + ', "users": [{"password": "cca6deb8-e8d6-47b7-86e3-c0404b8b2fc1"}], "padding_scheme": [], "tls": {"enabled": true, "certificate_path": "/etc/ssl/9929.live/fullchain.pem", "key_path": "/etc/ssl/9929.live/privkey.pem"}}]}')
 
-            inbounds_config_content = ('{"inbounds": [{"type": "anytls", "tag": "' + tag_in_port + '", "listen": "::", "listen_port": ' + port + ', "users": [{"password": "cca6deb8-e8d6-47b7-86e3-c0404b8b2fc1"}], "padding_scheme": [], "tls": {"enabled": true, "certificate_path": "/etc/ssl/9929.live/fullchain.pem", "key_path": "/etc/ssl/9929.live/privkey.pem"}, "multiplex": {"enabled": true, "padding": true, "brutal": {"enabled": true, "up_mbps": 1000, "down_mbps": 1000}}}]}')
             route_config_path = generate_route_config(route_config_content, port)
             inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
                 
