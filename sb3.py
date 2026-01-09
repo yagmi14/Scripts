@@ -170,8 +170,7 @@ def option_1():
             route_config_path = generate_route_config(route_config_content, port)
             inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
                 
-            restart_service()
-            
+            restart_service()            
             status_service()
             
         elif choice == "2":
@@ -191,8 +190,7 @@ def option_1():
             route_config_path = generate_route_config(route_config_content, port)
             inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
                 
-            restart_service()
-            
+            restart_service()            
             status_service()            
         
         elif choice == "3":
@@ -212,8 +210,7 @@ def option_1():
             route_config_path = generate_route_config(route_config_content, port)
             inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
             
-            restart_service()
-                
+            restart_service()                
             status_service()
             
         elif choice == "4":
@@ -233,8 +230,7 @@ def option_1():
             route_config_path = generate_route_config(route_config_content, port)
             inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
             
-            restart_service()
-                
+            restart_service()                
             status_service()
 
         elif choice == "5":
@@ -249,8 +245,7 @@ def option_1():
             route_config_path = generate_route_config(route_config_content, port)
             inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
             
-            restart_service()
-                
+            restart_service()               
             status_service()
 
         elif choice == "6":
@@ -270,8 +265,7 @@ def option_1():
             route_config_path = generate_route_config(route_config_content, port)
             inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
                 
-            restart_service()
-            
+            restart_service()            
             status_service()
 
         elif choice == "7":
@@ -353,8 +347,7 @@ def option_2():
                   
             outbounds_config_path = generate_outbounds_config(outbounds_config_content, tag_out)
             
-            restart_service()
-            
+            restart_service()            
             status_service()
             
         elif choice == "2":
@@ -364,8 +357,7 @@ def option_2():
                   
             outbounds_config_path = generate_outbounds_config(outbounds_config_content, tag_out)
             
-            restart_service()
-            
+            restart_service()            
             status_service()
 
     except KeyboardInterrupt:
@@ -388,8 +380,7 @@ def option_3():
         print(f"已删除route_{port}.json")
         print(f"已删除inbounds_{port}.json")
             
-        restart_service()
-            
+        restart_service()            
         status_service()
 
     except KeyboardInterrupt:
@@ -424,8 +415,7 @@ def option_4():
         subprocess.run(["rm", "-f", outbounds_config], check=True)
         print(f"已删除outbounds_{tag_out}.json")
 
-        restart_service()
-            
+        restart_service()            
         status_service()
 
     except KeyboardInterrupt:
