@@ -139,6 +139,7 @@ def option_1():
         print("4) VLESS-HTTP2-REALITY")
         print("5) Hysteria2")
         print("6) VLESS-Vision-REALITY_2")
+        print("7) AnyTLS")
 
         choice = input("Please select:")
 
