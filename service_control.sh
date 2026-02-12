@@ -24,6 +24,7 @@ case $choice in
     ;;
   2)
     sudo systemctl restart $service_name
+    sleep 5
     sudo systemctl status $service_name
     echo "$service_name 服务已重启"
     ;;  
