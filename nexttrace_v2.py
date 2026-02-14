@@ -197,8 +197,7 @@ TRACES: Dict[int, List[TraceItem]] = {
 def run_nexttrace(label: str, cmd: List[str]) -> int:
     """运行 nexttrace，并在执行开始前显示备注（label），分割线更明显。"""
     sep = "═" * 92
-    print(f"
-{sep}")
+    print(f"\n{sep}")
     print(f"▶ 备注: {label}")
     print("$ " + " ".join(cmd))
     print(sep)
@@ -208,22 +207,18 @@ def run_nexttrace(label: str, cmd: List[str]) -> int:
         p = subprocess.run(cmd)
         rc = p.returncode
     except FileNotFoundError:
-        print("
-[错误] 未找到 nexttrace 命令：请确认已安装并已加入 PATH
-")
+        print("\n[错误] 未找到 nexttrace 命令：请确认已安装并已加入 PATH\n")
         return 127
     except KeyboardInterrupt:
-        print("
-[中断] 用户终止
-")
+        print("\n[中断] 用户终止\n")
         return 130
 
     status = "OK" if rc == 0 else f"EXIT={rc}"
     # 结束后也给一个明显的结束分隔（不再把备注放在最后，而是强调状态）
     print(f"{sep}")
     print(f"■ 完成: {label}  ({status})")
-    print(f"{sep}
-")
+    print(sep)
+    print("")
     return rc
 
 
