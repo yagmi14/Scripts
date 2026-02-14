@@ -235,11 +235,29 @@ def main() -> int:
     num_options = len(options)
     num_rows = (num_options + num_columns - 1) // num_columns
 
+    # 让三列对齐：用“显示宽度”补空格（比 \t 更稳定，10) 这类两位数也能对齐）
+    try:
+        from wcwidth import wcswidth  # pip 包 wcwidth
+    except Exception:
+        import unicodedata
+        def wcswidth(s: str) -> int:
+            w = 0
+            for ch in s:
+                w += 2 if unicodedata.east_asian_width(ch) in ("W", "F") else 1
+            return w
+
+    def pad_cell(s: str, width: int) -> str:
+        return s + " " * max(0, width - wcswidth(s))
+
+    col_width = max(wcswidth(o) for o in options) + 4  # 每列额外留点空隙
     formatted_options = ""
-    for i in range(num_rows):
-        for j in range(i, num_options, num_rows):
-            formatted_options += f"{options[j]}\t"
-        formatted_options += "\n"
+    for r in range(num_rows):
+        line = ""
+        for c in range(num_columns):
+            idx = r + c * num_rows
+            if idx < num_options:
+                line += pad_cell(options[idx], col_width)
+        formatted_options += line.rstrip() + "\n"
 
     print("请选择:")
     print(formatted_options)
