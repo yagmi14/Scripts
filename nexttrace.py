@@ -217,9 +217,10 @@ def run_nexttrace(label: str, cmd: List[str]) -> int:
     except FileNotFoundError:
         print("\n[错误] 未找到 nexttrace 命令：请确认已安装并已加入 PATH\n")
         return 127
-    except KeyboardInterrupt:
-        print("\n[中断] 用户终止\n")
-        return 130
+
+    # 如果 nexttrace 因为 SIGINT(CTRL+C) 退出（某些环境下 Python 不一定抛 KeyboardInterrupt），也直接终止脚本
+    if rc == 130:
+        raise KeyboardInterrupt
 
     status = "OK" if rc == 0 else f"EXIT={rc}"
     # 结束后也给一个明显的结束分隔（不再把备注放在最后，而是强调状态）
@@ -294,7 +295,10 @@ def main() -> int:
             # if last_rc != 0:
             #     break
     except KeyboardInterrupt:
-        print("\n程序已被中断。\n")
+        print("\n[中断] 检测已被终止，退出脚本。")
+        if done_labels:
+            print("已完成: " + ", ".join(done_labels))
+        print("")
         return 130
 
     # 汇总：一次性列出本次执行的所有备注（每个选项都会显示，不限 HK）
