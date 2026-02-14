@@ -99,25 +99,24 @@ try:
 
         elif choice == 8:
             # HK
-            subprocess.call(["nexttrace", "-M", "103.229.54.254"]) # Akari-HKG
+            subprocess.call(["nexttrace", "-M", "143.14.86.11"]) # Akari-HKG
             subprocess.call(["nexttrace", "-MT", "oss-cn-hongkong.aliyuncs.com"]) # Alibaba-HKG
-            subprocess.call(["nexttrace", "-M", "23.247.139.3"]) # Apernet-HKG
+            subprocess.call(["nexttrace", "-M", "23.247.139.10"]) # Apernet-HKG
             subprocess.call(["nexttrace", "-M", "156.251.180.1"]) # Cera-HKG
             subprocess.call(["nexttrace", "-MT", "-p", "8080", "speedtestbb.hk.chinamobile.com"]) # CMHK-HKG
             subprocess.call(["nexttrace", "-MT", "-p", "8080", "speedtest.hk210.hkg.cn.ctcsci.com"]) # CTCSCI-HKG
             subprocess.call(["nexttrace", "-MT4", "hkg.download.datapacket.com"]) # Datacamp-HKG                        
             subprocess.call(["nexttrace", "-M", "154.3.33.110"]) # Dmit-HKG
-            subprocess.call(["nexttrace", "-M", "209.146.125.124"]) # Eons-HKG
+            subprocess.call(["nexttrace", "-M", "209.146.125.10"]) # Eons-HKG
             subprocess.call(["nexttrace", "-M", "91.199.84.1"]) # Gcore-HKG
             subprocess.call(["nexttrace", "-MT", "-p", "8080", "ookla-speedtest-central.hgconair.hgc.com.hk"]) # HGC-HKG
             subprocess.call(["nexttrace", "-MT", "-p", "8080", "speedtest12.hkbn.net"]) # HKBN-HKG
             subprocess.call(["nexttrace", "-MT", "-p", "8080", "suntechspeedtest.com"]) # HKT-HKG
-            subprocess.call(["nexttrace", "-MT", "-p", "8080", "hytron-hk.hytron.io"]) # Hytron-HKG
+            subprocess.call(["nexttrace", "-M", "38.150.13.64"]) # Hytron-HKG
             subprocess.call(["nexttrace", "-M", "103.116.72.2"]) # Jinx-HKG
-            subprocess.call(["nexttrace", "-M", "38.59.254.150"]) # Kirino-HKG
-            subprocess.call(["nexttrace", "-M", "45.11.104.3"]) # Misaka-HKG
-            subprocess.call(["nexttrace", "-M", "23.26.90.5"]) # Nearoute-HKG
-            subprocess.call(["nexttrace", "-M", "178.173.249.1"]) # NeroCloud-HKG
+            subprocess.call(["nexttrace", "-M", "37.123.198.10"]) # Kirino-HKG
+            subprocess.call(["nexttrace", "-MT4", "-p", "8080", "hk-hkg12.speed.misaka.one"]) # Misaka-HKG
+            subprocess.call(["nexttrace", "-MT4", "-p", "8080", "hk-bgp-speedtest.nearoute.io.prod.hosts.ooklaserver.net"]) # Nearoute-HKG
             subprocess.call(["nexttrace", "-M", "157.254.32.1"]) # Sharon-HKG
             subprocess.call(["nexttrace", "-M", "103.213.4.13"]) # Skywolf-HKG
             subprocess.call(["nexttrace", "-M", "43.251.133.23"]) # WTT-HKG
@@ -125,7 +124,7 @@ try:
             subprocess.call(["nexttrace", "-M", "156.59.103.1"]) # Zenlayer-HKG
             subprocess.call(["nexttrace", "-MT", "ec2.ap-east-1.amazonaws.com"]) # AWS-HKG
             subprocess.call(["nexttrace", "-MT", "q9eastasia.blob.core.windows.net"]) # Azure-HKG
-            subprocess.call(["nexttrace", "-M", "35.220.230.27"]) # GCP-HKG
+            subprocess.call(["nexttrace", "-M", "hk.starxn.ggff.net"]) # GCP-HKG
             # Add more tracing commands for HK option as needed
         elif choice == 9:
             # TW
