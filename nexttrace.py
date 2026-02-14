@@ -6,22 +6,22 @@ import sys
 from typing import List, Tuple, Dict
 
 options = [
-    "0) 🇨🇳 IPV6",
-    "1) 🇨🇳 CT",
-    "2) 🇨🇳 CU",
-    "3) 🇨🇳 CM",
-    "4) 🇨🇳 Others",
-    "5) 🇨🇳 SJW",
-    "6) 🇨🇳 SHA",
-    "7) 🇨🇳 CAN",
-    "8) 🇭🇰 HK",
-    "9) 🇹🇼 TW",
-    "10) 🇯🇵 JP",
-    "11) 🇸🇬 SG",
-    "12) 🇺🇸 US",
-    "13) 🇪🇺 EU",
-    "14) 🇦🇺 AU",
-    "15) 🇺🇳 TG",
+    "0) IPV6",
+    "1) CT",
+    "2) CU",
+    "3) CM",
+    "4) Others",
+    "5) SJW",
+    "6) SHA",
+    "7) CAN",
+    "8) HK",
+    "9) TW",
+    "10) JP",
+    "11) SG",
+    "12) US",
+    "13) EU",
+    "14) AU",
+    "15) TG",
 ]
 
 TraceItem = Tuple[str, List[str]]
