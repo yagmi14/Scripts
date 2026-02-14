@@ -104,6 +104,7 @@ TRACES: Dict[int, List[TraceItem]] = {
         ("Hytron-HKG", ["nexttrace", "-M", "38.150.13.64"]),
         ("Jinx-HKG", ["nexttrace", "-M", "103.116.72.2"]),
         ("Kirino-HKG", ["nexttrace", "-M", "37.123.198.10"]),
+        ("LANDUPS-HKG", ["nexttrace", "-M", "103.46.184.1"]),
         ("Misaka-HKG", ["nexttrace", "-MT4", "-p", "8080", "hk-hkg12.speed.misaka.one"]),
         ("Nearoute-HKG", ["nexttrace", "-MT4", "-p", "8080", "hk-bgp-speedtest.nearoute.io.prod.hosts.ooklaserver.net"]),
         ("Sharon-HKG", ["nexttrace", "-M", "157.254.32.1"]),
