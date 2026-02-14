@@ -107,6 +107,7 @@ TRACES: Dict[int, List[TraceItem]] = {
         ("LANDUPS-HKG", ["nexttrace", "-M", "103.46.184.1"]),
         ("Misaka-HKG", ["nexttrace", "-MT4", "-p", "8080", "hk-hkg12.speed.misaka.one"]),
         ("Nearoute-HKG", ["nexttrace", "-MT4", "-p", "8080", "hk-bgp-speedtest.nearoute.io.prod.hosts.ooklaserver.net"]),
+        ("Sakura-HKG", ["nexttrace", "-MT", "-p", "8080", "speedtest.hkg01.node.as9516.com"]),
         ("Sharon-HKG", ["nexttrace", "-M", "157.254.32.1"]),
         ("Skywolf-HKG", ["nexttrace", "-M", "103.213.4.13"]),
         ("Tencent-HKG", ["nexttrace", "-MT", "feitsui-hkg-1251417183.cos.ap-hongkong.myqcloud.com"]),
