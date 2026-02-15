@@ -174,7 +174,7 @@ TRACES: Dict[int, List[TraceItem]] = {
         ("Ziply-SEA", ["nexttrace", "-MT4", "-p", "8080", "speedtest1-sttlwawb.as20055.net"]),
         ("OVH-HIL", ["nexttrace", "-M4", "hil.proof.ovh.us"]),
         ("Vultr-LAX", ["nexttrace", "-M4", "lax-ca-us-ping.vultr.com"]),
-        ("AWS-OR", ["nexttrace", "-M", "ec2.us-west-2.amazonaws.com"]),
+        ("AWS-OR", ["nexttrace", "-MT", "ec2.us-west-2.amazonaws.com"]),
         ("GCP-OR", ["nexttrace", "-M", "35.247.10.7"]),
     ],
     13: [
