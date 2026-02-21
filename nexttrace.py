@@ -126,9 +126,9 @@ TRACES: Dict[int, List[TraceItem]] = {
     10: [
         ("Akamai-NRT", ["nexttrace", "-M4", "speedtest.tokyo2.linode.com"]),
         ("Datacamp-NRT", ["nexttrace", "-M4", "tyo.download.datapacket.com"]),
-        ("Dmit-NRT", ["nexttrace", "-M", "45.88.193.16"]),
+        ("Dmit-NRT", ["nexttrace", "-M", "154.31.112.5"]),
         ("Eons-NRT", ["nexttrace", "-M", "103.168.154.1"]),
-        ("HostHatch-NRT", ["nexttrace", "-M", "jp.hosthatch-a.9929.live"]),
+        ("HostHatch-NRT", ["nexttrace", "-M", "31.57.218.1"]),
         ("Jinx-NRT", ["nexttrace", "-M", "172.81.102.192"]),
         ("Kddi-NRT", ["nexttrace", "-M", "106.180.224.1"]),
         ("Kirino-NRT", ["nexttrace", "-M", "212.107.30.65"]),
