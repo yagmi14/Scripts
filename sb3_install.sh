@@ -30,7 +30,7 @@ OS="$(detect_os)"
 [[ "$OS" == "unknown" ]] && { echo "不支持/未识别的系统"; exit 1; }
 
 # 统一用你指定的安装命令（Debian / Alpine 都走这条）
-bash <(curl -fsSL https://sing-box.app/deb-install.sh)
+curl -fsSL https://sing-box.app/install.sh | sh
 
 mkdir -p "$CONF_DIR"
 echo '{"log":{"disabled":false,"level":"info","timestamp":true}}' > "$LOG_JSON"
