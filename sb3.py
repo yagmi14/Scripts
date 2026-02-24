@@ -26,11 +26,47 @@ def generate_outbounds_config(outbounds_config_content, tag_out):
         outbounds_config.write(outbounds_config_content)
     return outbounds_config_path
 
-def restart_service():
-    subprocess.run(["systemctl", "restart", "sb3"])
-    
-def status_service():
-    subprocess.run(["systemctl", "status", "sb3"])
+def _get_os_release():
+    data = {}
+    try:
+        with open("/etc/os-release", "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                data[k] = v.strip().strip('"')
+    except FileNotFoundError:
+        pass
+    return data
+
+def _is_alpine():
+    osr = _get_os_release()
+    return osr.get("ID", "").lower() == "alpine"
+
+def _is_debian_family():
+    osr = _get_os_release()
+    _id = osr.get("ID", "").lower()
+    like = osr.get("ID_LIKE", "").lower()
+    # 常见 Debian 系
+    if _id in {"debian", "ubuntu", "linuxmint", "raspbian", "kali", "pop"}:
+        return True
+    return "debian" in like
+
+# 按系统动态定义两个函数
+if _is_alpine():
+    def restart_service():
+        subprocess.run(["rc-service", "sb3", "restart"])
+
+    def status_service():
+        subprocess.run(["rc-service", "sb3", "status"])
+else:
+    # 按你的要求：Debian系用 systemctl（也覆盖其它非 alpine 的情况）
+    def restart_service():
+        subprocess.run(["systemctl", "restart", "sb3"])
+
+    def status_service():
+        subprocess.run(["systemctl", "status", "sb3"])
 
 def list_outbound_files(directory_path):
     """
