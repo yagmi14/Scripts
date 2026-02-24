@@ -3,6 +3,25 @@ import subprocess
 import datetime
 import sys
 import re
+import json
+import base64
+import binascii
+from typing import Optional
+
+# --- 2022 method 对应的随机字节长度（可扩展） ---
+METHOD_BYTES = {
+    "2022-blake3-aes-256-gcm": 32,
+    "2022-blake3-aes-128-gcm": 16,
+    # 其它默认 32
+}
+
+# --- 菜单映射（可扩展）---
+METHOD_MENU = {
+    "1": "2022-blake3-aes-256-gcm",
+    "2": "2022-blake3-aes-128-gcm",
+    "3": "aes-256-gcm",
+}
+DEFAULT_METHOD_KEY = "1"
 
 # 获取当前时间戳
 now = datetime.datetime.now()
@@ -107,6 +126,97 @@ def find_next_available_port(directory):
                 max_number = max(max_number, int(number[0]))
     return max_number + 1 if max_number != -1 else 43001
 
+def _py_base64_rand(nbytes: int) -> str:
+    """Python fallback: base64(os.urandom(nbytes))"""
+    return base64.b64encode(os.urandom(nbytes)).decode("utf-8")
+
+
+def _validate_base64(s: str) -> bool:
+    """验证输出确实是 base64（宽松：允许末尾=）"""
+    try:
+        base64.b64decode(s, validate=True)
+        return True
+    except (binascii.Error, ValueError):
+        return False
+
+
+def _singbox_base64_rand(nbytes: int) -> Optional[str]:
+    """
+    调用 sing-box 生成 base64 随机串。
+    返回 None 表示 sing-box 不可用/输出异常。
+    """
+    try:
+        p = subprocess.run(
+            ["sing-box", "generate", "rand", "--base64", str(nbytes)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError:
+        return None
+    except subprocess.CalledProcessError:
+        return None
+
+    # sing-box 可能输出多行：取最后一个非空行
+    lines = [ln.strip() for ln in (p.stdout or "").splitlines() if ln.strip()]
+    if not lines:
+        return None
+
+    candidate = lines[-1]
+    # 防止把日志当密码
+    if not _validate_base64(candidate):
+        return None
+
+    return candidate
+
+
+def generate_password(method: str) -> str:
+    """
+    生成 password：
+    - 2022-blake3-aes-256-gcm -> 32 bytes base64
+    - 2022-blake3-aes-128-gcm -> 16 bytes base64
+    - 其它 -> 32 bytes base64
+    优先 sing-box，失败 fallback。
+    """
+    nbytes = METHOD_BYTES.get(method, 32)
+
+    pw = _singbox_base64_rand(nbytes)
+    if pw is not None:
+        return pw
+
+    return _py_base64_rand(nbytes)
+
+def select_method() -> str:
+    """
+    method 选择：支持
+    - 回车：默认 1
+    - 输入 1/2/3：选择预设
+    - 输入其它非纯数字字符串：视为手动 method（直接使用）
+    - 输入其它纯数字：提示错误并重试
+    """
+    print("Please select the method:")
+    for k, v in METHOD_MENU.items():
+        print(f"{k}. {v}")
+    print(f"(Press Enter for default: {METHOD_MENU[DEFAULT_METHOD_KEY]})")
+
+    while True:
+        raw = input("method: ").strip()
+
+        if raw == "":
+            return METHOD_MENU[DEFAULT_METHOD_KEY]
+
+        if raw in METHOD_MENU:
+            return METHOD_MENU[raw]
+
+        # 纯数字但不在菜单里：判定为无效，重试
+        if raw.isdigit():
+            print("Incorrect input (unknown option). Please re-enter.")
+            continue
+
+        # 非纯数字：当作手动 method
+        print(f"Using custom method: {raw}")
+        return raw
+
 def main():
     while True:
         try:
@@ -183,28 +293,15 @@ def option_1():
             
             tag_in = "shadowsocks-in"
             tag_in_port = f"{tag_in}_{port}"
-            
-            print("Please select the method:")
-            print("1. 2022-blake3-aes-256-gcm")
-            print("2. 2022-blake3-aes-128-gcm")
-            print("3. aes-256-gcm")
 
-            method = input("method: ")
-            if method == "":
-                method = "2022-blake3-aes-256-gcm"
-            elif method == "1":
-                method = "2022-blake3-aes-256-gcm"
-            elif method == "2":
-                method = "2022-blake3-aes-128-gcm"
-            elif method == "3":
-                method = "aes-256-gcm"
-            else:
-                print("Incorrect input, please re-enter.")
-
+            method = select_method()
             print("Your selected method is:", method)
 
+            password = generate_password(method)
+            print("Generated password:", password)
+
             route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"' + tag_out + '"}]}}')
-            inbounds_config_content = ('{"inbounds":[{"type":"shadowsocks","tag":"' + tag_in + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4="}]}')
+            inbounds_config_content = ('{"inbounds":[{"type":"shadowsocks","tag":"' + tag_in + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"method":"' + method + '","password":"' + password + '"}]}')
 
             route_config_path = generate_route_config(route_config_content, port)
             inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
