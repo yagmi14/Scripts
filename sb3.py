@@ -138,8 +138,7 @@ def option_1():
         print("3) VLESS-gRPC-REALITY")
         print("4) VLESS-HTTP2-REALITY")
         print("5) Hysteria2")
-        print("6) VLESS-Vision-REALITY_2")
-        print("7) AnyTLS")
+        print("6) AnyTLS")
 
         choice = input("Please select:")
 
@@ -151,7 +150,8 @@ def option_1():
             
             print("Please select the method:")
             print("1. 2022-blake3-aes-256-gcm")
-            print("2. aes-256-gcm")
+            print("2. 2022-blake3-aes-128-gcm")
+            print("3. aes-256-gcm")
 
             method = input("method: ")
             if method == "":
@@ -159,6 +159,8 @@ def option_1():
             elif method == "1":
                 method = "2022-blake3-aes-256-gcm"
             elif method == "2":
+                method = "2022-blake3-aes-128-gcm"
+            elif method == "3":
                 method = "aes-256-gcm"
             else:
                 print("Incorrect input, please re-enter.")
@@ -166,7 +168,7 @@ def option_1():
             print("Your selected method is:", method)
 
             route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"' + tag_out + '"}]}}')
-            inbounds_config_content = ('{"inbounds":[{"type":"shadowsocks","tag":"' + tag_in + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4=","multiplex":{"enabled":true,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')
+            inbounds_config_content = ('{"inbounds":[{"type":"shadowsocks","tag":"' + tag_in + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"method":"' + method + '","password":"W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4="}]}')
 
             route_config_path = generate_route_config(route_config_content, port)
             inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
@@ -187,12 +189,12 @@ def option_1():
 
             route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"' + tag_out + '"}]}}')
             inbounds_config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_port + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98","flow":"xtls-rprx-vision"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}}}]}')
-
+            
             route_config_path = generate_route_config(route_config_content, port)
             inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
                 
             restart_service()            
-            status_service()            
+            status_service() 
         
         elif choice == "3":
             print("VLESS-gRPC-REALITY")
@@ -250,26 +252,6 @@ def option_1():
             status_service()
 
         elif choice == "6":
-            print("VLESS-Vision-REALITY_2")
-            
-            tag_in = "vless-in"
-            tag_in_port = f"{tag_in}_{port}"            
-            
-            domain = input("domain: ")
-            if domain == "":
-                domain = "cdn-design.tesla.com"
-            print(domain)
-
-            route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"' + tag_out + '"}]}}')
-            inbounds_config_content = ('{"inbounds":[{"type":"vless","tag":"' + tag_in_port + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"users":[{"uuid":"f8b5cc81-d25c-4d22-92b6-d10a055f7e98","flow":"xtls-rprx-vision"}],"tls":{"enabled":true,"server_name":"' + domain + '","reality":{"enabled":true,"handshake":{"server":"' + domain + '","server_port":443},"private_key":"oOyJjI_Cdn5CfDoKK9HtLai8HVS0jfBbHUz3ytRhOUY","short_id":["4c10a4acb2917613"]}}}]}')
-
-            route_config_path = generate_route_config(route_config_content, port)
-            inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
-                
-            restart_service()            
-            status_service()
-
-        elif choice == "7":
             print("AnyTLS")
             
             tag_in = "anytls-in"
@@ -335,30 +317,11 @@ def option_2():
             password = "W46bWMw2ZfuN9BzV2iTjLjp6INdT1oZLZ8WfpLTPRl4="
         print(password)
 
-        print("1) Shadowsocks")
-        print("2) Shadowsocks_2")
-
-        choice = input("Please select:")
-
-        if choice == "1":
-            print("Shadowsocks")
-
-            outbounds_config_content = ('{"outbounds":[{"type":"shadowsocks","tag":"' + tag_out + '","server":"' + ip + '","server_port":' + port + ',"method":"' + method + '","password":"' + password + '","multiplex":{"enabled":true,"protocol":"h2mux","max_connections":8,"min_streams":16,"padding":true,"brutal":{"enabled":true,"up_mbps":1000,"down_mbps":1000}}}]}')            
-                  
-            outbounds_config_path = generate_outbounds_config(outbounds_config_content, tag_out)
+        outbounds_config_content = ('{"outbounds":[{"type":"shadowsocks","tag":"' + tag_out + '","server":"' + ip + '","server_port":' + port + ',"method":"' + method + '","password":"' + password + '"}]}')            
+        outbounds_config_path = generate_outbounds_config(outbounds_config_content, tag_out)
             
-            restart_service()            
-            status_service()
-            
-        elif choice == "2":
-            print("Shadowsocks_2")
-
-            outbounds_config_content = ('{"outbounds":[{"type":"shadowsocks","tag":"' + tag_out + '","server":"' + ip + '","server_port":' + port + ',"method":"' + method + '","password":"' + password + '"}]}')            
-                  
-            outbounds_config_path = generate_outbounds_config(outbounds_config_content, tag_out)
-            
-            restart_service()            
-            status_service()
+        restart_service()            
+        status_service()
 
     except KeyboardInterrupt:
         print("\nThe program has been interrupted.")
