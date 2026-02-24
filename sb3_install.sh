@@ -3,6 +3,7 @@ set -eu
 
 CONF_DIR="/usr/local/etc/sb3/conf"
 LOG_JSON="$CONF_DIR/00_log.json"
+OUTBOUNDS_DIRECT_JSON="$CONF_DIR/outbounds_direct.json"
 
 require_root() {
   if [ "$(id -u)" -ne 0 ]; then
@@ -66,6 +67,21 @@ install_sing_box_alpine() {
 ensure_conf() {
   mkdir -p "$CONF_DIR"
   printf '%s\n' '{"log":{"disabled":false,"level":"info","timestamp":true}}' > "$LOG_JSON"
+}
+
+write_outbounds_direct() {
+  mkdir -p "$CONF_DIR"
+  printf '%s\n' '{"outbounds": [{"type": "direct", "tag": "direct-out"}]}' > "$OUTBOUNDS_DIRECT_JSON"
+}
+
+restart_sb3() {
+  if command -v systemctl >/dev/null 2>&1; then
+    systemctl restart sb3 >/dev/null 2>&1 || systemctl start sb3
+  elif command -v rc-service >/dev/null 2>&1; then
+    rc-service sb3 restart >/dev/null 2>&1 || rc-service sb3 start
+  else
+    echo "无法重启 sb3：未找到 systemctl 或 rc-service"
+  fi
 }
 
 write_systemd_service() {
@@ -146,14 +162,18 @@ main() {
     debian)
       install_sing_box_debian
       ensure_conf
+      write_outbounds_direct
       write_systemd_service
-      echo "Debian 系：已写入 systemd 服务 /etc/systemd/system/sb3.service，并设置开机自启（enable）。"
+      restart_sb3
+      echo "Debian 系：已写入 systemd 服务 /etc/systemd/system/sb3.service，并设置开机自启（enable），并已重启/启动 sb3。"
       ;;
     alpine)
       install_sing_box_alpine
       ensure_conf
+      write_outbounds_direct
       write_openrc_service
-      echo "Alpine：已写入 OpenRC 服务 /etc/init.d/sb3，并设置开机自启（rc-update add default）。"
+      restart_sb3
+      echo "Alpine：已写入 OpenRC 服务 /etc/init.d/sb3，并设置开机自启（rc-update add default），并已重启/启动 sb3。"
       ;;
     *)
       echo "不支持的系统：未识别为 Debian 系或 Alpine"
