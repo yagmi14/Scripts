@@ -340,9 +340,9 @@ def option_2():
         elif method == "1":
             method = "2022-blake3-aes-256-gcm"
         elif method == "2":
-            method = "aes-256-gcm"
+            method = "2022-blake3-aes-128-gcm"
         elif method == "3":
-            method = "aes-128-gcm"
+            method = "aes-256-gcm"
         else:
             print("Incorrect input, please re-enter.")
 
