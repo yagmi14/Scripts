@@ -300,34 +300,14 @@ def option_1():
             password = generate_password(method)
             print("Generated password:", password)
 
-            # ✅ 强烈建议：route inbound 和 inbounds tag 保持一致，避免规则匹配不到
-            inbound_tag = tag_in_port
+            route_config_content = ('{"route":{"rules":[{"inbound":"' + tag_in_port + '","outbound":"' + tag_out + '"}]}}')
+            inbounds_config_content = ('{"inbounds":[{"type":"shadowsocks","tag":"' + tag_in_port + '","listen":"::","listen_port":' + port + ',"sniff":true,"sniff_override_destination":true,"method":"' + method + '","password":"' + password + '"}]}')
 
-            route_config = {
-                "route": {
-                    "rules": [
-                        {"inbound": inbound_tag, "outbound": tag_out}
-                    ]
-                }
-            }
-
-            inbounds_config = {
-                "inbounds": [
-                    {
-                        "type": "shadowsocks",
-                        "tag": inbound_tag,
-                        "listen": "::",
-                        "listen_port": int(port),
-                        "sniff": True,
-                        "sniff_override_destination": True,
-                        "method": method,
-                        "password": password,
-                    }
-                ]
-            }
-
-            route_config_content = json.dumps(route_config, ensure_ascii=False, separators=(",", ":"))
-            inbounds_config_content = json.dumps(inbounds_config, ensure_ascii=False, separators=(",", ":"))
+            route_config_path = generate_route_config(route_config_content, port)
+            inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
+                
+            restart_service()            
+            status_service()
             
         elif choice == "2":
             print("VLESS-Vision-REALITY")
