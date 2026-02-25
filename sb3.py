@@ -448,8 +448,8 @@ def option_2():
 
         print("Please select the method:")
         print("1. 2022-blake3-aes-256-gcm")
-        print("2. aes-256-gcm")
-        print("3. aes-128-gcm")
+        print("2. 2022-blake3-aes-128-gcm")
+        print("3. aes-256-gcm")
 
         method = input("method: ")
         if method == "":
