@@ -305,6 +305,8 @@ def option_1():
 
             route_config_path = generate_route_config(route_config_content, port)
             inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
+
+            print(f"Configuration file location for inbounds: {inbounds_config_path}")
                 
             restart_service()            
             status_service()
@@ -325,6 +327,8 @@ def option_1():
             
             route_config_path = generate_route_config(route_config_content, port)
             inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
+
+            print(f"Configuration file location for inbounds: {inbounds_config_path}")
                 
             restart_service()            
             status_service() 
@@ -395,6 +399,8 @@ def option_1():
 
             route_config_path = generate_route_config(route_config_content, port)
             inbounds_config_path = generate_inbounds_config(inbounds_config_content, port)
+
+            print(f"Configuration file location for inbounds: {inbounds_config_path}")
                 
             restart_service()
             status_service()    
@@ -452,6 +458,8 @@ def option_2():
 
         outbounds_config_content = ('{"outbounds":[{"type":"shadowsocks","tag":"' + tag_out + '","server":"' + ip + '","server_port":' + port + ',"method":"' + method + '","password":"' + password + '"}]}')            
         outbounds_config_path = generate_outbounds_config(outbounds_config_content, tag_out)
+
+        print(f"Configuration file location for outbounds: {outbounds_config_path}")
             
         restart_service()            
         status_service()
