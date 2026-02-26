@@ -3,7 +3,7 @@ set -eu
 
 CONF_DIR="/usr/local/etc/sb3/conf"
 LOG_JSON="$CONF_DIR/00_log.json"
-OUTBOUNDS_DIRECT_JSON="$CONF_DIR/outbounds_direct.json"
+OUTBOUNDS_DIRECT_JSON="$CONF_DIR/outbounds_direct_out.json"
 
 require_root() {
   if [ "$(id -u)" -ne 0 ]; then
@@ -71,7 +71,7 @@ ensure_conf() {
 
 write_outbounds_direct() {
   mkdir -p "$CONF_DIR"
-  printf '%s\n' '{"outbounds": [{"type": "direct", "tag": "direct-out"}]}' > "$OUTBOUNDS_DIRECT_JSON"
+  printf '%s\n' '{"outbounds": [{"type": "direct", "tag": "direct_out"}]}' > "$OUTBOUNDS_DIRECT_JSON"
 }
 
 restart_sb3() {
