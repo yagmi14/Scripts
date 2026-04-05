@@ -142,7 +142,10 @@ command_args="run -C $CONF_DIR/"
 
 # 使用 OpenRC 内置 supervise-daemon 做守护 + 异常退出自动重启
 supervisor=supervise-daemon
-respawn_delay=10
+# 失败后重启的间隔时间调整为 5 秒
+respawn_delay=5
+# 0 表示无限制重启，防止 OOM 频繁触发导致进程彻底挂掉
+respawn_max=0
 
 depend() {
   need net
