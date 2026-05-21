@@ -16,6 +16,9 @@ Default paths can be overridden with environment variables:
   EW_SKIP_RELOAD=1      # skip systemctl reload/restart
   EW_PROJECT_DIR=/root/projects/EgressWatch
   EW_CRON_MARKER=egressctl:EgressWatch
+  EW_SPEEDTEST_URL=https://updates.cdn-apple.com/2024FallFCS/fullrestores/072-56000/8475F789-7D9E-4676-8344-803B762D1F3C/iPhone12%2C3%2CiPhone12%2C5_18.2.1_22C161_Restore.ipsw
+  EW_SPEEDTEST_DURATION=15
+  EW_SPEEDTEST_CONNECT_TIMEOUT=15
 """
 from __future__ import annotations
 
@@ -46,6 +49,12 @@ EGRESSWATCH_PYTHON = Path(os.environ.get("EW_PYTHON", str(EGRESSWATCH_PROJECT_DI
 EGRESSWATCH_SCRIPT = os.environ.get("EW_SCRIPT", "egress_watch.py")
 EGRESSWATCH_LOG = os.environ.get("EW_LOG", "run.log")
 EGRESSWATCH_CRON_MARKER = os.environ.get("EW_CRON_MARKER", "egressctl:EgressWatch")
+APPLE_CDN_SPEEDTEST_URL = os.environ.get(
+    "EW_SPEEDTEST_URL",
+    "https://updates.cdn-apple.com/2024FallFCS/fullrestores/072-56000/8475F789-7D9E-4676-8344-803B762D1F3C/iPhone12%2C3%2CiPhone12%2C5_18.2.1_22C161_Restore.ipsw",
+)
+SPEEDTEST_DURATION = int(os.environ.get("EW_SPEEDTEST_DURATION", "15"))
+SPEEDTEST_CONNECT_TIMEOUT = int(os.environ.get("EW_SPEEDTEST_CONNECT_TIMEOUT", "15"))
 
 COUNTRY_GROUPS = ["HK", "JP", "SG", "TW", "KR", "US", "Intl"]
 COUNTRY_CODES = set(COUNTRY_GROUPS[:-1])
@@ -1180,6 +1189,181 @@ def action_change_cron_interval() -> None:
     print("提示：该操作写入的是当前运行 egressctl 的用户 crontab；用 sudo 运行时就是 root 的 crontab。")
 
 
+
+
+def human_size(num_bytes: float) -> str:
+    value = float(num_bytes)
+    units = ["B", "KiB", "MiB", "GiB", "TiB"]
+    for unit in units:
+        if abs(value) < 1024.0 or unit == units[-1]:
+            return f"{value:.2f} {unit}" if unit != "B" else f"{value:.0f} {unit}"
+        value /= 1024.0
+    return f"{value:.2f} TiB"
+
+
+def human_speed(bytes_per_second: float) -> str:
+    mib = float(bytes_per_second) / 1024.0 / 1024.0
+    mbps = float(bytes_per_second) * 8.0 / 1000.0 / 1000.0
+    return f"{mib:.2f} MiB/s ({mbps:.2f} Mbps)"
+
+
+def speedtest_stat_from_output(stdout: str, stderr: str, returncode: int, wall_time: float) -> Dict[str, Any]:
+    stats: Dict[str, Any] = {
+        "ok": False,
+        "returncode": returncode,
+        "size_download": 0.0,
+        "time_total": max(float(wall_time), 0.001),
+        "speed_download": 0.0,
+        "http_code": "",
+        "remote_ip": "",
+        "stderr": stderr.strip(),
+        "stdout": stdout.strip(),
+    }
+
+    m = re.search(
+        r"__EWSTATS__\s+size=(?P<size>[0-9.]+)\s+time=(?P<time>[0-9.]+)\s+speed=(?P<speed>[0-9.]+)\s+code=(?P<code>[0-9]{3})\s+ip=(?P<ip>\S*)",
+        stdout,
+    )
+    if m:
+        stats["size_download"] = float(m.group("size") or 0)
+        stats["time_total"] = max(float(m.group("time") or 0), 0.001)
+        stats["speed_download"] = float(m.group("speed") or 0)
+        stats["http_code"] = m.group("code") or ""
+        stats["remote_ip"] = m.group("ip") or ""
+
+    # curl 28 is expected when --max-time stops an in-progress large download.
+    # Treat it as successful if bytes were actually downloaded.
+    stats["ok"] = returncode == 0 or (returncode == 28 and stats["size_download"] > 0)
+    return stats
+
+
+def build_speedtest_curl_args(url: str, proxy: str, duration: int, worker_index: int) -> List[str]:
+    args = [
+        "curl",
+        "-L",
+        "--silent",
+        "--proxy",
+        proxy,
+        "--connect-timeout",
+        str(SPEEDTEST_CONNECT_TIMEOUT),
+        "--max-time",
+        str(duration),
+        "-o",
+        "/dev/null",
+        "-w",
+        "__EWSTATS__ size=%{size_download} time=%{time_total} speed=%{speed_download} code=%{http_code} ip=%{remote_ip}\n",
+    ]
+
+    # In multi-thread mode, request different byte ranges so the workers do not
+    # all start from exactly the same offset. Large Apple restore images are big
+    # enough for these offsets; if the server ignores Range, curl still downloads normally.
+    if worker_index > 0:
+        start = worker_index * 512 * 1024 * 1024
+        args.extend(["--range", f"{start}-"])
+
+    args.append(url)
+    return args
+
+
+def run_apple_cdn_speedtest(proxy: str, workers: int, duration: int, url: str) -> List[Dict[str, Any]]:
+    if not shutil.which("curl"):
+        raise RuntimeError("未找到 curl，无法测速。请先安装 curl。")
+    if workers < 1:
+        raise ValueError("线程数必须大于等于 1。")
+
+    processes: List[Tuple[int, float, subprocess.Popen[str]]] = []
+    for index in range(workers):
+        args = build_speedtest_curl_args(url, proxy, duration, index)
+        start = time.monotonic()
+        proc = subprocess.Popen(args, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        processes.append((index, start, proc))
+
+    results: List[Dict[str, Any]] = []
+    for index, start, proc in processes:
+        stdout, stderr = proc.communicate()
+        wall_time = max(time.monotonic() - start, 0.001)
+        stat = speedtest_stat_from_output(stdout or "", stderr or "", proc.returncode, wall_time)
+        stat["worker"] = index + 1
+        stat["wall_time"] = wall_time
+        results.append(stat)
+
+    return results
+
+
+def print_speedtest_results(node_name: str, proxy: str, workers: int, duration: int, url: str, results: List[Dict[str, Any]]) -> None:
+    ok_results = [r for r in results if r.get("ok")]
+    total_bytes = sum(float(r.get("size_download") or 0) for r in results)
+    elapsed = max([float(r.get("time_total") or 0.001) for r in results] + [0.001])
+    aggregate_speed = total_bytes / elapsed
+
+    print("\n测速结果：")
+    print(f"节点：{node_name}")
+    print(f"模式：{'单线程' if workers == 1 else str(workers) + '线程'}")
+    print(f"代理：{proxy}")
+    print(f"下载源：{url}")
+    print(f"测速时长：{duration} 秒")
+    print(f"总下载：{human_size(total_bytes)}")
+    print(f"聚合速度：{human_speed(aggregate_speed)}")
+
+    if workers > 1:
+        print("\n各线程：")
+        for r in results:
+            size = float(r.get("size_download") or 0)
+            seconds = max(float(r.get("time_total") or 0.001), 0.001)
+            speed = size / seconds
+            status = "OK" if r.get("ok") else f"失败 rc={r.get('returncode')}"
+            remote_ip = str(r.get("remote_ip") or "-")
+            print(f"  线程 {r.get('worker')}: {human_speed(speed)}，下载 {human_size(size)}，HTTP {r.get('http_code') or '-'}，CDN IP {remote_ip}，{status}")
+
+    failed = [r for r in results if not r.get("ok")]
+    if failed and not ok_results:
+        print("\n测速失败详情：")
+        for r in failed:
+            msg = r.get("stderr") or r.get("stdout") or "无错误输出"
+            print(f"  线程 {r.get('worker')}: rc={r.get('returncode')} {msg}")
+    elif failed:
+        print("\n部分线程失败：")
+        for r in failed:
+            msg = r.get("stderr") or r.get("stdout") or "无错误输出"
+            print(f"  线程 {r.get('worker')}: rc={r.get('returncode')} {msg}")
+
+
+def action_speedtest(mihomo: Dict[str, Any], ew: Dict[str, Any]) -> None:
+    node = choose_node(mihomo, ew)
+    if not node:
+        return
+
+    proxy = proxy_for_ip_check(node)
+    if not proxy:
+        print("该节点没有可用 socks 入站，无法测速。")
+        return
+
+    print("\n选择 Apple CDN 下载测速模式：")
+    print("1. 单线程")
+    print("2. 4线程")
+    choice = read_choice("选择模式：", 1, 2, allow_q=True)
+    if choice is None:
+        return
+
+    workers = 1 if choice == 1 else 4
+    duration = ask_int("测速时长，单位：秒", SPEEDTEST_DURATION, low=5, high=600)
+    url = ask("Apple CDN 测速文件 URL", APPLE_CDN_SPEEDTEST_URL, required=True)
+
+    print(f"\n即将通过 {proxy} 下载 Apple CDN 文件测速：")
+    print(f"节点：{node['name']}")
+    print(f"模式：{'单线程' if workers == 1 else '4线程'}")
+    print(f"时长：{duration} 秒")
+    if not ask_bool("确认开始测速", True):
+        return
+
+    try:
+        results = run_apple_cdn_speedtest(proxy, workers, duration, url)
+    except KeyboardInterrupt:
+        print("\n测速已中止。")
+        return
+
+    print_speedtest_results(node["name"], proxy, workers, duration, url, results)
+
 def load_configs() -> Tuple[Dict[str, Any], Dict[str, Any]]:
     mihomo = load_yaml(MIHOMO_CONFIG)
     ew = load_yaml(EGRESSWATCH_CONFIG)
@@ -1217,6 +1401,7 @@ def main() -> None:
             print("5. 选择节点执行 IP 质量检测")
             print("6. 仅同步/重建 Mihomo 分组")
             print("7. 修改定时检测 IP 时间间隔")
+            print("8. 选择节点测速（Apple CDN）")
             print("q. 退出")
             choice = input("请选择：").strip().lower()
 
@@ -1225,7 +1410,7 @@ def main() -> None:
             if choice == "7":
                 action_change_cron_interval()
                 pause()
-            elif choice in {"1", "2", "3", "4", "5", "6"}:
+            elif choice in {"1", "2", "3", "4", "5", "6", "8"}:
                 mihomo, ew = load_configs()
                 if choice == "1":
                     print_groups(mihomo, ew)
@@ -1244,6 +1429,9 @@ def main() -> None:
                     pause()
                 elif choice == "6":
                     action_sync_groups(mihomo, ew)
+                    pause()
+                elif choice == "8":
+                    action_speedtest(mihomo, ew)
                     pause()
             else:
                 print("无效选择。")
