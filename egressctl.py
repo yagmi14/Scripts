@@ -14,6 +14,8 @@ Default paths can be overridden with environment variables:
   EW_PORT_MAX=11999
   EW_SKIP_TEST=1        # skip `mihomo -t -f ...` validation
   EW_SKIP_RELOAD=1      # skip systemctl reload/restart
+  EW_PROJECT_DIR=/root/projects/EgressWatch
+  EW_CRON_MARKER=egressctl:EgressWatch
 """
 from __future__ import annotations
 
@@ -38,6 +40,12 @@ MIHOMO_SERVICE = os.environ.get("MIHOMO_SERVICE", "mihomo")
 PORT_MIN = int(os.environ.get("EW_PORT_MIN", "11000"))
 PORT_MAX = int(os.environ.get("EW_PORT_MAX", "11999"))
 LOCAL_LISTEN = os.environ.get("EW_LOCAL_LISTEN", "127.0.0.1")
+EGRESSWATCH_PROJECT_DIR = Path(os.environ.get("EW_PROJECT_DIR", "/root/projects/EgressWatch"))
+EGRESSWATCH_ENV = Path(os.environ.get("EW_ENV_FILE", str(EGRESSWATCH_PROJECT_DIR / ".env")))
+EGRESSWATCH_PYTHON = Path(os.environ.get("EW_PYTHON", str(EGRESSWATCH_PROJECT_DIR / ".venv/bin/python")))
+EGRESSWATCH_SCRIPT = os.environ.get("EW_SCRIPT", "egress_watch.py")
+EGRESSWATCH_LOG = os.environ.get("EW_LOG", "run.log")
+EGRESSWATCH_CRON_MARKER = os.environ.get("EW_CRON_MARKER", "egressctl:EgressWatch")
 
 COUNTRY_GROUPS = ["HK", "JP", "SG", "TW", "KR", "US", "Intl"]
 COUNTRY_CODES = set(COUNTRY_GROUPS[:-1])
@@ -1084,6 +1092,94 @@ def action_ip_check(mihomo: Dict[str, Any], ew: Dict[str, Any]) -> None:
         print(f"检测脚本执行失败，退出码：{bash_rc}", file=sys.stderr)
 
 
+def shell_quote(value: Any) -> str:
+    """Small POSIX-safe single-quote helper for crontab commands."""
+    s = str(value)
+    return "'" + s.replace("'", "'\"'\"'") + "'"
+
+
+def current_crontab_lines() -> List[str]:
+    proc = subprocess.run(["crontab", "-l"], text=True, capture_output=True)
+    if proc.returncode == 0:
+        return proc.stdout.splitlines()
+    # crontab -l returns 1 when the current user has no crontab.
+    combined = f"{proc.stdout}\n{proc.stderr}".lower()
+    if "no crontab" in combined or "no crontab for" in combined:
+        return []
+    raise RuntimeError((proc.stderr or proc.stdout or "读取 crontab 失败").strip())
+
+
+def install_crontab_lines(lines: List[str]) -> None:
+    content = "\n".join(lines).rstrip() + "\n"
+    proc = subprocess.run(["crontab", "-"], input=content, text=True, capture_output=True)
+    if proc.returncode != 0:
+        raise RuntimeError((proc.stderr or proc.stdout or "写入 crontab 失败").strip())
+
+
+def is_egresswatch_cron_line(line: str) -> bool:
+    stripped = line.strip()
+    if not stripped or stripped.startswith("#"):
+        return False
+    if EGRESSWATCH_CRON_MARKER in stripped:
+        return True
+    return "egress_watch.py" in stripped and "EgressWatch" in stripped
+
+
+def build_egresswatch_cron_line(interval_minutes: int) -> str:
+    if interval_minutes < 1:
+        raise ValueError("分钟间隔必须大于等于 1。")
+
+    project_dir = shell_quote(EGRESSWATCH_PROJECT_DIR)
+    env_file = shell_quote(EGRESSWATCH_ENV)
+    python_bin = shell_quote(EGRESSWATCH_PYTHON)
+    script = shell_quote(EGRESSWATCH_SCRIPT)
+    log_file = shell_quote(EGRESSWATCH_LOG)
+
+    # Cron has only five fields, so arbitrary intervals such as 90 minutes cannot
+    # be represented exactly with a simple "*/N" expression. Running once per
+    # minute with an epoch-minute modulo guard gives an exact N-minute interval.
+    # Percent signs must be escaped in crontab commands.
+    return (
+        f"* * * * * "
+        f"cd {project_dir} && "
+        f"[ $(( $(date +\\%s) / 60 \\% {interval_minutes} )) -eq 0 ] && "
+        f". {env_file} && "
+        f"{python_bin} {script} >> {log_file} 2>&1 "
+        f"# {EGRESSWATCH_CRON_MARKER}; interval={interval_minutes}m"
+    )
+
+
+def describe_current_egresswatch_cron(lines: List[str]) -> None:
+    matches = [line for line in lines if is_egresswatch_cron_line(line)]
+    if not matches:
+        print("当前 crontab 未找到 EgressWatch 定时任务。")
+        return
+    print("当前 EgressWatch 定时任务：")
+    for line in matches:
+        print(f"  {line}")
+
+
+def action_change_cron_interval() -> None:
+    print("\n修改定时检测 IP 时间间隔")
+    lines = current_crontab_lines()
+    describe_current_egresswatch_cron(lines)
+
+    interval = ask_int("输入检测间隔，单位：分钟", 10, low=1, high=43200)
+    new_line = build_egresswatch_cron_line(interval)
+
+    kept_lines = [line for line in lines if not is_egresswatch_cron_line(line)]
+    kept_lines.append(new_line)
+
+    print("\n将写入当前用户 crontab：")
+    print(f"  {new_line}")
+    if not ask_bool("确认覆盖原 EgressWatch 定时任务", True):
+        return
+
+    install_crontab_lines(kept_lines)
+    print(f"已更新：EgressWatch 将每 {interval} 分钟检测一次 IP。")
+    print("提示：该操作写入的是当前运行 egressctl 的用户 crontab；用 sudo 运行时就是 root 的 crontab。")
+
+
 def load_configs() -> Tuple[Dict[str, Any], Dict[str, Any]]:
     mihomo = load_yaml(MIHOMO_CONFIG)
     ew = load_yaml(EGRESSWATCH_CONFIG)
@@ -1120,30 +1216,35 @@ def main() -> None:
             print("4. 删除节点")
             print("5. 选择节点执行 IP 质量检测")
             print("6. 仅同步/重建 Mihomo 分组")
+            print("7. 修改定时检测 IP 时间间隔")
             print("q. 退出")
             choice = input("请选择：").strip().lower()
 
-            mihomo, ew = load_configs()
-            if choice == "1":
-                print_groups(mihomo, ew)
-                pause()
-            elif choice == "2":
-                action_add(mihomo, ew)
-                pause()
-            elif choice == "3":
-                action_edit(mihomo, ew)
-                pause()
-            elif choice == "4":
-                action_delete(mihomo, ew)
-                pause()
-            elif choice == "5":
-                action_ip_check(mihomo, ew)
-                pause()
-            elif choice == "6":
-                action_sync_groups(mihomo, ew)
-                pause()
-            elif choice in {"q", "quit", "exit"}:
+            if choice in {"q", "quit", "exit"}:
                 return
+            if choice == "7":
+                action_change_cron_interval()
+                pause()
+            elif choice in {"1", "2", "3", "4", "5", "6"}:
+                mihomo, ew = load_configs()
+                if choice == "1":
+                    print_groups(mihomo, ew)
+                    pause()
+                elif choice == "2":
+                    action_add(mihomo, ew)
+                    pause()
+                elif choice == "3":
+                    action_edit(mihomo, ew)
+                    pause()
+                elif choice == "4":
+                    action_delete(mihomo, ew)
+                    pause()
+                elif choice == "5":
+                    action_ip_check(mihomo, ew)
+                    pause()
+                elif choice == "6":
+                    action_sync_groups(mihomo, ew)
+                    pause()
             else:
                 print("无效选择。")
                 pause()
