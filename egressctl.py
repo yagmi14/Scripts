@@ -409,6 +409,22 @@ def read_choice(prompt: str, low: int, high: int, allow_q: bool = True) -> Optio
         print(f"请输入 {low}-{high} 的数字" + ("，或 q 返回。" if allow_q else "。"))
 
 
+def read_choice_default(prompt: str, low: int, high: int, default: int, allow_q: bool = True) -> Optional[int]:
+    if not (low <= default <= high):
+        raise ValueError("默认值不在可选范围内。")
+    while True:
+        raw = input(f"{prompt} [{default}]: ").strip()
+        if not raw:
+            return default
+        if allow_q and raw.lower() in {"q", "quit", "exit", "返回"}:
+            return None
+        if raw.isdigit():
+            val = int(raw)
+            if low <= val <= high:
+                return val
+        print(f"请输入 {low}-{high} 的数字" + ("，或 q 返回；直接回车使用默认值。" if allow_q else "；直接回车使用默认值。"))
+
+
 def choose_node(mihomo: Dict[str, Any], ew: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     grouped = print_groups(mihomo, ew)
     gi = read_choice("选择分组序号：", 1, len(COUNTRY_GROUPS))
@@ -991,6 +1007,96 @@ def action_add(mihomo: Dict[str, Any], ew: Dict[str, Any]) -> None:
         print(f"新增完成：{name} -> {socks_url}，分组：{group_of_name(name)}")
 
 
+def bool_default(value: Any, default: bool = False) -> bool:
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return default
+    s = str(value).strip().lower()
+    if s in {"1", "true", "yes", "y", "on", "是"}:
+        return True
+    if s in {"0", "false", "no", "n", "off", "否"}:
+        return False
+    return default
+
+
+def ask_optional_clear(prompt: str, current: Any = None) -> str:
+    current_s = norm_name(current)
+    value = ask(f"{prompt}（输入 - 清空）", current_s if current_s else None, required=False)
+    if value.strip() == "-":
+        return ""
+    return value
+
+
+def editable_port_default(proxy: Optional[Dict[str, Any]]) -> Optional[int]:
+    if not proxy:
+        return None
+    try:
+        return int(proxy.get("port"))
+    except Exception:
+        return None
+
+
+def edit_proxy_params(existing_proxy: Optional[Dict[str, Any]], old_name: str) -> Dict[str, Any]:
+    """Interactively edit an existing Mihomo outbound proxy.
+
+    Extra fields that are not prompted are preserved, so plugin/plugin-opts and
+    other Mihomo-specific options are not lost when editing common parameters.
+    """
+    if existing_proxy is None:
+        print("未找到 Mihomo 出站配置，请手动输入节点参数。")
+        proxy = manual_proxy()
+        proxy["name"] = canonical_node_name(proxy.get("name") or old_name)
+        return proxy
+
+    proxy = copy.deepcopy(existing_proxy)
+    ptype = norm_name(proxy.get("type")).lower()
+    print(f"\n当前出站协议：{ptype or 'unknown'}")
+
+    if ptype in {"ss", "shadowsocks"}:
+        proxy["name"] = canonical_node_name(ask("节点 name", old_name, required=True))
+        proxy["type"] = "ss"
+        proxy["server"] = ask("server", norm_name(proxy.get("server")) or None, required=True)
+        proxy["port"] = ask_int("port", editable_port_default(proxy), low=1, high=65535)
+        proxy["cipher"] = ask("cipher/method", norm_name(proxy.get("cipher")) or "aes-128-gcm", required=True)
+        proxy["password"] = ask("password", str(proxy.get("password")) if proxy.get("password") is not None else None, required=True)
+        proxy["udp"] = ask_bool("udp", bool_default(proxy.get("udp"), True))
+        return proxy
+
+    if ptype in {"socks", "socks5"}:
+        proxy["name"] = canonical_node_name(ask("节点 name", old_name, required=True))
+        proxy["type"] = "socks5"
+        proxy["server"] = ask("server", norm_name(proxy.get("server")) or None, required=True)
+        proxy["port"] = ask_int("port", editable_port_default(proxy), low=1, high=65535)
+        username = ask_optional_clear("username", proxy.get("username"))
+        password = ask_optional_clear("password", proxy.get("password")) if username else ""
+        if username:
+            proxy["username"] = username
+        else:
+            proxy.pop("username", None)
+        if password:
+            proxy["password"] = password
+        else:
+            proxy.pop("password", None)
+        tls = ask_bool("tls", bool_default(proxy.get("tls"), False))
+        if tls:
+            proxy["tls"] = True
+        else:
+            proxy.pop("tls", None)
+        proxy["udp"] = ask_bool("udp", bool_default(proxy.get("udp"), True))
+        return proxy
+
+    print("该协议暂不支持逐项编辑，将保留原有协议字段，只允许修改通用字段。")
+    proxy["name"] = canonical_node_name(ask("节点 name", old_name, required=True))
+    if "server" in proxy:
+        proxy["server"] = ask("server", norm_name(proxy.get("server")) or None, required=True)
+    if "port" in proxy:
+        proxy["port"] = ask_int("port", editable_port_default(proxy), low=1, high=65535)
+    if "udp" in proxy:
+        proxy["udp"] = ask_bool("udp", bool_default(proxy.get("udp"), True))
+    return proxy
+
+
 def action_edit(mihomo: Dict[str, Any], ew: Dict[str, Any]) -> None:
     node = choose_node(mihomo, ew)
     if not node:
@@ -1001,24 +1107,38 @@ def action_edit(mihomo: Dict[str, Any], ew: Dict[str, Any]) -> None:
     old_proxy = copy.deepcopy(find_proxy(mihomo, old_name))
 
     print(f"\n编辑节点：{old_name}")
-    print("粘贴新 ss:// 或 socks5:// 链接；直接回车表示只修改名称并保留原出站配置。")
-    uri = input("新链接：").strip()
+    print("1. 输入新链接（ss:// 或 socks5://）")
+    print("2. 修改节点参数")
+    edit_mode = read_choice("选择编辑方式：", 1, 2, allow_q=True)
+    if edit_mode is None:
+        return
 
-    parsed_proxy: Optional[Dict[str, Any]] = None
-    if uri:
+    new_proxy: Optional[Dict[str, Any]] = None
+
+    if edit_mode == 1:
+        uri = ask("新链接", required=True)
         try:
-            parsed_proxy = parse_share_link(uri)
-            parsed_name = canonical_node_name(parsed_proxy.get("name"))
+            new_proxy = parse_share_link(uri)
+            parsed_name = canonical_node_name(new_proxy.get("name"))
             if parsed_name:
                 print(f"链接内 name：{parsed_name}")
         except Exception as exc:
             print(f"解析失败：{exc}")
             return
 
-    new_name = canonical_node_name(ask("节点 name", old_name, required=True))
-    if not new_name:
-        print("节点 name 不能为空。")
-        return
+        default_name = canonical_node_name(new_proxy.get("name")) or old_name
+        new_name = canonical_node_name(ask("节点 name", default_name, required=True))
+        if not new_name:
+            print("节点 name 不能为空。")
+            return
+        new_proxy["name"] = new_name
+    else:
+        new_proxy = edit_proxy_params(old_proxy, old_name)
+        new_name = canonical_node_name(new_proxy.get("name") or old_name)
+        if not new_name:
+            print("节点 name 不能为空。")
+            return
+        new_proxy["name"] = new_name
 
     port = int(old_port) if old_port else choose_free_port(mihomo, ew)
     socks_url = make_socks_url(port)
@@ -1030,9 +1150,7 @@ def action_edit(mihomo: Dict[str, Any], ew: Dict[str, Any]) -> None:
         target_port = parse_port_from_url(norm_name(target.get("socks"))) if target else None
         remove_named_items(mihomo, ew, new_name, target_port)
 
-    new_proxy = parsed_proxy if parsed_proxy is not None else old_proxy
     if new_proxy is not None:
-        new_proxy["name"] = new_name
         upsert_proxy(mihomo, old_name, new_proxy)
 
     rename_references(mihomo, old_name, new_name)
@@ -1341,7 +1459,7 @@ def action_speedtest(mihomo: Dict[str, Any], ew: Dict[str, Any]) -> None:
     print("\n选择 Apple CDN 下载测速模式：")
     print("1. 单线程")
     print("2. 4线程")
-    choice = read_choice("选择模式：", 1, 2, allow_q=True)
+    choice = read_choice_default("选择模式，直接回车默认单线程", 1, 2, default=1, allow_q=True)
     if choice is None:
         return
 
