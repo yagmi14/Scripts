@@ -24,8 +24,8 @@ Default paths can be overridden with environment variables:
   SUBSCRIPTION_TIMEOUT=30
   SUBSCRIPTION_SYNC_HOURS=4
   SUBSCRIPTION_CRON_MARKER=egressctl:SubscriptionSync
-  EGRESSCTL_SOURCE_URL=https://gist.githubusercontent.com/yagmi14/7295259c4fc4b347326eda389aa42fd9/raw/egressctl.py
-  EGRESSCTL_COMMAND="python3 <(curl --compressed -fsSL https://gist.githubusercontent.com/yagmi14/7295259c4fc4b347326eda389aa42fd9/raw/egressctl.py)"
+  EGRESSCTL_SOURCE_URL=https://raw.githubusercontent.com/yagmi14/Scripts/refs/heads/main/egressctl.py
+  EGRESSCTL_COMMAND="python3 <(curl --compressed -fsSL https://raw.githubusercontent.com/yagmi14/Scripts/refs/heads/main/egressctl.py)"
   EGRESSCTL_EXEC=/usr/local/sbin/egressctl  # optional, only used when explicitly set
 """
 from __future__ import annotations
@@ -73,7 +73,7 @@ SUBSCRIPTION_DEFAULT_INTERVAL_HOURS = int(os.environ.get("SUBSCRIPTION_SYNC_HOUR
 SUBSCRIPTION_CRON_MARKER = os.environ.get("SUBSCRIPTION_CRON_MARKER", "egressctl:SubscriptionSync")
 EGRESSCTL_SOURCE_URL = os.environ.get(
     "EGRESSCTL_SOURCE_URL",
-    "https://gist.githubusercontent.com/yagmi14/7295259c4fc4b347326eda389aa42fd9/raw/egressctl.py",
+    "https://raw.githubusercontent.com/yagmi14/Scripts/refs/heads/main/egressctl.py",
 )
 # For cron jobs, aliases from ~/.zshrc are not available. Use a real command string.
 # If EGRESSCTL_COMMAND is empty, the script uses:
