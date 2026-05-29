@@ -24,6 +24,7 @@ Default paths can be overridden with environment variables:
   SUBSCRIPTION_TIMEOUT=30
   SUBSCRIPTION_SYNC_HOURS=4
   SUBSCRIPTION_CRON_MARKER=egressctl:SubscriptionSync
+  EGRESSCTL_STATE_FILE=~/.config/egressctl/state.yaml  # stores last subscription URLs
   EGRESSCTL_SOURCE_URL=https://raw.githubusercontent.com/yagmi14/Scripts/refs/heads/main/egressctl.py
   EGRESSCTL_COMMAND="python3 <(curl --compressed -fsSL https://raw.githubusercontent.com/yagmi14/Scripts/refs/heads/main/egressctl.py)"
   EGRESSCTL_EXEC=/usr/local/sbin/egressctl  # optional, only used when explicitly set
@@ -82,6 +83,7 @@ EGRESSCTL_SOURCE_URL = os.environ.get(
 EGRESSCTL_COMMAND = os.environ.get("EGRESSCTL_COMMAND", "")
 EGRESSCTL_EXEC = os.environ.get("EGRESSCTL_EXEC", "")
 SUBSCRIPTION_SYNC_LOG = os.environ.get("SUBSCRIPTION_SYNC_LOG", "subscription_sync.log")
+EGRESSCTL_STATE_FILE = Path(os.environ.get("EGRESSCTL_STATE_FILE", str(Path.home() / ".config" / "egressctl" / "state.yaml")))
 
 COUNTRY_GROUPS = ["HK", "JP", "SG", "TW", "KR", "US", "Intl"]
 COUNTRY_CODES = set(COUNTRY_GROUPS[:-1])
@@ -514,11 +516,58 @@ def read_choice_default(prompt: str, low: int, high: int, default: int, allow_q:
         print(f"请输入 {low}-{high} 的数字" + ("，或 q 返回；直接回车使用默认值。" if allow_q else "；直接回车使用默认值。"))
 
 
-def choose_node(mihomo: Dict[str, Any], ew: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    grouped = print_groups(mihomo, ew)
-    gi = read_choice("选择分组序号：", 1, len(COUNTRY_GROUPS))
-    if gi is None:
+def node_from_group_selection(grouped: Dict[str, List[Dict[str, Any]]], group_index: int, node_index: int) -> Optional[Dict[str, Any]]:
+    if not (1 <= group_index <= len(COUNTRY_GROUPS)):
+        print(f"分组号请输入 1-{len(COUNTRY_GROUPS)}。")
         return None
+
+    group = COUNTRY_GROUPS[group_index - 1]
+    nodes = grouped.get(group, [])
+    if not nodes:
+        print("该分组没有节点。")
+        return None
+
+    if not (1 <= node_index <= len(nodes)):
+        print(f"{group} 分组节点号请输入 1-{len(nodes)}。")
+        return None
+
+    return nodes[node_index - 1]
+
+
+def choose_node(
+    mihomo: Dict[str, Any],
+    ew: Dict[str, Any],
+    allow_quick_pair: bool = False,
+    quick_pair: Optional[Tuple[int, int]] = None,
+) -> Optional[Dict[str, Any]]:
+    grouped = print_groups(mihomo, ew)
+
+    if quick_pair is not None:
+        return node_from_group_selection(grouped, quick_pair[0], quick_pair[1])
+
+    while True:
+        if allow_quick_pair:
+            raw = input("选择分组序号，或输入 分组号 节点号 直接选择：").strip()
+        else:
+            raw = input("选择分组序号：").strip()
+
+        if raw.lower() in {"q", "quit", "exit", "返回"}:
+            return None
+
+        if allow_quick_pair:
+            parts = raw.split()
+            if len(parts) == 2 and all(part.isdigit() for part in parts):
+                node = node_from_group_selection(grouped, int(parts[0]), int(parts[1]))
+                if node is not None:
+                    return node
+                continue
+
+        if raw.isdigit():
+            gi = int(raw)
+            if 1 <= gi <= len(COUNTRY_GROUPS):
+                break
+        print(f"请输入 1-{len(COUNTRY_GROUPS)} 的数字" + ("，或输入类似 6 2 的分组号+节点号，或 q 返回。" if allow_quick_pair else "，或 q 返回。"))
+
     group = COUNTRY_GROUPS[gi - 1]
     nodes = grouped.get(group, [])
     if not nodes:
@@ -1284,8 +1333,8 @@ def proxy_for_ip_check(node: Dict[str, Any]) -> Optional[str]:
     return listener_socks_url(listener)
 
 
-def action_ip_check(mihomo: Dict[str, Any], ew: Dict[str, Any]) -> None:
-    node = choose_node(mihomo, ew)
+def action_ip_check(mihomo: Dict[str, Any], ew: Dict[str, Any], quick_pair: Optional[Tuple[int, int]] = None) -> None:
+    node = choose_node(mihomo, ew, allow_quick_pair=True, quick_pair=quick_pair)
     if not node:
         return
     proxy = proxy_for_ip_check(node)
@@ -1293,7 +1342,7 @@ def action_ip_check(mihomo: Dict[str, Any], ew: Dict[str, Any]) -> None:
         print("该节点没有可用 socks 入站，无法执行检测。")
         return
     print(f"\n将执行等价命令：bash <(curl -Ls https://IP.Check.Place) -x {proxy}")
-    if not ask_bool("确认执行远程检测脚本", False):
+    if not ask_bool("确认执行远程检测脚本", True):
         return
 
     curl = subprocess.Popen(["curl", "-fsSL", "https://IP.Check.Place"], stdout=subprocess.PIPE)
@@ -1470,19 +1519,69 @@ def install_subscription_sync_cron(interval_hours: int, mihomo_url: str, egress_
     print(f"  {mask_sensitive_line(new_line, mihomo_url, egress_url)}")
 
 
-def ask_subscription_url(label: str, default_url: str = "") -> str:
+def load_egressctl_state() -> Dict[str, Any]:
+    try:
+        data = load_yaml(EGRESSCTL_STATE_FILE)
+    except Exception:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def save_egressctl_state(state: Dict[str, Any]) -> None:
+    try:
+        EGRESSCTL_STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        dump_yaml(EGRESSCTL_STATE_FILE, state)
+        try:
+            os.chmod(EGRESSCTL_STATE_FILE, 0o600)
+        except Exception:
+            pass
+    except Exception as exc:
+        print(f"警告：保存脚本状态失败（{EGRESSCTL_STATE_FILE}）：{exc}", file=sys.stderr)
+
+
+def saved_subscription_urls() -> Tuple[str, str]:
+    state = load_egressctl_state()
+    subs = state.get("subscriptions")
+    if not isinstance(subs, dict):
+        return "", ""
+    return norm_name(subs.get("mihomo_url")), norm_name(subs.get("egresswatch_url"))
+
+
+def save_subscription_urls(mihomo_url: str, egress_url: str) -> None:
+    state = load_egressctl_state()
+    subs = state.get("subscriptions")
+    if not isinstance(subs, dict):
+        subs = {}
+    subs["mihomo_url"] = norm_name(mihomo_url)
+    subs["egresswatch_url"] = norm_name(egress_url)
+    subs["updated_at"] = time.strftime("%Y-%m-%d %H:%M:%S %z")
+    state["subscriptions"] = subs
+    save_egressctl_state(state)
+    print(f"已保存本次订阅 URL，后续同步可直接回车复用：{EGRESSCTL_STATE_FILE}")
+
+
+def ask_subscription_url(label: str, env_default_url: str = "", saved_url: str = "") -> str:
     """Prompt for a subscription URL.
 
-    The script intentionally has no built-in subscription URL. If the user sets
-    MIHOMO_SUB_URL / EGRESSWATCH_SUB_URL in the environment, pressing Enter uses
-    that environment-provided value. Otherwise the URL is required.
+    Pressing Enter prefers the most recently saved URL. If no saved URL exists,
+    the environment-provided URL is used as the fallback default.
     """
-    default_url = norm_name(default_url)
+    env_default_url = norm_name(env_default_url)
+    saved_url = norm_name(saved_url)
     while True:
-        if default_url:
-            print(f"{label} 当前环境变量默认：{mask_url(default_url)}")
-            value = input(f"{label}，直接回车使用上面的默认：").strip()
-            value = value or default_url
+        if saved_url:
+            print(f"{label} 最近保存：{mask_url(saved_url)}")
+            if env_default_url and env_default_url != saved_url:
+                print(f"{label} 环境变量：{mask_url(env_default_url)}（输入 env 使用）")
+            value = input(f"{label}，直接回车使用最近保存，或输入新的 URL：").strip()
+            if not value:
+                value = saved_url
+            elif value.lower() == "env" and env_default_url:
+                value = env_default_url
+        elif env_default_url:
+            print(f"{label} 当前环境变量默认：{mask_url(env_default_url)}")
+            value = input(f"{label}，直接回车使用上面的默认，或输入新的 URL：").strip()
+            value = value or env_default_url
         else:
             value = input(f"{label}（必填）：").strip()
 
@@ -1496,8 +1595,6 @@ def ask_subscription_url(label: str, default_url: str = "") -> str:
             continue
 
         return value
-
-
 
 
 def human_size(num_bytes: float) -> str:
@@ -2022,17 +2119,21 @@ def sync_subscriptions_apply(
 def action_sync_subscriptions(mihomo: Dict[str, Any], ew: Dict[str, Any]) -> None:
     print("\n同步订阅节点")
     print("脚本不再内置默认订阅链接；请在下面输入订阅 URL。")
-    print("如果已设置环境变量 MIHOMO_SUB_URL / EGRESSWATCH_SUB_URL，可直接回车使用环境变量值。")
-    mihomo_url = ask_subscription_url("Mihomo 订阅 URL", MIHOMO_SUBSCRIPTION_URL)
-    egress_url = ask_subscription_url("EgressWatch 订阅 URL", EGRESSWATCH_SUBSCRIPTION_URL)
+    print("如果已保存过订阅 URL，直接回车默认使用最近保存的值；也可输入新的 URL 覆盖保存。")
+    print("如果已设置环境变量 MIHOMO_SUB_URL / EGRESSWATCH_SUB_URL，但同时存在最近保存值，默认优先使用最近保存值。")
+
+    saved_mihomo_url, saved_egress_url = saved_subscription_urls()
+    mihomo_url = ask_subscription_url("Mihomo 订阅 URL", MIHOMO_SUBSCRIPTION_URL, saved_mihomo_url)
+    egress_url = ask_subscription_url("EgressWatch 订阅 URL", EGRESSWATCH_SUBSCRIPTION_URL, saved_egress_url)
 
     if not sync_subscriptions_apply(mihomo, ew, mihomo_url, egress_url, confirm=True):
         return
 
+    save_subscription_urls(mihomo_url, egress_url)
+
     interval = ask_int("订阅自动同步间隔，单位：小时", SUBSCRIPTION_DEFAULT_INTERVAL_HOURS, low=1, high=8760)
     print("订阅同步定时任务将使用本次输入的 Mihomo / EgressWatch 订阅 URL。")
     install_subscription_sync_cron(interval, mihomo_url, egress_url)
-
 
 
 def parse_cli_args(argv: List[str]) -> argparse.Namespace:
@@ -2085,6 +2186,8 @@ def run_cli_if_requested(argv: List[str]) -> bool:
             egress_url,
             confirm=False,
         )
+        if ok:
+            save_subscription_urls(mihomo_url, egress_url)
         raise SystemExit(0 if ok else 1)
     return False
 
@@ -2128,7 +2231,14 @@ def main() -> None:
             print("8. 选择节点测速（Apple CDN）")
             print("9. 同步订阅节点")
             print("q. 退出")
-            choice = input("请选择：").strip().lower()
+            choice_raw = input("请选择：").strip().lower()
+            choice_parts = choice_raw.split()
+            quick_ip_pair: Optional[Tuple[int, int]] = None
+            if len(choice_parts) == 3 and choice_parts[0] == "5" and choice_parts[1].isdigit() and choice_parts[2].isdigit():
+                choice = "5"
+                quick_ip_pair = (int(choice_parts[1]), int(choice_parts[2]))
+            else:
+                choice = choice_raw
 
             if choice in {"q", "quit", "exit"}:
                 return
@@ -2150,7 +2260,7 @@ def main() -> None:
                     action_delete(mihomo, ew)
                     pause()
                 elif choice == "5":
-                    action_ip_check(mihomo, ew)
+                    action_ip_check(mihomo, ew, quick_ip_pair)
                     pause()
                 elif choice == "6":
                     action_sync_groups(mihomo, ew)
