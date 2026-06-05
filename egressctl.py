@@ -84,6 +84,7 @@ EGRESSCTL_COMMAND = os.environ.get("EGRESSCTL_COMMAND", "")
 EGRESSCTL_EXEC = os.environ.get("EGRESSCTL_EXEC", "")
 SUBSCRIPTION_SYNC_LOG = os.environ.get("SUBSCRIPTION_SYNC_LOG", "subscription_sync.log")
 EGRESSCTL_STATE_FILE = Path(os.environ.get("EGRESSCTL_STATE_FILE", str(Path.home() / ".config" / "egressctl" / "state.yaml")))
+BACKUP_KEEP = int(os.environ.get("EGRESSCTL_BACKUP_KEEP", "3"))
 
 COUNTRY_GROUPS = ["HK", "JP", "SG", "TW", "KR", "US", "Intl"]
 COUNTRY_CODES = set(COUNTRY_GROUPS[:-1])
@@ -161,6 +162,35 @@ def make_backups(paths: Iterable[Path]) -> List[Tuple[Path, Path]]:
             backups.append((path, backup))
             print(f"已备份：{path} -> {backup}")
     return backups
+
+
+def cleanup_old_backups(paths: Iterable[Path], keep: int = BACKUP_KEEP) -> None:
+    """Keep only the newest backup files for each configured file.
+
+    Backups are named like config.yaml.bak.20260605090002. Cleanup is
+    intentionally called only after config validation/reload succeeds, so a
+    failed save still has its just-created backup available for rollback.
+    Set EGRESSCTL_BACKUP_KEEP=0 to delete all old backups, or a larger number
+    to keep more history.
+    """
+    try:
+        keep = max(int(keep), 0)
+    except Exception:
+        keep = 3
+
+    for path in paths:
+        parent = path.parent
+        if not parent.exists():
+            continue
+        pattern = f"{path.name}.bak.*"
+        backups = [p for p in parent.glob(pattern) if p.is_file()]
+        backups.sort(key=lambda p: (p.name.rsplit(".bak.", 1)[-1], p.stat().st_mtime), reverse=True)
+        for old_backup in backups[keep:]:
+            try:
+                old_backup.unlink()
+                print(f"已删除旧备份：{old_backup}")
+            except Exception as exc:
+                print(f"警告：删除旧备份失败：{old_backup}：{exc}", file=sys.stderr)
 
 
 def restore_backups(backups: List[Tuple[Path, Path]]) -> None:
@@ -1097,6 +1127,7 @@ def save_validate_reload(mihomo: Dict[str, Any], ew: Dict[str, Any]) -> bool:
             restore_backups(backups)
             return False
         reload_mihomo()
+        cleanup_old_backups([MIHOMO_CONFIG, EGRESSWATCH_CONFIG])
         return True
     except Exception as exc:
         print(f"保存失败：{exc}", file=sys.stderr)
