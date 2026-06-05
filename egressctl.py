@@ -19,10 +19,11 @@ Default paths can be overridden with environment variables:
   EW_SPEEDTEST_URL=https://updates.cdn-apple.com/2024FallFCS/fullrestores/072-56000/8475F789-7D9E-4676-8344-803B762D1F3C/iPhone12%2C3%2CiPhone12%2C5_18.2.1_22C161_Restore.ipsw
   EW_SPEEDTEST_DURATION=15
   EW_SPEEDTEST_CONNECT_TIMEOUT=15
+  EW_IPV4_CHECK_URLS=https://api.ipify.org,https://ipv4.icanhazip.com,https://v4.ident.me
   MIHOMO_SUB_URL=                  # optional; if unset, menu 9 will prompt for input
   EGRESSWATCH_SUB_URL=            # optional; if unset, menu 9 will prompt for input
   SUBSCRIPTION_TIMEOUT=30
-  SUBSCRIPTION_SYNC_HOURS=4
+  SUBSCRIPTION_SYNC_MINUTES=15  # auto subscription sync interval in minutes
   SUBSCRIPTION_CRON_MARKER=egressctl:SubscriptionSync
   EGRESSCTL_STATE_FILE=~/.config/egressctl/state.yaml  # stores last subscription URLs
   EGRESSCTL_SOURCE_URL=https://raw.githubusercontent.com/yagmi14/Scripts/refs/heads/main/egressctl.py
@@ -34,6 +35,7 @@ from __future__ import annotations
 import argparse
 import base64
 import io
+import ipaddress
 import copy
 import os
 import random
@@ -70,8 +72,19 @@ SPEEDTEST_CONNECT_TIMEOUT = int(os.environ.get("EW_SPEEDTEST_CONNECT_TIMEOUT", "
 MIHOMO_SUBSCRIPTION_URL = os.environ.get("MIHOMO_SUB_URL", "").strip()
 EGRESSWATCH_SUBSCRIPTION_URL = os.environ.get("EGRESSWATCH_SUB_URL", "").strip()
 SUBSCRIPTION_TIMEOUT = int(os.environ.get("SUBSCRIPTION_TIMEOUT", "30"))
-SUBSCRIPTION_DEFAULT_INTERVAL_HOURS = int(os.environ.get("SUBSCRIPTION_SYNC_HOURS", "4"))
+# Preferred setting: SUBSCRIPTION_SYNC_MINUTES. Keep SUBSCRIPTION_SYNC_HOURS
+# as a compatibility fallback for older environments that already set it.
+if os.environ.get("SUBSCRIPTION_SYNC_MINUTES"):
+    SUBSCRIPTION_DEFAULT_INTERVAL_MINUTES = int(os.environ["SUBSCRIPTION_SYNC_MINUTES"])
+elif os.environ.get("SUBSCRIPTION_SYNC_HOURS"):
+    SUBSCRIPTION_DEFAULT_INTERVAL_MINUTES = int(os.environ["SUBSCRIPTION_SYNC_HOURS"]) * 60
+else:
+    SUBSCRIPTION_DEFAULT_INTERVAL_MINUTES = 15
 SUBSCRIPTION_CRON_MARKER = os.environ.get("SUBSCRIPTION_CRON_MARKER", "egressctl:SubscriptionSync")
+IPV4_CHECK_URLS = os.environ.get(
+    "EW_IPV4_CHECK_URLS",
+    "https://api.ipify.org,https://ipv4.icanhazip.com,https://v4.ident.me",
+)
 EGRESSCTL_SOURCE_URL = os.environ.get(
     "EGRESSCTL_SOURCE_URL",
     "https://raw.githubusercontent.com/yagmi14/Scripts/refs/heads/main/egressctl.py",
@@ -1388,6 +1401,84 @@ def action_ip_check(mihomo: Dict[str, Any], ew: Dict[str, Any], quick_pair: Opti
         print(f"检测脚本执行失败，退出码：{bash_rc}", file=sys.stderr)
 
 
+def ipv4_check_urls() -> List[str]:
+    urls = [u.strip() for u in re.split(r"[,\s]+", IPV4_CHECK_URLS or "") if u.strip()]
+    return urls or ["https://api.ipify.org"]
+
+
+def extract_ipv4(text: str) -> Optional[str]:
+    for match in re.finditer(r"\b(?:\d{1,3}\.){3}\d{1,3}\b", text or ""):
+        candidate = match.group(0)
+        try:
+            ip = ipaddress.ip_address(candidate)
+        except ValueError:
+            continue
+        if isinstance(ip, ipaddress.IPv4Address):
+            return str(ip)
+    return None
+
+
+def fetch_proxy_ipv4(proxy: str) -> Tuple[Optional[str], List[str]]:
+    if not shutil.which("curl"):
+        raise RuntimeError("未找到 curl，无法获取出口 IPv4。请先安装 curl。")
+
+    errors: List[str] = []
+    for url in ipv4_check_urls():
+        proc = subprocess.run(
+            [
+                "curl",
+                "-4",
+                "--silent",
+                "--show-error",
+                "--fail",
+                "--proxy",
+                proxy,
+                "--connect-timeout",
+                "10",
+                "--max-time",
+                "20",
+                url,
+            ],
+            text=True,
+            capture_output=True,
+        )
+        output = (proc.stdout or "").strip()
+        ip = extract_ipv4(output)
+        if proc.returncode == 0 and ip:
+            return ip, []
+        detail = (proc.stderr or output or "无输出").strip()
+        errors.append(f"{url}: rc={proc.returncode} {detail}")
+
+    return None, errors
+
+
+def action_ipv4_check(mihomo: Dict[str, Any], ew: Dict[str, Any], quick_pair: Optional[Tuple[int, int]] = None) -> None:
+    node = choose_node(mihomo, ew, allow_quick_pair=True, quick_pair=quick_pair)
+    if not node:
+        return
+
+    proxy = proxy_for_ip_check(node)
+    if not proxy:
+        print("该节点没有可用 socks 入站，无法获取出口 IPv4。")
+        return
+
+    print(f"\n正在通过 {proxy} 获取出口 IPv4...")
+    try:
+        ip, errors = fetch_proxy_ipv4(proxy)
+    except Exception as exc:
+        print(f"获取出口 IPv4 失败：{exc}", file=sys.stderr)
+        return
+
+    if ip:
+        print(f"节点：{node['name']}")
+        print(f"出口 IPv4：{ip}")
+        return
+
+    print("获取出口 IPv4 失败，尝试过的服务：", file=sys.stderr)
+    for error in errors:
+        print(f"  - {error}", file=sys.stderr)
+
+
 def shell_quote(value: Any) -> str:
     """Small POSIX-safe single-quote helper for crontab commands."""
     s = str(value)
@@ -1500,31 +1591,31 @@ def egressctl_command_for_cron() -> str:
     return f"python3 <(curl --compressed -fsSL {shell_quote(EGRESSCTL_SOURCE_URL)})"
 
 
-def build_subscription_sync_cron_line(interval_hours: int, mihomo_url: str, egress_url: str) -> str:
-    if interval_hours < 1:
-        raise ValueError("订阅同步间隔必须大于等于 1 小时。")
+def build_subscription_sync_cron_line(interval_minutes: int, mihomo_url: str, egress_url: str) -> str:
+    if interval_minutes < 1:
+        raise ValueError("订阅同步间隔必须大于等于 1 分钟。")
 
     command = egressctl_command_for_cron()
     log_path = shell_quote(EGRESSWATCH_PROJECT_DIR / SUBSCRIPTION_SYNC_LOG)
     mihomo_arg = shell_quote(mihomo_url)
     egress_arg = shell_quote(egress_url)
 
-    # Use an hourly cron entry with an epoch-hour modulo guard so values greater
-    # than 23 hours still work exactly. Percent signs must be escaped in crontab.
+    # Use a once-per-minute cron entry with an epoch-minute modulo guard so any
+    # minute interval works exactly. Percent signs must be escaped in crontab.
     #
     # The inner command is executed by bash because the default command uses
     # process substitution: python3 <(curl ...).
     inner_command = (
-        f"[ $(( $(date +\\%s) / 3600 \\% {interval_hours} )) -eq 0 ] && "
+        f"[ $(( $(date +\\%s) / 60 \\% {interval_minutes} )) -eq 0 ] && "
         f"{command} --sync-subscriptions "
         f"--mihomo-sub-url {mihomo_arg} "
         f"--egress-sub-url {egress_arg} "
         f">> {log_path} 2>&1"
     )
     return (
-        f"0 * * * * "
+        f"* * * * * "
         f"/bin/bash -lc {shell_quote(inner_command)} "
-        f"# {SUBSCRIPTION_CRON_MARKER}; interval={interval_hours}h"
+        f"# {SUBSCRIPTION_CRON_MARKER}; interval={interval_minutes}m"
     )
 
 
@@ -1537,14 +1628,14 @@ def mask_sensitive_line(line: str, *urls: str) -> str:
     return masked
 
 
-def install_subscription_sync_cron(interval_hours: int, mihomo_url: str, egress_url: str) -> None:
+def install_subscription_sync_cron(interval_minutes: int, mihomo_url: str, egress_url: str) -> None:
     lines = current_crontab_lines()
-    new_line = build_subscription_sync_cron_line(interval_hours, mihomo_url, egress_url)
+    new_line = build_subscription_sync_cron_line(interval_minutes, mihomo_url, egress_url)
     kept_lines = [line for line in lines if not is_subscription_sync_cron_line(line)]
     kept_lines.append(new_line)
 
     install_crontab_lines(kept_lines)
-    print(f"已更新订阅同步定时任务：每 {interval_hours} 小时执行一次。")
+    print(f"已更新订阅同步定时任务：每 {interval_minutes} 分钟执行一次。")
     print("当前写入当前运行用户的 crontab；用 sudo 运行时就是 root 的 crontab。")
     print("定时任务：")
     print(f"  {mask_sensitive_line(new_line, mihomo_url, egress_url)}")
@@ -2162,7 +2253,7 @@ def action_sync_subscriptions(mihomo: Dict[str, Any], ew: Dict[str, Any]) -> Non
 
     save_subscription_urls(mihomo_url, egress_url)
 
-    interval = ask_int("订阅自动同步间隔，单位：小时", SUBSCRIPTION_DEFAULT_INTERVAL_HOURS, low=1, high=8760)
+    interval = ask_int("订阅自动同步间隔，单位：分钟", SUBSCRIPTION_DEFAULT_INTERVAL_MINUTES, low=1, high=525600)
     print("订阅同步定时任务将使用本次输入的 Mihomo / EgressWatch 订阅 URL。")
     install_subscription_sync_cron(interval, mihomo_url, egress_url)
 
@@ -2261,13 +2352,14 @@ def main() -> None:
             print("7. 修改定时检测 IP 时间间隔")
             print("8. 选择节点测速（Apple CDN）")
             print("9. 同步订阅节点")
+            print("10. 选择节点获取出口 IPv4 地址")
             print("q. 退出")
             choice_raw = input("请选择：").strip().lower()
             choice_parts = choice_raw.split()
-            quick_ip_pair: Optional[Tuple[int, int]] = None
-            if len(choice_parts) == 3 and choice_parts[0] == "5" and choice_parts[1].isdigit() and choice_parts[2].isdigit():
-                choice = "5"
-                quick_ip_pair = (int(choice_parts[1]), int(choice_parts[2]))
+            quick_node_pair: Optional[Tuple[int, int]] = None
+            if len(choice_parts) == 3 and choice_parts[0] in {"5", "10"} and choice_parts[1].isdigit() and choice_parts[2].isdigit():
+                choice = choice_parts[0]
+                quick_node_pair = (int(choice_parts[1]), int(choice_parts[2]))
             else:
                 choice = choice_raw
 
@@ -2276,7 +2368,7 @@ def main() -> None:
             if choice == "7":
                 action_change_cron_interval()
                 pause()
-            elif choice in {"1", "2", "3", "4", "5", "6", "8", "9"}:
+            elif choice in {"1", "2", "3", "4", "5", "6", "8", "9", "10"}:
                 mihomo, ew = load_configs()
                 if choice == "1":
                     print_groups(mihomo, ew)
@@ -2291,7 +2383,7 @@ def main() -> None:
                     action_delete(mihomo, ew)
                     pause()
                 elif choice == "5":
-                    action_ip_check(mihomo, ew, quick_ip_pair)
+                    action_ip_check(mihomo, ew, quick_node_pair)
                     pause()
                 elif choice == "6":
                     action_sync_groups(mihomo, ew)
@@ -2301,6 +2393,9 @@ def main() -> None:
                     pause()
                 elif choice == "9":
                     action_sync_subscriptions(mihomo, ew)
+                    pause()
+                elif choice == "10":
+                    action_ipv4_check(mihomo, ew, quick_node_pair)
                     pause()
             else:
                 print("无效选择。")
