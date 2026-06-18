@@ -190,24 +190,23 @@ def fetch_feed() -> list[Any]:
 
 def format_message(entry: Any) -> str:
     """
-    简化推送内容：
-    不再发送“NodeSeek 新帖 / 作者 / 板块 / 时间”等文字。
-    只发送一个隐藏链接，让 Telegram 自动生成链接预览卡片。
-
-    Telegram 预览卡片里通常会显示：
-    - 站点名
-    - 帖子标题
-    - 部分正文摘要
-    - 缩略图
+    推送格式：
+    1. 消息正文只显示帖子标题
+    2. 标题本身带链接
+    3. Telegram 自动显示链接预览卡片
+    4. 不再显示作者、板块、时间
     """
+    title = clean_text(entry.get("title")) or "NodeSeek 新帖"
     link = clean_text(entry.get("link"))
 
-    if not link:
-        title = clean_text(entry.get("title")) or "NodeSeek 新帖"
-        return html.escape(title)
+    safe_title = html.escape(title)
 
-    # 使用零宽字符作为超链接文本，让消息主体尽量不可见
-    return f'<a href="{html.escape(link)}">&#8205;</a>'
+    if not link:
+        return safe_title
+
+    safe_link = html.escape(link, quote=True)
+
+    return f'<a href="{safe_link}">{safe_title}</a>'
 
 
 def telegram_send(text: str) -> None:
@@ -215,8 +214,6 @@ def telegram_send(text: str) -> None:
         "chat_id": TG_CHAT_ID,
         "text": text,
         "parse_mode": "HTML",
-
-        # 这里必须是 False，Telegram 才会显示下面的网页预览卡片
         "disable_web_page_preview": False,
     }
 
@@ -241,8 +238,10 @@ def telegram_send(text: str) -> None:
             timeout=REQUEST_TIMEOUT,
         )
 
-    resp.raise_for_status()
+    if not resp.ok:
+        logging.error("Telegram 返回错误：HTTP %s，响应：%s", resp.status_code, resp.text)
 
+    resp.raise_for_status()
 
 def process_once(conn: sqlite3.Connection, seed_only: bool = False) -> None:
     entries = fetch_feed()
