@@ -65,21 +65,16 @@ fi
 
 log "检测到 Debian 代号：${CODENAME}"
 
+log "准备 GPG 用户目录……"
+mkdir -p /root/.gnupg
+chmod 0700 /root/.gnupg
+
 log "下载并安装 nginx.org 签名密钥……"
 curl -fsSL https://nginx.org/keys/nginx_signing.key \
-    | gpg --dearmor --yes \
+    | gpg --batch --yes --dearmor \
     > "${NGINX_KEYRING}"
 
 chmod 0644 "${NGINX_KEYRING}"
-
-log "显示 Nginx 签名密钥信息……"
-gpg \
-    --dry-run \
-    --quiet \
-    --no-keyring \
-    --import \
-    --import-options import-show \
-    "${NGINX_KEYRING}"
 
 log "配置 nginx.org Mainline 软件源……"
 cat > "${NGINX_REPO_FILE}" <<EOF
