@@ -240,6 +240,141 @@ def test_one_node(cfg, node):
         )
 
 
+
+def test_nodes_parallel(cfg, nodes, workers):
+    """并发检测一组节点，返回 test_one_node() 的结果列表。"""
+    if not nodes:
+        return []
+
+    max_workers = min(workers, len(nodes))
+    results = []
+
+    with concurrent.futures.ThreadPoolExecutor(
+        max_workers=max_workers
+    ) as executor:
+        futures = [
+            executor.submit(
+                test_one_node,
+                cfg,
+                node,
+            )
+            for node in nodes
+        ]
+
+        for future in concurrent.futures.as_completed(
+            futures
+        ):
+            results.append(future.result())
+
+    return results
+
+
+def confirm_timeout_nodes(cfg, initial_timeouts, workers):
+    """
+    对初检超时的节点执行多轮复检。
+
+    只有初检和全部复检都失败的节点，才会被确认为超时。
+    任意一次复检成功，就从本轮通知中移除。
+    """
+    retry_attempts = get_int(
+        cfg,
+        "RECHECK_ATTEMPTS",
+        3,
+        0,
+    )
+    retry_interval = get_int(
+        cfg,
+        "RECHECK_INTERVAL_SECONDS",
+        3,
+        0,
+    )
+
+    pending = {
+        name: reason
+        for name, reason in initial_timeouts
+    }
+
+    if not pending or retry_attempts == 0:
+        return sorted(
+            pending.items(),
+            key=lambda item: item[0].casefold(),
+        )
+
+    initial_count = len(pending)
+
+    logging.info(
+        "初检发现 %d 个超时节点，开始复检：次数=%d，间隔=%d秒",
+        initial_count,
+        retry_attempts,
+        retry_interval,
+    )
+
+    for attempt in range(1, retry_attempts + 1):
+        if retry_interval > 0:
+            time.sleep(retry_interval)
+
+        nodes_to_test = sorted(
+            pending,
+            key=str.casefold,
+        )
+
+        results = test_nodes_parallel(
+            cfg,
+            nodes_to_test,
+            workers,
+        )
+
+        still_timed_out = {}
+        recovered = []
+
+        for name, is_timeout, delay, reason in results:
+            if is_timeout:
+                still_timed_out[name] = reason
+            else:
+                recovered.append((name, delay))
+
+        if recovered:
+            logging.info(
+                "第 %d/%d 次复检恢复 %d 个节点：%s",
+                attempt,
+                retry_attempts,
+                len(recovered),
+                ", ".join(
+                    "{}({}ms)".format(name, delay)
+                    for name, delay in sorted(
+                        recovered,
+                        key=lambda item: item[0].casefold(),
+                    )
+                ),
+            )
+
+        pending = still_timed_out
+
+        logging.info(
+            "第 %d/%d 次复检完成，仍超时=%d",
+            attempt,
+            retry_attempts,
+            len(pending),
+        )
+
+        if not pending:
+            break
+
+    confirmed = sorted(
+        pending.items(),
+        key=lambda item: item[0].casefold(),
+    )
+
+    logging.info(
+        "复检结束：初检超时=%d，确认超时=%d，已过滤波动=%d",
+        initial_count,
+        len(confirmed),
+        initial_count - len(confirmed),
+    )
+
+    return confirmed
+
+
 def telegram_send(cfg, text):
     token = cfg.get("TG_BOT_TOKEN", "")
     chat_id = cfg.get("TG_CHAT_ID", "")
@@ -414,26 +549,13 @@ def run_once(cfg):
         len(nodes),
     )
 
-    results = []
+    results = test_nodes_parallel(
+        cfg,
+        nodes,
+        workers,
+    )
 
-    with concurrent.futures.ThreadPoolExecutor(
-        max_workers=workers
-    ) as executor:
-        futures = [
-            executor.submit(
-                test_one_node,
-                cfg,
-                node,
-            )
-            for node in nodes
-        ]
-
-        for future in concurrent.futures.as_completed(
-            futures
-        ):
-            results.append(future.result())
-
-    timed_out = sorted(
+    initial_timeouts = sorted(
         [
             (name, reason)
             for name, is_timeout, delay, reason in results
@@ -443,7 +565,19 @@ def run_once(cfg):
     )
 
     logging.info(
-        "检测完成：总节点=%d，超时=%d",
+        "初检完成：总节点=%d，初检超时=%d",
+        len(nodes),
+        len(initial_timeouts),
+    )
+
+    timed_out = confirm_timeout_nodes(
+        cfg,
+        initial_timeouts,
+        workers,
+    )
+
+    logging.info(
+        "本轮检测完成：总节点=%d，确认超时=%d",
         len(nodes),
         len(timed_out),
     )
