@@ -177,8 +177,11 @@ if ! grep -Eq \
 fi
 
 # ------------------------------------------------------------
-# 清理可能冲突的旧设置
+# 检查现有 SSH 配置中的相关设置
+# 这里只检查，不修改原配置文件
 # ------------------------------------------------------------
+
+log "检查现有 SSH 配置..."
 
 SSH_CONFIG_FILES=(
     "/etc/ssh/sshd_config"
@@ -191,19 +194,35 @@ done < <(
         -maxdepth 1 \
         -type f \
         -name '*.conf' \
-        -print0
+        ! -path "$MANAGED_CONFIG" \
+        -print0 2>/dev/null
 )
+
+FOUND_EXISTING=0
 
 for file in "${SSH_CONFIG_FILES[@]}"; do
 
     [[ -f "$file" ]] || continue
 
-    # 注释掉已有的相关配置，避免多个配置互相覆盖
-    sed -i -E \
-        's/^([[:space:]]*)(Port|PubkeyAuthentication|PasswordAuthentication|KbdInteractiveAuthentication|PermitEmptyPasswords)([[:space:]]+.*)$/# ssh-hardening-disabled: \1\2\3/' \
-        "$file"
+    MATCHES="$(
+        grep -nEi \
+            '^[[:space:]]*(Port|PubkeyAuthentication|PasswordAuthentication|KbdInteractiveAuthentication|PermitEmptyPasswords)[[:space:]]+' \
+            "$file" 2>/dev/null || true
+    )"
+
+    if [[ -n "$MATCHES" ]]; then
+        FOUND_EXISTING=1
+        warn "发现现有 SSH 设置：$file"
+        printf '%s\n' "$MATCHES"
+    fi
 
 done
+
+if [[ "$FOUND_EXISTING" == "1" ]]; then
+    warn "以上配置不会被脚本直接修改，稍后将通过 sshd -T 检查最终生效值。"
+else
+    log "未发现需要关注的旧 SSH 设置"
+fi
 
 # ------------------------------------------------------------
 # 写入统一 SSH 配置
