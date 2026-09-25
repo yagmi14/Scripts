@@ -5,24 +5,26 @@ set -Eeuo pipefail
 # Universal XanMod Installer
 #
 # 用法：
-#   sudo bash install-xanmod.sh
+#   sudo bash xanmod_install.sh
 #
 # 可选：
-#   sudo XANMOD_FLAVOR=main bash install-xanmod.sh
-#   sudo XANMOD_FLAVOR=lts  bash install-xanmod.sh
-#   sudo XANMOD_FLAVOR=edge bash install-xanmod.sh
-#   sudo XANMOD_FLAVOR=rt   bash install-xanmod.sh
+#   sudo XANMOD_FLAVOR=main bash xanmod_install.sh
+#   sudo XANMOD_FLAVOR=lts  bash xanmod_install.sh
+#   sudo XANMOD_FLAVOR=edge bash xanmod_install.sh
+#   sudo XANMOD_FLAVOR=rt   bash xanmod_install.sh
 #
 # 默认：
 #   XANMOD_FLAVOR=auto
 #   优先 MAIN，不可用时自动尝试 LTS
 #
 # 自动重启：
-#   sudo AUTO_REBOOT=1 bash install-xanmod.sh
+#   sudo AUTO_REBOOT=1 bash xanmod_install.sh
 # ============================================================
 
 XANMOD_FLAVOR="${XANMOD_FLAVOR:-auto}"
 AUTO_REBOOT="${AUTO_REBOOT:-0}"
+# XanMod's CDN may challenge wget's default User-Agent while allowing APT requests.
+XANMOD_HTTP_USER_AGENT="Debian APT-HTTP/1.3"
 
 log() {
     printf '\n[xanmod] %s\n' "$*"
@@ -282,12 +284,26 @@ for candidate in "${CODENAME_CANDIDATES[@]}"; do
 
     log "检查 XanMod 仓库是否支持：$candidate"
 
-    if wget -qO \
-        "$TMPDIR/Release" \
-        "http://deb.xanmod.org/dists/${candidate}/Release"; then
+    if wget -nv -S \
+        --user-agent="$XANMOD_HTTP_USER_AGENT" \
+        --output-document="$TMPDIR/Release" \
+        "https://deb.xanmod.org/dists/${candidate}/Release" \
+        2>"$TMPDIR/release-wget.log"; then
+
+        grep -Fxq "Codename: $candidate" "$TMPDIR/Release" || \
+            fail "XanMod 仓库返回的 Release 元数据与 ${candidate} 不匹配"
 
         CODENAME="$candidate"
         break
+    fi
+
+    REPO_HTTP_STATUS="$(
+        awk '/^[[:space:]]*HTTP\/[0-9.]+[[:space:]]+[0-9]+/ { code=$2 } END { print code }' \
+            "$TMPDIR/release-wget.log"
+    )"
+
+    if [[ "$REPO_HTTP_STATUS" != "404" ]]; then
+        fail "无法访问 XanMod 仓库（${candidate}，HTTP ${REPO_HTTP_STATUS:-unknown}）；请检查网络或仓库访问限制"
     fi
 done
 
@@ -302,9 +318,11 @@ log "使用 XanMod suite：$CODENAME"
 
 log "下载 XanMod 官方 archive key"
 
-wget -qO \
-    "$TMPDIR/archive.key" \
-    https://dl.xanmod.org/archive.key
+wget -nv \
+    --user-agent="$XANMOD_HTTP_USER_AGENT" \
+    --output-document="$TMPDIR/archive.key" \
+    https://dl.xanmod.org/archive.key || \
+    fail "无法下载 XanMod 官方 archive key；请检查网络或仓库访问限制"
 
 [[ -s "$TMPDIR/archive.key" ]] || \
     fail "下载的 XanMod archive key 为空"
@@ -328,7 +346,7 @@ install \
 log "写入 XanMod 官方仓库"
 
 printf \
-    'deb [arch=amd64 signed-by=%s] http://deb.xanmod.org %s main\n' \
+    'deb [arch=amd64 signed-by=%s] https://deb.xanmod.org %s main\n' \
     "$KEYRING" \
     "$CODENAME" \
     > "$LIST_FILE"
