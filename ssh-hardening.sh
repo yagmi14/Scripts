@@ -7,7 +7,7 @@ set -Eeuo pipefail
 #
 # 功能：
 #   1. 添加 SSH 公钥（支持多把，不覆盖已有密钥）
-#   2. 调整 SSH 端口（默认保留现有端口；无现有配置时使用 40022）
+#   2. 将 SSH 端口统一为 40022
 #   3. 开启公钥认证
 #   4. 禁用密码认证
 #   5. 禁用 Keyboard-Interactive 认证
@@ -23,18 +23,7 @@ set -Eeuo pipefail
 # 用户配置
 # ============================================================
 
-DEFAULT_SSH_PORT=40022
-
-# 留空表示自动沿用服务器现有的唯一 Port；仅在未检测到现有 Port 时使用默认值。
-SSH_PORT="${SSH_PORT:-}"
-
-SSH_PORT_EXPLICIT=0
-
-if [[ -n "$SSH_PORT" ]]; then
-
-    SSH_PORT_EXPLICIT=1
-
-fi
+SSH_PORT=40022
 
 TARGET_USER="${TARGET_USER:-root}"
 
@@ -66,6 +55,8 @@ SOCKET_DROPIN_FILE=""
 MANAGED_CONFIG_EXISTED=0
 F2B_CONFIG_EXISTED=0
 SOCKET_DROPIN_EXISTED=0
+
+PORT_CONFIG_FILES_MODIFIED=()
 
 SSH_SOCKET=""
 SSH_SERVICE=""
@@ -102,14 +93,10 @@ fi
 # 参数检查
 # ============================================================
 
-if [[ -n "$SSH_PORT" ]]; then
+if ! [[ "$SSH_PORT" =~ ^[0-9]+$ ]] ||
+   (( SSH_PORT < 1 || SSH_PORT > 65535 )); then
 
-    if ! [[ "$SSH_PORT" =~ ^[0-9]+$ ]] ||
-       (( SSH_PORT < 1 || SSH_PORT > 65535 )); then
-
-        die "SSH_PORT 无效：$SSH_PORT"
-
-    fi
+    die "SSH_PORT 无效：$SSH_PORT"
 
 fi
 
@@ -207,87 +194,7 @@ fi
     die "未找到 sshd"
 
 
-# ============================================================
-# 解析 SSH 端口
-#
-# 未显式指定 SSH_PORT 时：
-#   1. 保留现有配置中的唯一 Port
-#   2. 没有显式 Port 时使用默认端口 40022
-#
-# 脚本不会自动删除已有 Port，避免误断开当前 SSH 会话。
-# ============================================================
-
-get_configured_ssh_ports() {
-
-    local file
-
-    for file in /etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf; do
-
-        [[ -f "$file" ]] || continue
-
-        awk '
-            tolower($1) == "port" && $2 ~ /^[0-9]+$/ {
-                print $2
-            }
-        ' "$file"
-
-    done |
-        sort -nu
-
-}
-
-
-mapfile -t CONFIGURED_SSH_PORTS < <(
-    get_configured_ssh_ports
-)
-
-
-if (( SSH_PORT_EXPLICIT == 0 )); then
-
-    case "${#CONFIGURED_SSH_PORTS[@]}" in
-
-        0)
-            SSH_PORT="$DEFAULT_SSH_PORT"
-            log "未检测到现有 SSH Port，使用默认端口：$SSH_PORT"
-            ;;
-
-        1)
-            SSH_PORT="${CONFIGURED_SSH_PORTS[0]}"
-            log "检测到现有 SSH Port，自动保留：$SSH_PORT"
-            ;;
-
-        *)
-            die "检测到多个现有 SSH Port：${CONFIGURED_SSH_PORTS[*]}，请通过 SSH_PORT 明确指定并先清理旧配置"
-            ;;
-
-    esac
-
-else
-
-    if (( ${#CONFIGURED_SSH_PORTS[@]} > 1 )); then
-
-        die "现有 SSH Port 不止一个：${CONFIGURED_SSH_PORTS[*]}，脚本不会自动删除旧端口"
-
-    fi
-
-    if (( ${#CONFIGURED_SSH_PORTS[@]} == 1 )) &&
-       [[ "${CONFIGURED_SSH_PORTS[0]}" != "$SSH_PORT" ]]; then
-
-        die "SSH_PORT=$SSH_PORT 与现有 SSH Port=${CONFIGURED_SSH_PORTS[0]} 冲突；省略 SSH_PORT 可自动保留现有端口"
-
-    fi
-
-    log "使用显式指定的 SSH Port：$SSH_PORT"
-
-fi
-
-
-if ! [[ "$SSH_PORT" =~ ^[0-9]+$ ]] ||
-   (( SSH_PORT < 1 || SSH_PORT > 65535 )); then
-
-    die "SSH_PORT 无效：$SSH_PORT"
-
-fi
+log "SSH 目标端口固定为：$SSH_PORT"
 
 
 # ============================================================
@@ -340,8 +247,7 @@ mkdir -p "$BACKUP_DIR"
 
 # ------------------------------------------------------------
 # 主配置备份
-# 仅作为人工恢复用途
-# 脚本不会主动修改 sshd_config
+# 用于失败回滚；脚本可能会注释其中的旧 Port 声明
 # ------------------------------------------------------------
 
 if [[ -f /etc/ssh/sshd_config ]]; then
@@ -417,12 +323,68 @@ log "配置已备份至：$BACKUP_DIR"
 
 
 # ============================================================
+# 清理已有 SSH 端口配置
+#
+# sshd 的 Port 可以累积生效，单独写入 Port 40022 无法覆盖旧端口。
+# 因此先注释已有活动 Port，再由脚本管理文件写入唯一的 Port 40022。
+# ============================================================
+
+disable_existing_ssh_port_directives() {
+
+    local file
+
+    for file in /etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf; do
+
+        [[ -f "$file" ]] || continue
+        [[ "$file" == "$MANAGED_CONFIG" ]] && continue
+
+        if grep -Eq '^[[:space:]]*[Pp][Oo][Rr][Tt][[:space:]]+[0-9]+' "$file"; then
+
+            sed -i -E \
+                's/^([[:space:]]*)[Pp][Oo][Rr][Tt]([[:space:]]+[0-9]+)([[:space:]]*(#.*))?$/\1# Disabled by ssh-hardening.sh: Port\2\3/' \
+                "$file"
+
+            PORT_CONFIG_FILES_MODIFIED+=("$file")
+
+            warn "已停用旧 SSH Port 配置：$file（统一使用 $SSH_PORT）"
+
+        fi
+
+    done
+
+}
+
+
+# ============================================================
 # SSH 回滚函数
 # ============================================================
 
 rollback_ssh() {
 
     warn "正在恢复脚本管理的 SSH 配置..."
+
+
+    # --------------------------------------------------------
+    # 恢复被停用的旧 Port 配置
+    # --------------------------------------------------------
+
+    for file in "${PORT_CONFIG_FILES_MODIFIED[@]}"; do
+
+        if [[ "$file" == "/etc/ssh/sshd_config" ]]; then
+
+            cp -a \
+                "$BACKUP_DIR/sshd_config" \
+                "$file"
+
+        elif [[ "$file" == /etc/ssh/sshd_config.d/* ]]; then
+
+            cp -a \
+                "$BACKUP_DIR/sshd_config.d/$(basename "$file")" \
+                "$file"
+
+        fi
+
+    done
 
 
     # --------------------------------------------------------
@@ -604,7 +566,7 @@ log "sshd_config.d 已启用"
 # ============================================================
 # 检查现有 SSH 配置
 #
-# 这里只检查，不修改
+# 端口配置已在前一步统一为 40022；此处检查其余可能影响最终结果的设置。
 # ============================================================
 
 log "检查现有 SSH 配置..."
@@ -663,7 +625,7 @@ done
 
 if [[ "$FOUND_EXISTING" == "1" ]]; then
 
-    warn "以上配置不会被脚本修改，稍后通过 sshd -T 检查最终生效值"
+    warn "以上配置不会被脚本覆盖，稍后通过 sshd -T 检查最终生效值"
 
 else
 
@@ -673,8 +635,10 @@ fi
 
 
 # ============================================================
-# 写入脚本管理的 SSH 配置
+# 统一旧端口并写入脚本管理的 SSH 配置
 # ============================================================
+
+disable_existing_ssh_port_directives
 
 cat > "$MANAGED_CONFIG" <<EOF
 # ============================================================
