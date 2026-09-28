@@ -7,7 +7,7 @@ set -Eeuo pipefail
 #
 # 功能：
 #   1. 添加 SSH 公钥（支持多把，不覆盖已有密钥）
-#   2. SSH 修改为 40022 端口
+#   2. 调整 SSH 端口（默认保留现有端口；无现有配置时使用 40022）
 #   3. 开启公钥认证
 #   4. 禁用密码认证
 #   5. 禁用 Keyboard-Interactive 认证
@@ -23,7 +23,18 @@ set -Eeuo pipefail
 # 用户配置
 # ============================================================
 
-SSH_PORT="${SSH_PORT:-40022}"
+DEFAULT_SSH_PORT=40022
+
+# 留空表示自动沿用服务器现有的唯一 Port；仅在未检测到现有 Port 时使用默认值。
+SSH_PORT="${SSH_PORT:-}"
+
+SSH_PORT_EXPLICIT=0
+
+if [[ -n "$SSH_PORT" ]]; then
+
+    SSH_PORT_EXPLICIT=1
+
+fi
 
 TARGET_USER="${TARGET_USER:-root}"
 
@@ -91,10 +102,14 @@ fi
 # 参数检查
 # ============================================================
 
-if ! [[ "$SSH_PORT" =~ ^[0-9]+$ ]] ||
-   (( SSH_PORT < 1 || SSH_PORT > 65535 )); then
+if [[ -n "$SSH_PORT" ]]; then
 
-    die "SSH_PORT 无效：$SSH_PORT"
+    if ! [[ "$SSH_PORT" =~ ^[0-9]+$ ]] ||
+       (( SSH_PORT < 1 || SSH_PORT > 65535 )); then
+
+        die "SSH_PORT 无效：$SSH_PORT"
+
+    fi
 
 fi
 
@@ -190,6 +205,89 @@ fi
 
 [[ -n "$SSHD_BIN" ]] ||
     die "未找到 sshd"
+
+
+# ============================================================
+# 解析 SSH 端口
+#
+# 未显式指定 SSH_PORT 时：
+#   1. 保留现有配置中的唯一 Port
+#   2. 没有显式 Port 时使用默认端口 40022
+#
+# 脚本不会自动删除已有 Port，避免误断开当前 SSH 会话。
+# ============================================================
+
+get_configured_ssh_ports() {
+
+    local file
+
+    for file in /etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf; do
+
+        [[ -f "$file" ]] || continue
+
+        awk '
+            tolower($1) == "port" && $2 ~ /^[0-9]+$/ {
+                print $2
+            }
+        ' "$file"
+
+    done |
+        sort -nu
+
+}
+
+
+mapfile -t CONFIGURED_SSH_PORTS < <(
+    get_configured_ssh_ports
+)
+
+
+if (( SSH_PORT_EXPLICIT == 0 )); then
+
+    case "${#CONFIGURED_SSH_PORTS[@]}" in
+
+        0)
+            SSH_PORT="$DEFAULT_SSH_PORT"
+            log "未检测到现有 SSH Port，使用默认端口：$SSH_PORT"
+            ;;
+
+        1)
+            SSH_PORT="${CONFIGURED_SSH_PORTS[0]}"
+            log "检测到现有 SSH Port，自动保留：$SSH_PORT"
+            ;;
+
+        *)
+            die "检测到多个现有 SSH Port：${CONFIGURED_SSH_PORTS[*]}，请通过 SSH_PORT 明确指定并先清理旧配置"
+            ;;
+
+    esac
+
+else
+
+    if (( ${#CONFIGURED_SSH_PORTS[@]} > 1 )); then
+
+        die "现有 SSH Port 不止一个：${CONFIGURED_SSH_PORTS[*]}，脚本不会自动删除旧端口"
+
+    fi
+
+    if (( ${#CONFIGURED_SSH_PORTS[@]} == 1 )) &&
+       [[ "${CONFIGURED_SSH_PORTS[0]}" != "$SSH_PORT" ]]; then
+
+        die "SSH_PORT=$SSH_PORT 与现有 SSH Port=${CONFIGURED_SSH_PORTS[0]} 冲突；省略 SSH_PORT 可自动保留现有端口"
+
+    fi
+
+    log "使用显式指定的 SSH Port：$SSH_PORT"
+
+fi
+
+
+if ! [[ "$SSH_PORT" =~ ^[0-9]+$ ]] ||
+   (( SSH_PORT < 1 || SSH_PORT > 65535 )); then
+
+    die "SSH_PORT 无效：$SSH_PORT"
+
+fi
 
 
 # ============================================================
