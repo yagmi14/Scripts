@@ -57,6 +57,7 @@ F2B_CONFIG_EXISTED=0
 SOCKET_DROPIN_EXISTED=0
 
 PORT_CONFIG_FILES_MODIFIED=()
+SOCKET_DISABLED_UNITS=()
 
 SSH_SOCKET=""
 SSH_SERVICE=""
@@ -425,6 +426,17 @@ rollback_ssh() {
         systemctl daemon-reload || true
 
     fi
+
+
+    # --------------------------------------------------------
+    # 恢复原本启用但被脚本临时停用的 SSH Socket
+    # --------------------------------------------------------
+
+    for unit in "${SOCKET_DISABLED_UNITS[@]}"; do
+
+        systemctl enable "$unit" >/dev/null 2>&1 || true
+
+    done
 
 
     # --------------------------------------------------------
@@ -842,13 +854,17 @@ fi
 
 
 # ============================================================
-# 检测 systemd ssh.socket
+# 检测 SSH 服务模式
+#
+# 只有 active 的 socket 才表示当前正在使用 socket activation。
+# enabled 但 inactive 的 socket 不能作为依据；Debian 可能同时启用
+# ssh.service 与 ssh.socket，此时重启 inactive socket 会失败：
+# "Socket service ssh.service already active, refusing."
 # ============================================================
 
 for unit in ssh.socket sshd.socket; do
 
-    if systemctl is-active --quiet "$unit" 2>/dev/null ||
-       systemctl is-enabled --quiet "$unit" 2>/dev/null; then
+    if systemctl is-active --quiet "$unit" 2>/dev/null; then
 
         SSH_SOCKET="$unit"
 
@@ -857,6 +873,45 @@ for unit in ssh.socket sshd.socket; do
     fi
 
 done
+
+
+if [[ -z "$SSH_SOCKET" ]]; then
+
+    for unit in ssh.service sshd.service; do
+
+        if systemctl is-active --quiet "$unit" 2>/dev/null; then
+
+            SSH_SERVICE="${unit%.service}"
+
+            break
+
+        fi
+
+    done
+
+fi
+
+
+if [[ -z "$SSH_SOCKET" ]] && [[ -n "$SSH_SERVICE" ]]; then
+
+    for unit in ssh.socket sshd.socket; do
+
+        if systemctl is-enabled --quiet "$unit" 2>/dev/null &&
+           ! systemctl is-active --quiet "$unit" 2>/dev/null; then
+
+            if systemctl disable "$unit" >/dev/null 2>&1; then
+
+                SOCKET_DISABLED_UNITS+=("$unit")
+
+                warn "检测到未运行但已启用的 SSH Socket，已停用：$unit"
+
+            fi
+
+        fi
+
+    done
+
+fi
 
 
 # ============================================================
@@ -920,19 +975,23 @@ else
     # 普通 ssh.service / sshd.service
     # ========================================================
 
-    if systemctl cat ssh.service >/dev/null 2>&1; then
+    if [[ -z "$SSH_SERVICE" ]]; then
 
-        SSH_SERVICE="ssh"
+        if systemctl cat ssh.service >/dev/null 2>&1; then
 
-    elif systemctl cat sshd.service >/dev/null 2>&1; then
+            SSH_SERVICE="ssh"
 
-        SSH_SERVICE="sshd"
+        elif systemctl cat sshd.service >/dev/null 2>&1; then
 
-    else
+            SSH_SERVICE="sshd"
 
-        rollback_ssh
+        else
 
-        die "找不到 ssh.service 或 sshd.service"
+            rollback_ssh
+
+            die "找不到 ssh.service 或 sshd.service"
+
+        fi
 
     fi
 
