@@ -19,10 +19,14 @@ set -Eeuo pipefail
 #
 # 自动重启：
 #   sudo AUTO_REBOOT=1 bash xanmod_install.sh
+#
+# 只检查兼容性（不修改系统 APT 配置，不安装或重启）：
+#   sudo XANMOD_CHECK_ONLY=1 bash xanmod_install.sh
 # ============================================================
 
 XANMOD_FLAVOR="${XANMOD_FLAVOR:-auto}"
 AUTO_REBOOT="${AUTO_REBOOT:-0}"
+XANMOD_CHECK_ONLY="${XANMOD_CHECK_ONLY:-0}"
 # XanMod's CDN may challenge wget's default User-Agent while allowing APT requests.
 XANMOD_HTTP_USER_AGENT="Debian APT-HTTP/1.3"
 
@@ -82,7 +86,11 @@ case "$XANMOD_FLAVOR" in
         ;;
 esac
 
+[[ "$AUTO_REBOOT" =~ ^[01]$ && "$XANMOD_CHECK_ONLY" =~ ^[01]$ ]] || \
+    fail "AUTO_REBOOT 和 XANMOD_CHECK_ONLY 仅接受 0 或 1"
+
 export DEBIAN_FRONTEND=noninteractive
+export LC_ALL=C
 
 SOURCE_LIST=/etc/apt/sources.list
 SOURCE_DIR=/etc/apt/sources.list.d
@@ -97,264 +105,142 @@ BACKUP_DIR="/root/xanmod-install-backup-${STAMP}"
 TMPDIR="$(mktemp -d)"
 trap 'rm -rf "$TMPDIR"' EXIT
 
-install -d -m 0755 "$SOURCE_DIR" "$KEYRING_DIR"
-install -d -m 0700 "$BACKUP_DIR"
+SOURCES_CLEANED=0
 
-backup_file() {
-    local file="$1"
-    local rel
-    local dest
+cleanup_xanmod_sources() {
+    install -d -m 0755 "$SOURCE_DIR" "$KEYRING_DIR"
+    install -d -m 0700 "$BACKUP_DIR"
 
-    [[ -f "$file" ]] || return 0
+    backup_file() {
+        local file="$1"
+        local rel
+        local dest
 
-    rel="${file#/etc/apt/}"
-    dest="${BACKUP_DIR}/${rel}"
+        [[ -f "$file" ]] || return 0
 
-    install -d -m 0700 "$(dirname "$dest")"
+        rel="${file#/etc/apt/}"
+        dest="${BACKUP_DIR}/${rel}"
 
-    cp -a -- "$file" "$dest"
-}
+        install -d -m 0700 "$(dirname "$dest")"
 
-# ------------------------------------------------------------
-# 清理旧 XanMod 软件源
-# ------------------------------------------------------------
+        cp -a -- "$file" "$dest"
+    }
 
-log "清理旧 XanMod APT 配置"
-log "备份目录：$BACKUP_DIR"
+    # ------------------------------------------------------------
+    # 清理旧 XanMod 软件源
+    # ------------------------------------------------------------
 
-# 处理传统 .list
-while IFS= read -r -d '' file; do
+    log "清理旧 XanMod APT 配置"
+    log "备份目录：$BACKUP_DIR"
 
-    if grep -qiE \
-        '(deb\.xanmod\.org|dl\.xanmod\.org)' \
-        "$file" 2>/dev/null; then
+    # 处理传统 .list
+    while IFS= read -r -d '' file; do
 
-        backup_file "$file"
+        if grep -qiE \
+            '(deb\.xanmod\.org|dl\.xanmod\.org)' \
+            "$file" 2>/dev/null; then
 
-        sed -i -E \
-            '/^[[:space:]]*deb(-src)?[[:space:]].*(deb\.xanmod\.org|dl\.xanmod\.org)/s|^|# disabled-by-xanmod-installer: |' \
-            "$file"
-    fi
+            backup_file "$file"
 
-done < <(
-    {
-        [[ -f "$SOURCE_LIST" ]] && printf '%s\0' "$SOURCE_LIST"
+            sed -i -E \
+                '/^[[:space:]]*deb(-src)?[[:space:]].*(deb\.xanmod\.org|dl\.xanmod\.org)/s|^|# disabled-by-xanmod-installer: |' \
+                "$file"
+        fi
 
+    done < <(
+        {
+            [[ -f "$SOURCE_LIST" ]] && printf '%s\0' "$SOURCE_LIST"
+
+            find "$SOURCE_DIR" \
+                -maxdepth 1 \
+                -type f \
+                -name '*.list' \
+                -print0 2>/dev/null
+        }
+    )
+
+    # 处理 Debian 新版 Deb822 .sources
+    while IFS= read -r -d '' file; do
+
+        if grep -qiE \
+            '(deb\.xanmod\.org|dl\.xanmod\.org)' \
+            "$file" 2>/dev/null; then
+
+            backup_file "$file"
+
+            tmp_sources="$(mktemp)"
+
+            awk '
+                BEGIN {
+                    RS=""
+                    ORS="\n\n"
+                }
+
+                tolower($0) !~ /(deb\.xanmod\.org|dl\.xanmod\.org)/ {
+                    print
+                }
+            ' "$file" > "$tmp_sources"
+
+            if [[ -s "$tmp_sources" ]]; then
+                install -m 0644 "$tmp_sources" "$file"
+            else
+                rm -f -- "$file"
+            fi
+
+            rm -f -- "$tmp_sources"
+        fi
+
+    done < <(
         find "$SOURCE_DIR" \
             -maxdepth 1 \
             -type f \
-            -name '*.list' \
+            -name '*.sources' \
             -print0 2>/dev/null
-    }
-)
+    )
 
-# 处理 Debian 新版 Deb822 .sources
-while IFS= read -r -d '' file; do
+    # 清除 sources.list.d 中错误的 XanMod 备份文件
+    while IFS= read -r -d '' file; do
 
-    if grep -qiE \
-        '(deb\.xanmod\.org|dl\.xanmod\.org)' \
-        "$file" 2>/dev/null; then
+        base="$(basename "$file")"
 
-        backup_file "$file"
+        case "$base" in
+            *.list|*.sources)
+                continue
+                ;;
+        esac
 
-        tmp_sources="$(mktemp)"
+        if [[ "$base" == *xanmod* ]] ||
+           grep -qiE \
+            '(deb\.xanmod\.org|dl\.xanmod\.org)' \
+            "$file" 2>/dev/null; then
 
-        awk '
-            BEGIN {
-                RS=""
-                ORS="\n\n"
-            }
-
-            tolower($0) !~ /(deb\.xanmod\.org|dl\.xanmod\.org)/ {
-                print
-            }
-        ' "$file" > "$tmp_sources"
-
-        if [[ -s "$tmp_sources" ]]; then
-            install -m 0644 "$tmp_sources" "$file"
-        else
+            backup_file "$file"
             rm -f -- "$file"
         fi
 
-        rm -f -- "$tmp_sources"
-    fi
+    done < <(
+        find "$SOURCE_DIR" \
+            -maxdepth 1 \
+            -type f \
+            -print0 2>/dev/null
+    )
 
-done < <(
-    find "$SOURCE_DIR" \
+    rm -f -- "$LIST_FILE"
+
+    # 清理旧索引
+    find /var/lib/apt/lists \
         -maxdepth 1 \
         -type f \
-        -name '*.sources' \
-        -print0 2>/dev/null
-)
+        \( -iname '*xanmod*' -o -iname '*deb.xanmod.org*' \) \
+        -delete 2>/dev/null || true
 
-# 清除 sources.list.d 中错误的 XanMod 备份文件
-while IFS= read -r -d '' file; do
-
-    base="$(basename "$file")"
-
-    case "$base" in
-        *.list|*.sources)
-            continue
-            ;;
-    esac
-
-    if [[ "$base" == *xanmod* ]] ||
-       grep -qiE \
-        '(deb\.xanmod\.org|dl\.xanmod\.org)' \
-        "$file" 2>/dev/null; then
-
-        backup_file "$file"
-        rm -f -- "$file"
-    fi
-
-done < <(
-    find "$SOURCE_DIR" \
+    find /var/lib/apt/lists/partial \
         -maxdepth 1 \
         -type f \
-        -print0 2>/dev/null
-)
-
-rm -f -- "$LIST_FILE"
-
-# 清理旧索引
-find /var/lib/apt/lists \
-    -maxdepth 1 \
-    -type f \
-    \( -iname '*xanmod*' -o -iname '*deb.xanmod.org*' \) \
-    -delete 2>/dev/null || true
-
-find /var/lib/apt/lists/partial \
-    -maxdepth 1 \
-    -type f \
-    \( -iname '*xanmod*' -o -iname '*deb.xanmod.org*' \) \
-    -delete 2>/dev/null || true
-
-# ------------------------------------------------------------
-# 安装依赖
-# ------------------------------------------------------------
-
-log "更新系统 APT 索引"
-
-apt-get update \
-    --allow-releaseinfo-change
-
-log "安装依赖"
-
-apt-get install -y \
-    --no-install-recommends \
-    ca-certificates \
-    wget \
-    gnupg
-
-# ------------------------------------------------------------
-# 检测发行版 codename
-# ------------------------------------------------------------
-
-# shellcheck disable=SC1091
-. /etc/os-release
-
-declare -a CODENAME_CANDIDATES=()
-
-add_codename() {
-    local c="${1:-}"
-    local existing
-
-    [[ -n "$c" ]] || return 0
-
-    for existing in "${CODENAME_CANDIDATES[@]:-}"; do
-        [[ "$existing" == "$c" ]] && return 0
-    done
-
-    CODENAME_CANDIDATES+=("$c")
+        \( -iname '*xanmod*' -o -iname '*deb.xanmod.org*' \) \
+        -delete 2>/dev/null || true
+    SOURCES_CLEANED=1
 }
-
-add_codename "${VERSION_CODENAME:-}"
-add_codename "${UBUNTU_CODENAME:-}"
-
-if command -v lsb_release >/dev/null 2>&1; then
-    add_codename "$(lsb_release -sc 2>/dev/null || true)"
-fi
-
-[[ ${#CODENAME_CANDIDATES[@]} -gt 0 ]] || \
-    fail "无法识别发行版 codename"
-
-CODENAME=""
-
-for candidate in "${CODENAME_CANDIDATES[@]}"; do
-
-    log "检查 XanMod 仓库是否支持：$candidate"
-
-    if wget -nv -S \
-        --user-agent="$XANMOD_HTTP_USER_AGENT" \
-        --output-document="$TMPDIR/Release" \
-        "https://deb.xanmod.org/dists/${candidate}/Release" \
-        2>"$TMPDIR/release-wget.log"; then
-
-        grep -Fxq "Codename: $candidate" "$TMPDIR/Release" || \
-            fail "XanMod 仓库返回的 Release 元数据与 ${candidate} 不匹配"
-
-        CODENAME="$candidate"
-        break
-    fi
-
-    REPO_HTTP_STATUS="$(
-        awk '/^[[:space:]]*HTTP\/[0-9.]+[[:space:]]+[0-9]+/ { code=$2 } END { print code }' \
-            "$TMPDIR/release-wget.log"
-    )"
-
-    if [[ "$REPO_HTTP_STATUS" != "404" ]]; then
-        fail "无法访问 XanMod 仓库（${candidate}，HTTP ${REPO_HTTP_STATUS:-unknown}）；请检查网络或仓库访问限制"
-    fi
-done
-
-[[ -n "$CODENAME" ]] || \
-    fail "XanMod 当前不支持检测到的发行版：${CODENAME_CANDIDATES[*]}"
-
-log "使用 XanMod suite：$CODENAME"
-
-# ------------------------------------------------------------
-# 安装 XanMod 官方密钥
-# ------------------------------------------------------------
-
-log "下载 XanMod 官方 archive key"
-
-wget -nv \
-    --user-agent="$XANMOD_HTTP_USER_AGENT" \
-    --output-document="$TMPDIR/archive.key" \
-    https://dl.xanmod.org/archive.key || \
-    fail "无法下载 XanMod 官方 archive key；请检查网络或仓库访问限制"
-
-[[ -s "$TMPDIR/archive.key" ]] || \
-    fail "下载的 XanMod archive key 为空"
-
-gpg \
-    --batch \
-    --yes \
-    --dearmor \
-    --output "$TMPDIR/xanmod-archive-keyring.gpg" \
-    "$TMPDIR/archive.key"
-
-install \
-    -m 0644 \
-    "$TMPDIR/xanmod-archive-keyring.gpg" \
-    "$KEYRING"
-
-# ------------------------------------------------------------
-# 添加 XanMod 仓库
-# ------------------------------------------------------------
-
-log "写入 XanMod 官方仓库"
-
-printf \
-    'deb [arch=amd64 signed-by=%s] https://deb.xanmod.org %s main\n' \
-    "$KEYRING" \
-    "$CODENAME" \
-    > "$LIST_FILE"
-
-chmod 0644 "$LIST_FILE"
-
-apt-get update \
-    --allow-releaseinfo-change
 
 # ------------------------------------------------------------
 # 自动检测 x86-64 psABI
@@ -471,15 +357,165 @@ case "$XANMOD_FLAVOR" in
         ;;
 esac
 
+# ------------------------------------------------------------
+# 安装依赖
+# ------------------------------------------------------------
+
+if ! command -v wget >/dev/null 2>&1 ||
+   ! command -v gpg >/dev/null 2>&1 ||
+   [[ ! -s /etc/ssl/certs/ca-certificates.crt ]]; then
+    [[ "$XANMOD_CHECK_ONLY" == "0" ]] || \
+        fail "只检查模式需要已有 ca-certificates、wget 和 gnupg；请先安装依赖"
+
+    # Bootstrap missing tools without letting a stale XanMod entry block APT.
+    cleanup_xanmod_sources
+    log "更新系统 APT 索引并安装缺失依赖"
+    apt-get update --allow-releaseinfo-change -o APT::Update::Error-Mode=any
+    apt-get install -y --no-install-recommends ca-certificates wget gnupg
+fi
+
+# ------------------------------------------------------------
+# 检测发行版 codename
+# ------------------------------------------------------------
+
+# shellcheck disable=SC1091
+. /etc/os-release
+
+declare -a CODENAME_CANDIDATES=()
+
+add_codename() {
+    local c="${1:-}"
+    local existing
+
+    [[ -n "$c" ]] || return 0
+
+    for existing in "${CODENAME_CANDIDATES[@]:-}"; do
+        [[ "$existing" == "$c" ]] && return 0
+    done
+
+    CODENAME_CANDIDATES+=("$c")
+}
+
+add_codename "${VERSION_CODENAME:-}"
+add_codename "${UBUNTU_CODENAME:-}"
+
+if command -v lsb_release >/dev/null 2>&1; then
+    add_codename "$(lsb_release -sc 2>/dev/null || true)"
+fi
+
+[[ ${#CODENAME_CANDIDATES[@]} -gt 0 ]] || \
+    fail "无法识别发行版 codename"
+
+CODENAME=""
+
+for candidate in "${CODENAME_CANDIDATES[@]}"; do
+
+    log "检查 XanMod 仓库是否支持：$candidate"
+
+    if wget -nv -S \
+        --timeout=20 --tries=2 \
+        --user-agent="$XANMOD_HTTP_USER_AGENT" \
+        --output-document="$TMPDIR/Release" \
+        "https://deb.xanmod.org/dists/${candidate}/Release" \
+        2>"$TMPDIR/release-wget.log"; then
+
+        grep -Fxq "Codename: $candidate" "$TMPDIR/Release" || \
+            fail "XanMod 仓库返回的 Release 元数据与 ${candidate} 不匹配"
+
+        CODENAME="$candidate"
+        break
+    fi
+
+    REPO_HTTP_STATUS="$(
+        awk '/^[[:space:]]*HTTP\/[0-9.]+[[:space:]]+[0-9]+/ { code=$2 } END { print code }' \
+            "$TMPDIR/release-wget.log"
+    )"
+
+    if [[ "$REPO_HTTP_STATUS" != "404" ]]; then
+        fail "无法访问 XanMod 仓库（${candidate}，HTTP ${REPO_HTTP_STATUS:-unknown}）；请检查网络或仓库访问限制"
+    fi
+done
+
+[[ -n "$CODENAME" ]] || \
+    fail "XanMod 当前不支持检测到的发行版：${CODENAME_CANDIDATES[*]}"
+
+log "使用 XanMod suite：$CODENAME"
+
+# ------------------------------------------------------------
+# 安装 XanMod 官方密钥
+# ------------------------------------------------------------
+
+log "下载 XanMod 官方 archive key"
+
+wget -nv \
+    --timeout=20 --tries=2 \
+    --user-agent="$XANMOD_HTTP_USER_AGENT" \
+    --output-document="$TMPDIR/archive.key" \
+    https://dl.xanmod.org/archive.key || \
+    fail "无法下载 XanMod 官方 archive key；请检查网络或仓库访问限制"
+
+[[ -s "$TMPDIR/archive.key" ]] || \
+    fail "下载的 XanMod archive key 为空"
+
+install -d -m 0700 "$TMPDIR/gnupg"
+GNUPGHOME="$TMPDIR/gnupg" gpg \
+    --batch \
+    --yes \
+    --dearmor \
+    --output "$TMPDIR/xanmod-archive-keyring.gpg" \
+    "$TMPDIR/archive.key"
+
+# ------------------------------------------------------------
+# 使用临时 APT 目录验证签名和包，避免失败时破坏系统软件源
+# ------------------------------------------------------------
+
+log "在临时目录检查 XanMod 仓库签名和内核包"
+
+# Allow APT's _apt user to read the public repository key and temporary source.
+chmod 0755 "$TMPDIR"
+chmod 0644 "$TMPDIR/xanmod-archive-keyring.gpg"
+install -d -m 0755 "$TMPDIR/state/lists/partial" "$TMPDIR/cache/archives/partial" \
+    "$TMPDIR/log" "$TMPDIR/apt.conf.d" "$TMPDIR/sourceparts"
+: > "$TMPDIR/status"
+# APT_CONFIG is read before system apt.conf.d, so host update hooks cannot run.
+printf 'Dir::Etc::main "%s";\nDir::Etc::parts "%s";\n' \
+    "$TMPDIR/apt.conf" "$TMPDIR/apt.conf.d" > "$TMPDIR/apt.conf"
+
+printf \
+    'deb [arch=amd64 signed-by=%s] https://deb.xanmod.org %s main\n' \
+    "$TMPDIR/xanmod-archive-keyring.gpg" \
+    "$CODENAME" \
+    > "$TMPDIR/xanmod.list"
+
+declare -a CHECK_APT_OPTIONS=(
+    -o "Dir::Etc::sourcelist=$TMPDIR/xanmod.list"
+    -o "Dir::Etc::sourceparts=$TMPDIR/sourceparts"
+    -o "Dir::Etc::main=$TMPDIR/apt.conf"
+    -o "Dir::Etc::parts=$TMPDIR/apt.conf.d"
+    -o "Dir::State=$TMPDIR/state"
+    -o "Dir::State::status=$TMPDIR/status"
+    -o "Dir::Cache=$TMPDIR/cache"
+    -o "Dir::Log=$TMPDIR/log"
+    -o APT::Update::Error-Mode=any
+    -o Acquire::Retries=2
+    -o Acquire::http::Timeout=20
+    -o Acquire::https::Timeout=20
+    -o "Acquire::http::User-Agent=$XANMOD_HTTP_USER_AGENT"
+    -o Acquire::PDiffs=false
+)
+
+APT_CONFIG="$TMPDIR/apt.conf" apt-get "${CHECK_APT_OPTIONS[@]}" update
+
 SELECTED_PACKAGE=""
 
 for pkg in "${PACKAGES[@]}"; do
 
     candidate_version="$(
-        apt-cache policy "$pkg" 2>/dev/null |
-        awk '/Candidate:/ {
+        APT_CONFIG="$TMPDIR/apt.conf" apt-cache "${CHECK_APT_OPTIONS[@]}" policy "$pkg" |
+        # Consume all output: apt 3.x may otherwise receive SIGPIPE under pipefail.
+        awk '/Candidate:/ && !found {
             print $2
-            exit
+            found=1
         }'
     )"
 
@@ -493,6 +529,24 @@ done
 
 [[ -n "$SELECTED_PACKAGE" ]] || \
     fail "找不到合适的 XanMod 内核。尝试过：${PACKAGES[*]}"
+
+if [[ "$XANMOD_CHECK_ONLY" == "1" ]]; then
+    log "兼容性检查通过（未修改系统 APT 配置、安装内核或重启）"
+    printf '系统：%s\n发行版：%s\nCPU 等级：x64v%s\n安装包：%s\n候选版本：%s\n当前内核：%s\n' \
+        "${PRETTY_NAME:-unknown}" "$CODENAME" "$CPU_LEVEL" \
+        "$SELECTED_PACKAGE" "$candidate_version" "$(uname -r)"
+    exit 0
+fi
+
+[[ "$SOURCES_CLEANED" == "1" ]] || cleanup_xanmod_sources
+backup_file "$KEYRING"
+install -m 0644 "$TMPDIR/xanmod-archive-keyring.gpg" "$KEYRING"
+
+log "写入 XanMod 官方仓库"
+printf 'deb [arch=amd64 signed-by=%s] https://deb.xanmod.org %s main\n' \
+    "$KEYRING" "$CODENAME" > "$LIST_FILE"
+chmod 0644 "$LIST_FILE"
+apt-get update --allow-releaseinfo-change -o APT::Update::Error-Mode=any
 
 # ------------------------------------------------------------
 # 安装
