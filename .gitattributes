@@ -1,0 +1,2 @@
+/debian-sources.sh text eol=lf
+/tests/debian_sources_test.sh text eol=lf
