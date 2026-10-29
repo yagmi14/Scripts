@@ -1,2 +1,4 @@
 /debian-sources.sh text eol=lf
 /tests/debian_sources_test.sh text eol=lf
+/ssh-hardening.sh text eol=lf
+/tests/ssh_hardening_test.sh text eol=lf

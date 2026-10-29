@@ -1,5 +1,33 @@
 # Scripts
 
+## SSH 安全加固
+
+`ssh-hardening.sh` 为 Debian/Ubuntu 添加公钥、将 SSH 端口统一为 **40022**、
+关闭密码及交互式认证，并配置使用 systemd 日志的 Fail2ban。
+执行前确认脚本内的公钥属于你，并确认服务商防火墙允许 TCP 40022：
+
+```bash
+curl -fL --retry 2 https://raw.githubusercontent.com/yagmi14/Scripts/main/ssh-hardening.sh -o ssh-hardening.sh && sudo bash ssh-hardening.sh
+```
+
+SSH 认证选项以先读到的配置为准。脚本使用
+`/etc/ssh/sshd_config.d/00-000-local-hardening.conf`，早于镜像常见的
+`00-cloudshlii-login.conf` 和 `50-cloud-init.conf`，避免它们的密码登录设置
+覆盖加固策略。旧版 `00-local-hardening.conf` 会保留，其中的旧端口按普通
+配置处理。主配置在 Include 前的设置或排序更早的自定义文件仍可能冲突；
+脚本会在重载前通过 `sshd -t` / `sshd -T` 检测并恢复配置。
+
+修改前备份位于 `/root/ssh-hardening-backup-*`。完成后保留当前会话，
+另开终端用公钥连接 `ssh -p 40022 root@服务器IP`，确认可登录后再关闭旧会话。
+Fail2ban 阶段失败只恢复其配置，SSH 加固可能已经生效，应检查输出中的端口。
+
+回归测试需要 Linux、root 和已有 OpenSSH 服务端；使用真实 `sshd` 解析临时配置，
+模拟软件安装、防火墙和服务控制，不修改系统 SSH 设置：
+
+```bash
+sudo bash tests/ssh_hardening_test.sh
+```
+
 ## Debian 一键换源
 
 `debian-sources.sh` 自动检测 Debian 12（bookworm）或 Debian 13（trixie），

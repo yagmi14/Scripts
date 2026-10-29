@@ -46,7 +46,9 @@ F2B_BANTIME="${F2B_BANTIME:-10m}"
 # 脚本管理文件
 # ============================================================
 
-MANAGED_CONFIG="/etc/ssh/sshd_config.d/00-local-hardening.conf"
+# OpenSSH 对认证选项采用先读到的值。必须早于镜像常见的
+# 00-cloudshlii-login.conf / 50-cloud-init.conf，避免校验失败后回滚。
+MANAGED_CONFIG="/etc/ssh/sshd_config.d/00-000-local-hardening.conf"
 
 F2B_CONFIG="/etc/fail2ban/jail.d/sshd.local"
 
@@ -284,7 +286,7 @@ if [[ -f "$MANAGED_CONFIG" ]]; then
 
     cp -a \
         "$MANAGED_CONFIG" \
-        "$BACKUP_DIR/00-local-hardening.conf"
+        "$BACKUP_DIR/00-000-local-hardening.conf"
 
 fi
 
@@ -395,7 +397,7 @@ rollback_ssh() {
     if [[ "$MANAGED_CONFIG_EXISTED" == "1" ]]; then
 
         cp -a \
-            "$BACKUP_DIR/00-local-hardening.conf" \
+            "$BACKUP_DIR/00-000-local-hardening.conf" \
             "$MANAGED_CONFIG"
 
     else
