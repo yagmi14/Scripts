@@ -88,7 +88,7 @@ run rm -f \
   /etc/apt/sources.list.d/download_docker_com_linux_ubuntu.sources
 
 run apt-get update
-run apt-get install -y ca-certificates curl python3
+run apt-get install -y ca-certificates curl python3 cron util-linux
 
 # Check that the repository suite exists before writing the source file.
 if ! curl -fsSL "https://download.docker.com/linux/${docker_os}/dists/${codename}/Release" -o /dev/null; then
@@ -181,13 +181,63 @@ else:
     print("Configured Docker json-file logging: 50m x 5 files (about 250 MiB per container).")
 PYTHON
 
+# Check hourly, but prune only after ten full days since installation/last success.
+# A persistent timestamp keeps the interval across reboots and installer re-runs.
+run install -m 0755 -d /usr/local/sbin /etc/cron.d
+${SUDO} tee /usr/local/sbin/docker-build-cache-prune >/dev/null <<'CACHE_PRUNE'
+#!/usr/bin/env bash
+set -Eeuo pipefail
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+state_dir=/var/lib/docker-build-cache-prune
+install -m 0700 -d "$state_dir"
+exec 9>"$state_dir/lock"
+flock -n 9 || exit 0
+stamp="$state_dir/last-success"
+
+write_stamp() {
+  local temporary
+  temporary=$(mktemp "$state_dir/.last-success.XXXXXX")
+  if ! date +%s > "$temporary" || ! mv -f -- "$temporary" "$stamp"; then
+    rm -f -- "$temporary"
+    return 1
+  fi
+}
+
+if [[ ! -e "$stamp" ]]; then
+  write_stamp
+fi
+if [[ "${1:-}" == --initialize ]]; then
+  exit 0
+fi
+last_success=$(cat "$stamp")
+if [[ ! "$last_success" =~ ^[0-9]+$ ]]; then
+  echo "ERROR: Invalid cleanup timestamp in $stamp" >&2
+  exit 1
+fi
+now=$(date +%s)
+if (( now - last_success < 10 * 24 * 60 * 60 )); then
+  exit 0
+fi
+/usr/bin/docker builder prune -af --filter until=168h
+write_stamp
+CACHE_PRUNE
+run chmod 0755 /usr/local/sbin/docker-build-cache-prune
+run /usr/local/sbin/docker-build-cache-prune --initialize
+${SUDO} tee /etc/cron.d/docker-build-cache-prune >/dev/null <<'CACHE_CRON'
+# Check each hour; the helper enforces ten days between successful cache prunes.
+17 * * * * root /usr/local/sbin/docker-build-cache-prune 2>&1 | /usr/bin/logger -t docker-build-cache-prune
+CACHE_CRON
+run chmod 0644 /etc/cron.d/docker-build-cache-prune
+
 if command -v systemctl >/dev/null 2>&1 && systemctl list-unit-files >/dev/null 2>&1; then
   run systemctl enable docker
   run systemctl restart docker
+  run systemctl enable --now cron
 elif command -v service >/dev/null 2>&1; then
   run service docker restart
+  run service cron start
 else
-  echo "WARNING: Neither systemctl nor service is available. Start Docker manually if needed." >&2
+  echo "WARNING: Neither systemctl nor service is available. Start Docker and cron manually." >&2
 fi
 
 if command -v docker >/dev/null 2>&1; then
@@ -195,6 +245,8 @@ if command -v docker >/dev/null 2>&1; then
   docker compose version
   echo "Log rotation defaults apply to new containers; recreate existing containers to use them."
   echo "Per-container or Compose logging settings override these defaults."
+  echo "Build cache cleanup: every 10 days (checked hourly), pruning cache unused for over 7 days."
+  echo "Cleanup logs: journalctl -t docker-build-cache-prune"
   echo "Docker installed. To test the daemon, run: sudo docker run hello-world"
 else
   echo "ERROR: docker command was not found after installation." >&2

@@ -1,6 +1,6 @@
 # Scripts
 
-## Docker 安装与日志轮转
+## Docker 安装、日志轮转与构建缓存清理
 
 `docker_install.sh` 使用 Docker 官方 APT 仓库安装 Debian/Ubuntu 的 Docker Engine、
 Buildx 和 Compose，并配置默认日志轮转：`json-file`、`max-size: "50m"`、
@@ -17,10 +17,27 @@ curl -fL --retry 2 https://raw.githubusercontent.com/yagmi14/Scripts/main/docker
 默认值只对新建容器生效；已有容器需要重建。容器或 Compose 单独指定的日志配置优先，
 应用自行写入文件的日志需另行管理。
 
+脚本还会安装并启用 cron，配置**每 10 天清理一次构建缓存**，仅清理超过 7 天未使用的缓存：
+
+- 清理脚本：`/usr/local/sbin/docker-build-cache-prune`。
+- 定时配置：`/etc/cron.d/docker-build-cache-prune`，每小时第 17 分钟检查一次。
+- 时间记录：`/var/lib/docker-build-cache-prune/last-success`。
+
+首次安装后满 10 天才会执行首次清理，此后按上次成功清理时间计满 10 天，
+在下一次小时检查时执行。重启服务器或重复安装不会重置已有时间记录，
+清理失败不更新成功时间，下一小时会重试。使用文件锁避免并发清理。
+该任务只调用 `docker builder prune -af --filter until=168h`，不会清理容器、镜像或数据卷；
+后续构建可能需要重新生成缓存。无服务管理器的环境需要手动启动 Docker 和 cron。
+
+```bash
+journalctl -t docker-build-cache-prune --since '30 days ago'
+```
+
 配置回归测试只操作临时目录，不安装软件或重启服务；已安装 `dockerd` 时还会执行真实配置校验：
 
 ```bash
 python3 tests/docker_install_test.py
+python3 tests/docker_cache_prune_test.py
 ```
 
 ## SSH 安全加固
