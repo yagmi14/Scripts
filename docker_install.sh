@@ -88,7 +88,7 @@ run rm -f \
   /etc/apt/sources.list.d/download_docker_com_linux_ubuntu.sources
 
 run apt-get update
-run apt-get install -y ca-certificates curl
+run apt-get install -y ca-certificates curl python3
 
 # Check that the repository suite exists before writing the source file.
 if ! curl -fsSL "https://download.docker.com/linux/${docker_os}/dists/${codename}/Release" -o /dev/null; then
@@ -128,10 +128,64 @@ fi
 run apt-get update
 run apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
+# Merge the daemon defaults without replacing unrelated settings (mirrors, DNS, etc.).
+# Package installation can start Docker before this configuration is written.
+run python3 - /etc/docker/daemon.json <<'PYTHON'
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tempfile
+
+config_path = Path(sys.argv[1])
+if config_path.is_symlink():
+    raise SystemExit(f"ERROR: Refusing to replace a symlink: {config_path}")
+existing = config_path.exists()
+original = json.loads(config_path.read_text()) if existing else {}
+if not isinstance(original, dict):
+    raise SystemExit("ERROR: Docker daemon.json must contain a JSON object.")
+options = original.get("log-opts", {})
+if not isinstance(options, dict):
+    raise SystemExit("ERROR: Docker log-opts must contain a JSON object.")
+
+# Options for a different logging driver may not be valid for json-file.
+options = options.copy() if original.get("log-driver", "json-file") == "json-file" else {}
+options.update({"max-size": "50m", "max-file": "5"})
+config = {**original, "log-driver": "json-file", "log-opts": options}
+if existing and config == original:
+    subprocess.run(["dockerd", "--validate", "--config-file", str(config_path)], check=True)
+    print("Docker log rotation defaults are already configured.")
+else:
+    config_path.parent.mkdir(parents=True, exist_ok=True)
+    fd, candidate = tempfile.mkstemp(prefix=".daemon.json.", dir=config_path.parent)
+    try:
+        with os.fdopen(fd, "w") as stream:
+            json.dump(config, stream, indent=2)
+            stream.write("\n")
+        if existing:
+            shutil.copymode(config_path, candidate)
+        else:
+            os.chmod(candidate, 0o644)
+        subprocess.run(["dockerd", "--validate", "--config-file", candidate], check=True)
+        if existing:
+            backup_fd, backup = tempfile.mkstemp(prefix="daemon.json.backup.", dir=config_path.parent)
+            os.close(backup_fd)
+            shutil.copy2(config_path, backup)
+            print(f"Existing Docker configuration backed up to: {backup}")
+        os.replace(candidate, config_path)
+    finally:
+        if os.path.exists(candidate):
+            os.unlink(candidate)
+    print("Configured Docker json-file logging: 50m x 5 files (about 250 MiB per container).")
+PYTHON
+
 if command -v systemctl >/dev/null 2>&1 && systemctl list-unit-files >/dev/null 2>&1; then
-  run systemctl enable --now docker
+  run systemctl enable docker
+  run systemctl restart docker
 elif command -v service >/dev/null 2>&1; then
-  run service docker start || true
+  run service docker restart
 else
   echo "WARNING: Neither systemctl nor service is available. Start Docker manually if needed." >&2
 fi
@@ -139,6 +193,8 @@ fi
 if command -v docker >/dev/null 2>&1; then
   docker --version
   docker compose version
+  echo "Log rotation defaults apply to new containers; recreate existing containers to use them."
+  echo "Per-container or Compose logging settings override these defaults."
   echo "Docker installed. To test the daemon, run: sudo docker run hello-world"
 else
   echo "ERROR: docker command was not found after installation." >&2

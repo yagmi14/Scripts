@@ -2,3 +2,4 @@
 /tests/debian_sources_test.sh text eol=lf
 /ssh-hardening.sh text eol=lf
 /tests/ssh_hardening_test.sh text eol=lf
+/docker_install.sh text eol=lf

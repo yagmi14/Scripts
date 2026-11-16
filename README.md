@@ -1,5 +1,28 @@
 # Scripts
 
+## Docker 安装与日志轮转
+
+`docker_install.sh` 使用 Docker 官方 APT 仓库安装 Debian/Ubuntu 的 Docker Engine、
+Buildx 和 Compose，并配置默认日志轮转：`json-file`、`max-size: "50m"`、
+`max-file: "5"`，每个容器日志最多约 **250 MiB**。
+
+```bash
+curl -fL --retry 2 https://raw.githubusercontent.com/yagmi14/Scripts/main/docker_install.sh -o docker_install.sh && sudo bash docker_install.sh
+```
+
+脚本合并 `/etc/docker/daemon.json`，保留镜像源、DNS 等其他设置；已有配置会先备份为
+`/etc/docker/daemon.json.backup.*`。切换日志驱动时清除旧驱动专用的日志选项，
+写入前使用 `dockerd --validate` 校验。安装完成后重启 Docker 以加载配置，可能短暂影响现有服务。
+
+默认值只对新建容器生效；已有容器需要重建。容器或 Compose 单独指定的日志配置优先，
+应用自行写入文件的日志需另行管理。
+
+配置回归测试只操作临时目录，不安装软件或重启服务；已安装 `dockerd` 时还会执行真实配置校验：
+
+```bash
+python3 tests/docker_install_test.py
+```
+
 ## SSH 安全加固
 
 `ssh-hardening.sh` 为 Debian/Ubuntu 添加公钥、将 SSH 端口统一为 **40022**、
